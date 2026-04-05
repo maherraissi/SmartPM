@@ -1,1 +1,62 @@
-<p>manager-dashboard works!</p>
+<div class="aerospace-dashboard">
+  <!-- Glowing Header -->
+  <header class="neo-header cinematic-enter">
+    <div class="title-group">
+      <div class="pulse-ring"></div>
+      <h1>Command Center</h1>
+      <span class="subtitle">Aerospace DO-178C Matrix</span>
+    </div>
+    <div class="action-orbit">
+      <button class="cyber-button" (click)="launchWizard()">
+        <span class="icon">⚡</span> Initialize Project
+        <div class="glow-effect"></div>
+      </button>
+    </div>
+  </header>
+
+  <!-- Metric Cards with stagger animation -->
+  <section class="metrics-grid">
+    <div class="neo-card metric glass-panel fade-up" *ngFor="let stat of stats; let i = index" [style.animation-delay]="i * 0.1 + 's'">
+      <div class="card-icon" [ngClass]="stat.color">{{ stat.icon }}</div>
+      <div class="card-data">
+        <h3>{{ stat.value }}</h3>
+        <p>{{ stat.label }}</p>
+      </div>
+      <div class="trend-badge" [ngClass]="stat.color">{{ stat.trend }}</div>
+    </div>
+  </section>
+
+  <!-- Radar & Activity Section -->
+  <section class="bottom-grid fade-up" style="animation-delay: 0.5s;">
+    <!-- Active Projects Radar -->
+    <div class="neo-card radar-panel glass-panel">
+      <div class="card-header">
+        <h2>Live System Radar</h2>
+        <span class="live-indicator">LIVE</span>
+      </div>
+      <div class="radar-wrapper">
+        <div class="radar">
+          <div class="sweep"></div>
+          <div class="blip blip-1"></div>
+          <div class="blip blip-2"></div>
+        </div>
+        <div class="radar-overlay">Scanning architecture...</div>
+      </div>
+    </div>
+
+    <!-- Activity Stream -->
+    <div class="neo-card activity-panel glass-panel">
+      <h2>Recent Logs</h2>
+      <ul class="activity-list">
+        <li *ngFor="let act of activities; let j = index" class="activity-item slide-in" [style.animation-delay]="j * 0.15 + 0.6 + 's'">
+          <div class="status-dot" [ngClass]="act.status"></div>
+          <div class="activity-details">
+            <strong>{{ act.action }}</strong>
+            <span>{{ act.project }}</span>
+          </div>
+          <div class="activity-time">{{ act.time }}</div>
+        </li>
+      </ul>
+    </div>
+  </section>
+</div>
