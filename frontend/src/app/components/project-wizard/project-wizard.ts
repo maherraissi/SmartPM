@@ -114,18 +114,41 @@ export class ProjectWizard {
     this.newActivityEndDate = '';
   }
 
-  deployProject() {
+  async deployProject() {
     if (!this.isProjectValid) {
       alert("Error: DO-178C Compliance dictates at least one Phase and Sub-Phase must be active.");
       return;
     }
     
-    // UI Loading State (AI Simulation)
+    // UI Loading State (AI Simulation & Network Sync)
     this.isDeploying = true;
     
-    setTimeout(() => {
+    const selectedTree = this.activities.filter(a => a.selected).map(a => ({
+      id: a.id.split('_')[0], // Retain base LLR, LLT, etc.
+      name: a.name,
+      subs: a.subActivities.filter(s => s.selected)
+    }));
+    
+    const payload = {
+      ...this.projectData,
+      activities: selectedTree
+    };
+    
+    try {
+      const res = await fetch('http://localhost:3000/projects/deploy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      const data = await res.json();
+      console.log('🚀 Backend sync successful. DB Record Created:', data);
       this.isDeploying = false;
       this.router.navigate(['/manager']);
-    }, 2500);
+    } catch (err) {
+      console.error('Failed to sync to backend:', err);
+      alert('Network failure reaching backend.');
+      this.isDeploying = false;
+    }
   }
 }

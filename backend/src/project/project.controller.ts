@@ -1,4 +1,12 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
+import { ProjectService } from './project.service';
 
-@Controller('project')
-export class ProjectController {}
+@Controller('projects')
+export class ProjectController {
+  constructor(private readonly projectService: ProjectService) {}
+
+  @Post('deploy')
+  async deployMission(@Body() payload: any) {
+    return this.projectService.deployMission(payload);
+  }
+}

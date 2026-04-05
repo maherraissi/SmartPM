@@ -14,7 +14,8 @@ export enum AeroPhase {
   LLR = 'LLR',
   CODE = 'CODE',
   LLT = 'LLT',
-  HLT = 'HLT'
+  HLT = 'HLT',
+  CUSTOM = 'CUSTOM'
 }
 
 @Schema({
