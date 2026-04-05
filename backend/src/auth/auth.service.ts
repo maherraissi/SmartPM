@@ -11,6 +11,26 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<UserDocument>
   ) {}
 
+  async validateUser(email: string, pass: string): Promise<any> {
+    const user = await this.userModel.findOne({ email }).select('+passwordHash');
+    if (user && user.passwordHash) {
+      const bcrypt = await import('bcrypt');
+      const isMatch = await bcrypt.compare(pass, user.passwordHash);
+      if (isMatch) {
+        const { passwordHash, ...result } = user.toObject();
+        return result;
+      }
+    }
+    return null;
+  }
+
+  async login(user: any) {
+    const payload = { email: user.email, sub: user._id, role: user.role };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
+
   // ENTERPRISE SSO UPSERT PATTERN
   async validateOAuthUser(profile: any) {
     let user = await this.userModel.findOne({ email: profile.email });

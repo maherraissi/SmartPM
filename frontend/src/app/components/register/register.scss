@@ -1,0 +1,47 @@
+.auth-container {
+  display: flex; justify-content: center; align-items: center;
+  min-height: calc(100vh - 70px);
+  padding: 2rem;
+}
+
+.auth-box {
+  width: 100%; max-width: 500px;
+  padding: 2.5rem; border-radius: 16px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+
+  h2 { margin: 0; color: #fff; font-size: 1.8rem; text-align: center; }
+  .subtitle { color: #8b9bb4; text-align: center; margin: 0.5rem 0 2rem; font-size: 0.95rem; }
+}
+
+.row-flex { display: flex; gap: 0.5rem; }
+.flex-1 { flex: 1; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 2rem; }
+
+.input-group {
+  display: flex; flex-direction: column; gap: 0.5rem;
+  label { font-size: 0.85rem; font-weight: 600; color: #cbd5e1; }
+  input, select {
+    padding: 0.8rem 1rem; border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff; transition: all 0.2s;
+    &:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+  }
+}
+
+.custom-select {
+  appearance: none; background-color: rgba(0,0,0,0.2) !important;
+  option { background-color: #1e293b; }
+}
+
+.btn-primary {
+  width: 100%; padding: 0.8rem; border-radius: 8px; font-weight: bold; background: #3b82f6; color: #fff;
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.footer-link {
+  text-align: center; margin-top: 2rem; color: #94a3b8; font-size: 0.9rem;
+  a { color: #3b82f6; text-decoration: none; font-weight: 600; &:hover { text-decoration: underline; } }
+}

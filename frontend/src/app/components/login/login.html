@@ -1,0 +1,38 @@
+<div class="auth-container glassmorphism">
+  <div class="auth-box">
+    <h2>Welcome Back</h2>
+    <p class="subtitle">Secure access to SmartPM Dashboard</p>
+
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <div class="input-group">
+        <label>Email Address</label>
+        <input type="email" name="email" [(ngModel)]="loginData.email" required placeholder="name@company.com">
+      </div>
+
+      <div class="input-group mt-3">
+        <label>Password</label>
+        <input type="password" name="password" [(ngModel)]="loginData.password" required placeholder="••••••••">
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-4" [disabled]="!loginForm.valid || isLoading">
+        <span *ngIf="!isLoading">Sign In</span>
+        <span *ngIf="isLoading">Authenticating...</span>
+      </button>
+    </form>
+
+    <div class="divider"><span>OR</span></div>
+
+    <div class="social-auth">
+      <button class="btn btn-social google" (click)="loginWithGoogle()">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
+        Google
+      </button>
+      <button class="btn btn-social github" (click)="loginWithGithub()">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" alt="Github">
+        Github
+      </button>
+    </div>
+
+    <p class="footer-link">Don't have an account? <a routerLink="/register">Request Access</a></p>
+  </div>
+</div>

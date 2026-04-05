@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards, Res } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards, Res, Post, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 
@@ -26,5 +26,26 @@ export class AuthController {
   async githubAuthRedirect(@Req() req, @Res() res) {
     const tokenParams = await this.authService.validateOAuthUser(req.user);
     res.redirect(`${process.env.FRONTEND_URL}/manager?token=${tokenParams.access_token}`);
+  }
+
+  @Post('login')
+  async login(@Body() body: any) {
+    const user = await this.authService.validateUser(body.email, body.password);
+    if (!user) {
+      return { message: 'Invalid credentials' };
+    }
+    return this.authService.login(user);
+  }
+
+  @Post('register')
+  async register(@Body() body: any) {
+    // This will be used by Admin to create others or self-register if public
+    return this.authService.validateOAuthUser({
+      email: body.email,
+      firstName: body.firstName,
+      lastName: body.lastName,
+      provider: 'local',
+      role: body.role || 'MEMBER'
+    });
   }
 }
