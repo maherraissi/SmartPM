@@ -1,0 +1,21 @@
+# Node.js
+node_modules/
+dist/
+
+# Python / AI
+ai/venv/
+ai/__pycache__/
+
+# Environments
+.env
+
+# Angular
+frontend/dist/
+frontend/.angular/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+*.suo
+*.sln

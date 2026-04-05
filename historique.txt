@@ -1,0 +1,47 @@
+# Historique & Architecture du projet SmartPM (Aéronautique DO-178C)
+
+Ce document trace l'historique de la création de la plateforme, son but, ainsi que le dictionnaire exhaustif des fichiers créés et leur rôle exact.
+
+## 🎯 Raison d'être du projet
+SmartPM n'est pas un système de gestion de tickets classique. C'est une **Engineering Execution & Competency Platform** conçue pour l'Aéronautique orientée sur le cycle de vie **DO-178C**. Elle gère le "V-cycle" et les règles de ségrégation des rôles (Skills-based access) pour assurer la conformité des artefacts produits. 
+
+## 🏗️ Architecture Globale (Triade BFA)
+1. **[B]ackend** : NestJS (Node.js) + Mongoose connecté à MongoDB Atlas. 
+2. **[F]rontend** : Angular (Standalone) structuré avec des Dashboards spécifiques.
+3. **[A]I Service** : FastAPI (Python) traitant avec Ollama (Local LLM), Gemini (Google Cloud RAG) et ChromaDB (Vector DB).
+
+---
+
+## 📁 Dictionnaire des Fichiers Clés
+
+### 1️⃣ Racine du Projet (`/`)
+- `package.json` : Orchestrateur central avec *concurrently* pour lancer le Backend, le Frontend et le microservice d'IA en une seule commande (`npm run dev`).
+- `README.md` : La documentation officielle pour toute l'équipe (Développeurs, Admins, DevOps).
+- `historique.txt` : Le registre exhaustif documentant la nature et l'évolution du projet.
+
+### 2️⃣ Backend NestJS (`/backend/src/`)
+*Moteur de l'application gérant la base de données MongoDB, l'API REST, et la logique.*
+- `app.module.ts` : Point d'entrée du backend, charge la BDD (MongoDB Atlas) via Mongoose et orchestre tous les modules métier.
+- `user/schemas/user.schema.ts` : Structure MongoDB incluant les rôles (`ADMIN`, `MANAGER`, `MEMBER`) et la Matrice de Certifications (`AeroPhase`). 
+- `project/schemas/project.schema.ts` : Entité mère de la plateforme (Le Projet Aéro complet).
+- `task/schemas/task.schema.ts` : Le cœur atomique du compliance. Contient des IDs stricts pour `authorId` et `reviewerId` pour garantir la règle : Reviewer ≠ Author. Il intègre aussi les métriques de tracking de temps (estimated/actual).
+- `function-template/schemas/function-template.schema.ts` : Librairie préconfigurée par l'admin stockant les "60 fonctions" standards requises par les cycles LLR/LLT.
+- `*/...module.ts` : Déclarations d'injection de dépendances pour relier les schémas, services et les API REST (Controller) de chaque entité.
+
+### 3️⃣ Frontend Angular (`/frontend/src/`)
+*Une interface Single-Page (SPA) utilisant Angular 18+ mode Standalone.*
+- `app/app.ts` : Point d'entrée du composant principal "App" gérant le routeur.
+- `app/app.routes.ts` : Définition de la navigation (Logique des Dashboards `Manager`, `Admin`, `Member`).
+- `app/app.html` et `app/app.scss` : Template général et styles instanciant la Navbar, la Sidebar et gérant le flex-layout structuré de l'application complète. 
+- `styles.scss` : La charte graphique globale "Aéro" (Variable CSS en Vanilla).
+- `/components/` : Différents Dashboards Standalone gérant l'UX (ManagerDashboard pour l'auto-planning, MemberDashboard pour les tâches et formations en cours).
+- `/services/` : Ensemble des clients HTTP permettant au frontend de consommer les endpoints de NestJS et FastAPI en arrière-plan.
+
+### 4️⃣ Intelligence Artificielle (`/ai/`)
+*Microservice Python tournant sur le port 8000. Le cerveau autonome du projet.*
+- `main.py` : Application FastAPI. Expose les routes `/plan` (Gemini), `/risk` (Ollama), et intègre les outils vectoriels (ChromaDB).
+- `.env` : Contient les clés permettant d'interroger Gemini et l'adresse de l'Ollama local.
+- `venv/` : L'environnement virtuel Python isolé comprenant : fastapi, google-generativeai, langchain-ollama, pypdf, chromadb.
+
+---
+**Fin du dictionnaire système.** La base de données et l'authentification Git sont entièrement automatisés selon l'arborescence ci-dessus.
