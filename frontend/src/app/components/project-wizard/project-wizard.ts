@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-project-wizard',
@@ -11,6 +12,9 @@ import { FormsModule } from '@angular/forms';
 })
 export class ProjectWizard {
   currentStep: number = 1;
+  isDeploying: boolean = false;
+
+  constructor(private router: Router) {}
 
   projectData = {
     name: '',
@@ -101,12 +105,13 @@ export class ProjectWizard {
       alert("Error: DO-178C Compliance dictates at least one Phase and Sub-Phase must be active.");
       return;
     }
-    const selectedTree = this.activities.filter(a => a.selected).map(a => ({
-      name: a.name,
-      subs: a.subActivities.filter(s => s.selected)
-    }));
     
-    console.log("✈️ Deploying Final Aerospace Structure:", selectedTree);
-    alert("Mission Deployed! AI Engine is generating tasks based on your selection...");
+    // UI Loading State (AI Simulation)
+    this.isDeploying = true;
+    
+    setTimeout(() => {
+      this.isDeploying = false;
+      this.router.navigate(['/manager']);
+    }, 2500);
   }
 }

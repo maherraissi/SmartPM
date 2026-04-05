@@ -91,6 +91,10 @@
     <button class="btn btn-secondary" (click)="prevStep()" *ngIf="currentStep > 1">Back</button>
     <div class="spacer"></div>
     <button class="btn btn-primary" (click)="nextStep()" *ngIf="currentStep < 3">Next Phase &rarr;</button>
-    <button class="btn btn-success" [disabled]="!isProjectValid" (click)="deployProject()" *ngIf="currentStep === 3">Deploy Mission 🚀</button>
+    
+    <button class="btn btn-success" [disabled]="!isProjectValid || isDeploying" (click)="deployProject()" *ngIf="currentStep === 3">
+      <span *ngIf="!isDeploying">Deploy Mission 🚀</span>
+      <span *ngIf="isDeploying">⚙️ Syncing with AI...</span>
+    </button>
   </div>
 </div>
