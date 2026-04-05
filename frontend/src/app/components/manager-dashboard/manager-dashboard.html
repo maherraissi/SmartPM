@@ -1,62 +1,64 @@
-<div class="aerospace-dashboard">
-  <!-- Glowing Header -->
-  <header class="neo-header cinematic-enter">
+<div class="manager-dashboard">
+  <!-- Clean Corporate Header -->
+  <header class="clean-header">
     <div class="title-group">
-      <div class="pulse-ring"></div>
-      <h1>Command Center</h1>
-      <span class="subtitle">Aerospace DO-178C Matrix</span>
+      <h1>Project Management Dashboard</h1>
+      <span class="subtitle">Overview & Progress Tracking</span>
     </div>
-    <div class="action-orbit">
-      <button class="cyber-button" (click)="launchWizard()">
-        <span class="icon">⚡</span> Initialize Project
-        <div class="glow-effect"></div>
+    <div class="action-group">
+      <button class="btn btn-primary" (click)="launchWizard()">
+        + Create New Project
       </button>
     </div>
   </header>
 
-  <!-- Metric Cards with stagger animation -->
-  <section class="metrics-grid">
-    <div class="neo-card metric glass-panel fade-up" *ngFor="let stat of stats; let i = index" [style.animation-delay]="i * 0.1 + 's'">
-      <div class="card-icon" [ngClass]="stat.color">{{ stat.icon }}</div>
-      <div class="card-data">
+  <!-- High-level stats -->
+  <section class="stats-grid mt-4">
+    <div class="stat-card" *ngFor="let stat of stats">
+      <div class="stat-icon">{{ stat.icon }}</div>
+      <div class="stat-details">
         <h3>{{ stat.value }}</h3>
         <p>{{ stat.label }}</p>
       </div>
-      <div class="trend-badge" [ngClass]="stat.color">{{ stat.trend }}</div>
     </div>
   </section>
 
-  <!-- Radar & Activity Section -->
-  <section class="bottom-grid fade-up" style="animation-delay: 0.5s;">
-    <!-- Active Projects Radar -->
-    <div class="neo-card radar-panel glass-panel">
+  <!-- Detailed Progress Tracking Section -->
+  <section class="tracking-section mt-4">
+    <div class="neo-card full-width">
       <div class="card-header">
-        <h2>Live System Radar</h2>
-        <span class="live-indicator">LIVE</span>
+        <h2>Active Project: {{ currentProject.name }}</h2>
+        <span class="badge border-green">In Progress</span>
       </div>
-      <div class="radar-wrapper">
-        <div class="radar">
-          <div class="sweep"></div>
-          <div class="blip blip-1"></div>
-          <div class="blip blip-2"></div>
+      
+      <!-- Overall Project Progress -->
+      <div class="main-progress mt-3">
+        <label>Total Completion ({{ currentProject.progress }}%)</label>
+        <div class="progress-bar-container large">
+          <div class="progress-fill" [style.width]="currentProject.progress + '%'"></div>
         </div>
-        <div class="radar-overlay">Scanning architecture...</div>
       </div>
-    </div>
 
-    <!-- Activity Stream -->
-    <div class="neo-card activity-panel glass-panel">
-      <h2>Recent Logs</h2>
-      <ul class="activity-list">
-        <li *ngFor="let act of activities; let j = index" class="activity-item slide-in" [style.animation-delay]="j * 0.15 + 0.6 + 's'">
-          <div class="status-dot" [ngClass]="act.status"></div>
-          <div class="activity-details">
-            <strong>{{ act.action }}</strong>
-            <span>{{ act.project }}</span>
+      <div class="activities-grid mt-4">
+        <!-- Display Phase Progress -->
+        <div class="activity-card" *ngFor="let act of currentProject.activities">
+          <div class="act-header">
+            <h4>{{ act.name }}</h4>
+            <span class="percent">{{ act.progress }}%</span>
           </div>
-          <div class="activity-time">{{ act.time }}</div>
-        </li>
-      </ul>
+          <div class="progress-bar-container">
+            <div class="progress-fill" [style.width]="act.progress + '%'"></div>
+          </div>
+          
+          <!-- Sub-Tasks breakdown -->
+          <ul class="sub-tasks mt-3">
+            <li *ngFor="let sub of act.tasks" class="sub-task">
+              <span>{{ sub.name }}</span>
+              <span class="status-badge" [ngClass]="sub.status">{{ sub.status }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </section>
 </div>

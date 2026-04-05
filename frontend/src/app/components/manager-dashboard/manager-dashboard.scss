@@ -1,127 +1,87 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
-
-$neon-blue: #00f3ff;
-$neon-green: #00ff66;
-$neon-purple: #b500ff;
-$neon-orange: #ffaa00;
-$dark-glass: rgba(10, 14, 23, 0.65);
-$border-glow: rgba(0, 243, 255, 0.2);
-
-.aerospace-dashboard {
+.manager-dashboard {
   padding: 2rem;
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Inter', sans-serif;
   color: #e2e8f0;
-  max-width: 1400px;
-  margin: 0 auto;
-}
 
-/* Glassmorphism Panel Base */
-.glass-panel {
-  background: $dark-glass;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  position: relative;
-  overflow: hidden;
+  .clean-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 1rem;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 2px;
-    background: linear-gradient(90deg, transparent, $neon-blue, transparent);
-    opacity: 0;
-    transition: opacity 0.3s;
+    .title-group h1 { font-size: 1.8rem; margin: 0; color: #fff; font-weight: bold;}
+    .subtitle { color: #8b9bb4; font-size: 1rem; margin-top: 5px; display: block;}
   }
 
-  &:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(0, 243, 255, 0.15);
-    border-color: $border-glow;
-    &::before { opacity: 1; }
-  }
-}
+  .mt-3 { margin-top: 1rem; }
+  .mt-4 { margin-top: 2rem; }
 
-/* Header */
-.neo-header {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;
-  .title-group {
-    display: flex; align-items: center; gap: 1rem;
-    .pulse-ring {
-      width: 15px; height: 15px; background: $neon-blue; border-radius: 50%; position: relative; box-shadow: 0 0 15px $neon-blue;
-      &::after { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border: 2px solid $neon-blue; border-radius: 50%; animation: pulse 2s infinite; }
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;
+    
+    .stat-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px; padding: 1.5rem;
+      display: flex; align-items: center; gap: 1rem; transition: transform 0.2s;
+      &:hover { transform: translateY(-5px); border-color: rgba(0,243,255,0.3); }
+      
+      .stat-icon { font-size: 2rem; }
+      .stat-details h3 { margin: 0; font-size: 1.6rem; color: #fff; }
+      .stat-details p { margin: 0; color: #8b9bb4; font-size: 0.85rem; text-transform: uppercase; font-weight: bold; }
     }
-    h1 {
-      font-family: 'Orbitron', sans-serif; font-size: 2.5rem; margin: 0;
-      background: linear-gradient(to right, #fff, $neon-blue); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px;
+  }
+
+  .neo-card {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px; padding: 2rem;
+
+    .card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 1rem;
+      h2 { margin: 0; font-size: 1.4rem; color: #fff; }
+      .badge { padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: bold; }
+      .border-green { border: 1px solid #10b981; color: #10b981; background: rgba(16, 185, 129, 0.1); }
     }
-    .subtitle { color: #8b9bb4; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
   }
-}
 
-/* Cyber Button */
-.cyber-button {
-  position: relative; background: rgba(0, 243, 255, 0.1); border: 1px solid $neon-blue; color: $neon-blue;
-  padding: 0.8rem 2rem; font-family: 'Orbitron', sans-serif; font-size: 1rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; overflow: hidden; transition: all 0.3s;
-  .glow-effect { position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); transform: skewX(-20deg); }
-  &:hover { background: $neon-blue; color: #000; box-shadow: 0 0 20px $neon-blue; .glow-effect { animation: flare 0.5s; } }
-}
+  .progress-bar-container {
+    width: 100%; background: rgba(0, 0, 0, 0.4); border-radius: 8px; overflow: hidden; height: 8px;
+    &.large { height: 14px; border-radius: 10px; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #00f3ff); transition: width 1s ease-out; }
+  }
 
-/* Metrics Grid */
-.metrics-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 3rem;
-  .metric {
-    display: flex; align-items: center; padding: 1.5rem; gap: 1.5rem;
-    .card-icon {
-      font-size: 2.5rem; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: rgba(255,255,255,0.05);
-      &.blue { color: $neon-blue; text-shadow: 0 0 10px $neon-blue; } &.green { color: $neon-green; text-shadow: 0 0 10px $neon-green; } &.purple { color: $neon-purple; text-shadow: 0 0 10px $neon-purple; } &.orange { color: $neon-orange; text-shadow: 0 0 10px $neon-orange; }
+  .main-progress {
+    label { display: block; margin-bottom: 0.5rem; font-weight: bold; color: #cbd5e1; font-size: 1.1rem; }
+  }
+
+  .activities-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;
+
+    .activity-card {
+      background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);
+      
+      .act-header {
+        display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;
+        h4 { margin: 0; color: #e2e8f0; font-size: 1.1rem; }
+        .percent { font-weight: bold; color: #0ea5e9; font-size: 1.1rem; }
+      }
+
+      .sub-tasks {
+        list-style: none; padding: 0; margin: 0;
+        .sub-task {
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 0.8rem 0; border-bottom: 1px dashed rgba(255,255,255,0.05); font-size: 0.95rem; color: #94a3b8;
+          &:last-child { border-bottom: none; }
+          
+          .status-badge {
+            font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 6px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;
+            &.Completed { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+            &.InProgress { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+            &.Pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+          }
+        }
+      }
     }
-    .card-data { h3 { font-family: 'Orbitron', sans-serif; font-size: 2rem; margin: 0; line-height: 1; } p { margin: 0.5rem 0 0; color: #8b9bb4; font-weight: 500; text-transform: uppercase; font-size: 0.85rem;} }
-    .trend-badge { margin-left: auto; padding: 0.3rem 0.6rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; background: rgba(255,255,255,0.1); &.blue { color: $neon-blue; background: rgba(0,243,255,0.15); } &.green { color: $neon-green; background: rgba(0,255,102,0.15); } &.purple { color: $neon-purple; background: rgba(181,0,255,0.15); } &.orange { color: $neon-orange; background: rgba(255,170,0,0.15); } }
   }
 }
-
-/* Bottom Grid */
-.bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; h2 { font-family: 'Orbitron', sans-serif; margin-top: 0; color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;} }
-
-/* Radar Animation */
-.radar-panel {
-  padding: 2rem; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  .card-header { width: 100%; display: flex; justify-content: space-between; align-items: center; .live-indicator { background: rgba(255,0,0,0.2); color: #ff3333; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: bold; animation: blink 1s infinite; } }
-  .radar-wrapper { position: relative; margin-top: 2rem; }
-  .radar {
-    width: 250px; height: 250px; border-radius: 50%; border: 2px solid rgba(0, 243, 255, 0.3); position: relative; overflow: hidden;
-    background: radial-gradient(circle at center, rgba(0,243,255,0.1) 0%, transparent 60%), repeating-radial-gradient(transparent, transparent 20px, rgba(0,243,255,0.1) 21px);
-    &::after { content: ''; position: absolute; top:50%; left:0; right:0; height:1px; background: rgba(0,243,255,0.3); } &::before { content: ''; position: absolute; left:50%; top:0; bottom:0; width:1px; background: rgba(0,243,255,0.3); }
-    .sweep { position: absolute; top: 0; left: 50%; width: 50%; height: 50%; background: linear-gradient(90deg, rgba(0,243,255,0.6), transparent); transform-origin: bottom left; animation: sweep 3s linear infinite; }
-    .blip { width: 8px; height: 8px; border-radius: 50%; position: absolute; opacity: 0; &.blip-1 { top: 30%; left: 60%; animation: blip 3s infinite 0.5s; background: $neon-green; box-shadow: 0 0 10px $neon-green;} &.blip-2 { top: 70%; left: 30%; animation: blip 3s infinite 1.5s; background: $neon-orange; box-shadow: 0 0 10px $neon-orange;} }
-  }
-  .radar-overlay { margin-top: 1.5rem; color: $neon-blue; font-family: 'Orbitron', monospace; letter-spacing: 2px; animation: blink 2s infinite;}
-}
-
-/* Activity List */
-.activity-panel {
-  padding: 2rem;
-  .activity-list { list-style: none; padding: 0; margin: 0; }
-  .activity-item {
-    display: flex; align-items: center; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 1rem; &:last-child { border-bottom: none; }
-    .status-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; &.success { background: $neon-green; box-shadow: 0 0 8px $neon-green; } &.info { background: $neon-blue; box-shadow: 0 0 8px $neon-blue; } &.warning { background: $neon-orange; box-shadow: 0 0 8px $neon-orange; } }
-    .activity-details { display: flex; flex-direction: column; flex: 1; strong { color: #fff; font-size: 1.1rem; } span { color: #8b9bb4; font-size: 0.9rem; margin-top: 0.2rem;} }
-    .activity-time { color: #64748b; font-size: 0.85rem; font-weight: bold;}
-  }
-}
-
-/* Base keyframes */
-@keyframes pulse { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
-@keyframes flare { 100% { left: 150%; } }
-@keyframes sweep { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-@keyframes blip { 0% { opacity: 0; transform: scale(0.5); } 10% { opacity: 1; transform: scale(1.5); } 30% { opacity: 0; transform: scale(1); } 100% { opacity: 0; } }
-@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-.cinematic-enter { animation: cinematicIn 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; transform: translateY(-30px); }
-.fade-up { animation: fadeUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; transform: translateY(40px); }
-.slide-in { animation: slideInRight 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; opacity: 0; transform: translateX(30px); }
-@keyframes cinematicIn { to { opacity: 1; transform: translateY(0); } }
-@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-@keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }

@@ -11,17 +11,36 @@ import { Router } from '@angular/router';
 })
 export class ManagerDashboard implements OnInit {
   stats = [
-    { label: 'Active Missions', value: '03', icon: '🚀', trend: '+12%', color: 'blue' },
-    { label: 'Compliance Index', value: '100%', icon: '🛡️', trend: 'DO-178C', color: 'green' },
-    { label: 'Engineers on Deck', value: '14', icon: '👨‍🚀', trend: 'Optimal', color: 'purple' },
-    { label: 'Pending Reviews', value: '08', icon: '⏳', trend: '-2', color: 'orange' }
+    { label: 'Total Projects', value: '3', icon: '📁' },
+    { label: 'Active Activities', value: '12', icon: '⚙️' },
+    { label: 'Engineers', value: '14', icon: '👥' },
+    { label: 'Tasks Pending', value: '8', icon: '⏳' }
   ];
 
-  activities = [
-    { action: 'V-Cycle Synced', project: 'Flight Control V2', time: '10 mins ago', status: 'success' },
-    { action: 'AI Planning Executed', project: 'Nose Gear System', time: '1 hour ago', status: 'info' },
-    { action: 'DO-178C Warning: Reviewer match', project: 'Auth Module', time: '3 hours ago', status: 'warning' },
-  ];
+  // Dummy data representing the structured tracking
+  currentProject = {
+    name: 'Flight Control System V2.1',
+    progress: 45,
+    activities: [
+      {
+        name: 'Low Level Requirements (LLR)',
+        progress: 80,
+        tasks: [
+          { name: 'Detailed Software Design', status: 'Completed' },
+          { name: 'Code Construction', status: 'InProgress' },
+          { name: 'Peer Review', status: 'Pending' }
+        ]
+      },
+      {
+        name: 'Low Level Testing (LLT)',
+        progress: 10,
+        tasks: [
+          { name: 'Unit Testing', status: 'InProgress' },
+          { name: 'Coverage Run (MCDC)', status: 'Pending' }
+        ]
+      }
+    ]
+  };
 
   constructor(private router: Router) {}
 
