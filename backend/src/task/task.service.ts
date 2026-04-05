@@ -8,6 +8,31 @@ export class TaskService {
   constructor(@InjectModel(Task.name) private taskModel: Model<TaskDocument>) {}
 
   // =========================================================================
+  // ENTERPRISE PATTERN: Idempotency Logic
+  // Avoids double-execution when Manager retries or network fails.
+  // =========================================================================
+  async createTasksWithIdempotency(taskDtos: any[], idempotencyKey: string) {
+    try {
+      // 1. Verify if the identical transaction was already successfully processed
+      const existing = await this.taskModel.find({ idempotencyKey });
+      if (existing.length > 0) {
+        console.log(`[IDEMPOTENCY] Network retry detected. Bypassing execution for key: ${idempotencyKey}`);
+        return existing; // Safely return the cached result
+      }
+
+      // 2. Perform the operation idempotently
+      const tasksToCreate = taskDtos.map(t => ({ ...t, idempotencyKey }));
+      return await this.taskModel.insertMany(tasksToCreate);
+      
+    } catch (error) {
+      if (error.code === 11000) { // MongoDB Unique constraint violation fallback
+        return await this.taskModel.find({ idempotencyKey });
+      }
+      throw error;
+    }
+  }
+
+  // =========================================================================
   // 1. COMPLIANCE ENGINE (DO-178C Independence Rule)
   // =========================================================================
   async assignReviewer(taskId: string, reviewerId: string): Promise<Task> {

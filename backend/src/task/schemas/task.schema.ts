@@ -55,6 +55,10 @@ export class Task {
 
   @Prop({ type: [String], default: [] })
   evidenceLinks: string[]; // PDFs, links, etc.
+
+  // Enterprise Idempotency Pattern: Prevents network retries from duplicating tasks
+  @Prop({ unique: true, sparse: true })
+  idempotencyKey?: string;
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);
