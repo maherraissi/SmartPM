@@ -20,14 +20,6 @@ export class ProjectWizard {
   // DO-178C Predefined Standard Tree
   activities = [
     { 
-      id: 'HLR', name: 'High Level Requirements',
-      icon: '📝', selected: false,
-      subActivities: [
-        { id: 'HLR_1', name: 'Requirements Engineering', selected: false },
-        { id: 'HLR_2', name: 'System Architecture Design', selected: false }
-      ]
-    },
-    { 
       id: 'LLR', name: 'Low Level Requirements',
       icon: '🧩', selected: false,
       subActivities: [
