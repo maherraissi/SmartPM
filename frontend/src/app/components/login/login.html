@@ -1,38 +1,42 @@
-<div class="auth-container glassmorphism">
+<div class="auth-container">
   <div class="auth-box">
-    <h2>Welcome Back</h2>
-    <p class="subtitle">Secure access to SmartPM Dashboard</p>
+    <div class="brand">
+      <span class="brand-icon">📈</span>
+      <span class="brand-name">Smart<strong>PM</strong></span>
+    </div>
+    <h2>Bon retour</h2>
+    <p class="subtitle">Accès sécurisé à votre espace de gestion</p>
 
     <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
       <div class="input-group">
-        <label>Email Address</label>
-        <input type="email" name="email" [(ngModel)]="loginData.email" required placeholder="name@company.com">
+        <label>Adresse e-mail</label>
+        <input type="email" name="email" [(ngModel)]="loginData.email" required placeholder="nom@entreprise.com">
       </div>
 
       <div class="input-group mt-3">
-        <label>Password</label>
+        <label>Mot de passe</label>
         <input type="password" name="password" [(ngModel)]="loginData.password" required placeholder="••••••••">
       </div>
 
-      <button type="submit" class="btn btn-primary mt-4" [disabled]="!loginForm.valid || isLoading">
-        <span *ngIf="!isLoading">Sign In</span>
-        <span *ngIf="isLoading">Authenticating...</span>
+      <button type="submit" class="btn-auth mt-4" [disabled]="!loginForm.valid || isLoading">
+        <span *ngIf="!isLoading">Se connecter</span>
+        <span *ngIf="isLoading">Authentification...</span>
       </button>
     </form>
 
-    <div class="divider"><span>OR</span></div>
+    <div class="divider"><span>OU</span></div>
 
     <div class="social-auth">
-      <button class="btn btn-social google" (click)="loginWithGoogle()">
+      <button class="btn-social" (click)="loginWithGoogle()">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google">
-        Google
+        Continuer avec Google
       </button>
-      <button class="btn btn-social github" (click)="loginWithGithub()">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" alt="Github">
-        Github
+      <button class="btn-social" (click)="loginWithGithub()">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" alt="Github" style="filter: invert(1);">
+        Continuer avec Github
       </button>
     </div>
 
-    <p class="footer-link">Don't have an account? <a routerLink="/register">Request Access</a></p>
+    <p class="footer-link">Pas encore de compte ? <a routerLink="/register">Demander un accès</a></p>
   </div>
 </div>

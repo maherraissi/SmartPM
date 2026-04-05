@@ -1,7 +1,12 @@
-<app-navbar></app-navbar>
-<div class="app-container">
-  <app-sidebar></app-sidebar>
-  <main class="app-content">
+<ng-container *ngIf="!isAuthPage">
+  <app-navbar></app-navbar>
+</ng-container>
+
+<div [class.app-container]="!isAuthPage">
+  <ng-container *ngIf="!isAuthPage">
+    <app-sidebar></app-sidebar>
+  </ng-container>
+  <main [class.app-content]="!isAuthPage" [class.auth-full]="isAuthPage">
     <router-outlet></router-outlet>
   </main>
 </div>

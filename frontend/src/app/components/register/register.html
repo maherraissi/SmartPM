@@ -1,44 +1,40 @@
-<div class="auth-container glassmorphism">
+<div class="auth-container">
   <div class="auth-box">
-    <h2>Join SmartPM</h2>
-    <p class="subtitle">Efficient management starts here</p>
+    <div class="brand">
+      <span class="brand-icon">📈</span>
+      <span class="brand-name">Smart<strong>PM</strong></span>
+    </div>
+    <h2>Créer un compte</h2>
+    <p class="subtitle">Votre responsable vous donnera accès et définira votre rôle</p>
 
     <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
       <div class="row-flex">
         <div class="input-group flex-1">
-          <label>First Name</label>
-          <input type="text" name="firstName" [(ngModel)]="registerData.firstName" required placeholder="John">
+          <label>Prénom</label>
+          <input type="text" name="firstName" [(ngModel)]="registerData.firstName" required placeholder="Jean">
         </div>
-        <div class="input-group flex-1 ms-2">
-          <label>Last Name</label>
-          <input type="text" name="lastName" [(ngModel)]="registerData.lastName" required placeholder="Doe">
+        <div class="input-group flex-1">
+          <label>Nom</label>
+          <input type="text" name="lastName" [(ngModel)]="registerData.lastName" required placeholder="Dupont">
         </div>
       </div>
 
       <div class="input-group mt-3">
-        <label>Work Email</label>
-        <input type="email" name="email" [(ngModel)]="registerData.email" required placeholder="john@company.com">
+        <label>E-mail professionnel</label>
+        <input type="email" name="email" [(ngModel)]="registerData.email" required placeholder="jean@entreprise.com">
       </div>
 
       <div class="input-group mt-3">
-        <label>Account Role</label>
-        <select name="role" [(ngModel)]="registerData.role" class="custom-select">
-          <option value="MANAGER">Project Manager</option>
-          <option value="MEMBER">Team Member</option>
-        </select>
+        <label>Mot de passe</label>
+        <input type="password" name="password" [(ngModel)]="registerData.password" required minlength="8" placeholder="Minimum 8 caractères">
       </div>
 
-      <div class="input-group mt-3">
-        <label>Password</label>
-        <input type="password" name="password" [(ngModel)]="registerData.password" required placeholder="Minimum 8 characters">
-      </div>
-
-      <button type="submit" class="btn btn-primary mt-4" [disabled]="!registerForm.valid || isLoading">
-        <span *ngIf="!isLoading">Create Account</span>
-        <span *ngIf="isLoading">Processing...</span>
+      <button type="submit" class="btn-auth mt-4" [disabled]="!registerForm.valid || isLoading">
+        <span *ngIf="!isLoading">Créer mon compte</span>
+        <span *ngIf="isLoading">Traitement en cours...</span>
       </button>
     </form>
 
-    <p class="footer-link">Already have an account? <a routerLink="/login">Sign In</a></p>
+    <p class="footer-link">Déjà un compte ? <a routerLink="/login">Se connecter</a></p>
   </div>
 </div>
