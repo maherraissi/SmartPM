@@ -21,14 +21,18 @@ model_ollama = OllamaLLM(model="llama3", base_url=ollama_url)
 class Task(BaseModel):
     id: str
     name: str
-    type: str # LLR, LLT, HLT, Code, Review
+    phase: str # HLR, LLR, LLT, HLT, Code
     duration: float # hours
-    dependencies: List[str] = []
+
+class TeamMember(BaseModel):
+    id: str
+    name: str
+    certifications: List[str] # Phases they are legally certified to execute/review
 
 class PlanningRequest(BaseModel):
     project_id: str
     tasks: List[Task]
-    working_hours: List[str] = ["08:00-12:00", "14:00-17:00"]
+    team: List[TeamMember]
 
 @app.get("/")
 async def root():
@@ -37,16 +41,26 @@ async def root():
 @app.post("/plan")
 async def auto_plan(request: PlanningRequest):
     prompt = f"""
-    As an Aerospace Project Manager, create an optimal schedule for the following tasks:
-    {request.tasks}
-    Working hours: {request.working_hours}
-    Handle dependencies (V-cycle: LLR -> LLT -> HLT).
-    Author must finish before reviewer can start.
-    Return a JSON with start_time, end_time and assigned_role for each task.
+    You are an AI specialized in DO-178C Aerospace Project Management.
+    Your job is to strictly assign Authors and Reviewers for a V-cycle project.
+    
+    RULES:
+    1. For every task, assign exactly ONE 'author_id' and ONE 'reviewer_id'.
+    2. THE GOLDEN RULE: 'author_id' MUST NEVER BE THE SAME AS 'reviewer_id' for any given task. This is an absolute strict DO-178C requirement.
+    3. You can only assign a team member to a task if their 'certifications' list includes the task's 'phase'.
+    4. Balance the workload evenly among the certified team members.
+
+    DATA:
+    Team Details: {[t.dict() for t in request.team]}
+    Tasks: {[t.dict() for t in request.tasks]}
+
+    FORMAT:
+    Return ONLY a highly structured RAW JSON array. No markdown code blocks. 
+    Format example: [{{"task_id": "T1", "author_id": "U1", "reviewer_id": "U2"}}]
     """
     try:
         response = model_gemini.generate_content(prompt)
-        return {"project_id": request.project_id, "schedule": response.text}
+        return {"project_id": request.project_id, "assignments": response.text}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
