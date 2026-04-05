@@ -16,11 +16,10 @@
   &::-webkit-scrollbar-thumb:hover { background: #00f3ff; }
 }
 
-// Auth pages: full screen, no sidebar
+// Auth pages: full screen scrollable, no sidebar
 .auth-full {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
