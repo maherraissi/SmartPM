@@ -1,1 +1,56 @@
-<p>admin-dashboard works!</p>
+<div class="admin-dashboard">
+
+  <!-- Header -->
+  <header class="admin-header">
+    <div>
+      <h1>Gestion des Utilisateurs</h1>
+      <p class="subtitle">{{ users.length }} compte(s) enregistré(s)</p>
+    </div>
+    <button class="btn-refresh" (click)="loadUsers()">↻ Actualiser</button>
+  </header>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="isLoading">
+    <span>Chargement des comptes...</span>
+  </div>
+
+  <!-- Users Table -->
+  <div class="table-card" *ngIf="!isLoading">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Utilisateur</th>
+          <th>E-mail</th>
+          <th>Méthode</th>
+          <th>Rôle</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users" class="user-row">
+          <td class="user-info">
+            <div class="avatar">{{ user.firstName?.charAt(0) }}{{ user.lastName?.charAt(0) }}</div>
+            <span>{{ user.firstName }} {{ user.lastName }}</span>
+          </td>
+          <td class="email">{{ user.email }}</td>
+          <td>
+            <span class="provider-badge">{{ user.provider || 'local' }}</span>
+          </td>
+          <td>
+            <select [(ngModel)]="user.role" (change)="updateRole(user)" class="role-select" [class.saving]="savingId === user._id">
+              <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+            </select>
+          </td>
+          <td>
+            <button class="btn-delete" (click)="deleteUser(user._id)" title="Supprimer">🗑</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="empty-state" *ngIf="users.length === 0">
+      <p>Aucun utilisateur trouvé.</p>
+    </div>
+  </div>
+
+</div>
