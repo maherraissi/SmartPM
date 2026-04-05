@@ -11,7 +11,7 @@ import { Router, RouterModule } from '@angular/router';
   styleUrls: ['./register.scss']
 })
 export class Register {
-  registerData = { firstName: '', lastName: '', email: '', password: '', role: 'MANAGER' };
+  registerData = { firstName: '', lastName: '', email: '', password: '' };
   isLoading = false;
 
   constructor(private router: Router) {}
@@ -22,19 +22,27 @@ export class Register {
       const res = await fetch('http://localhost:3000/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.registerData)
+        body: JSON.stringify({ ...this.registerData, role: 'MEMBER' })
       });
       const data = await res.json();
       if (data.access_token) {
-        alert('Account created successfully!');
+        alert('Compte créé avec succès !');
         this.router.navigate(['/login']);
       } else {
-        alert(data.message || 'Registration failed');
+        alert(data.message || 'Échec de la création du compte.');
       }
     } catch (err) {
-      alert('Network error');
+      alert('Erreur réseau. Vérifiez votre connexion.');
     } finally {
       this.isLoading = false;
     }
+  }
+
+  registerWithGoogle() {
+    window.location.href = 'http://localhost:3000/auth/google';
+  }
+
+  registerWithGithub() {
+    window.location.href = 'http://localhost:3000/auth/github';
   }
 }
