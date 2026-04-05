@@ -28,8 +28,15 @@ export class User {
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ required: true })
-  passwordHash: string;
+  @Prop({ required: false })
+  passwordHash?: string;
+
+  // Enterprise Security fields for OAuth
+  @Prop({ default: 'local' }) // values: local, google, github
+  provider: string;
+
+  @Prop()
+  providerId?: string;
 
   @Prop({ type: String, enum: UserRole, default: UserRole.MEMBER })
   role: UserRole;

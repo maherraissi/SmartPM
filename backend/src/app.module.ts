@@ -13,6 +13,7 @@ import { ReviewModule } from './review/review.module';
 import { TrainingModule } from './training/training.module';
 import { CertificationModule } from './certification/certification.module';
 import { AiIntegrationModule } from './ai-integration/ai-integration.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { AiIntegrationModule } from './ai-integration/ai-integration.module';
       },
       inject: [ConfigService],
     }),
+    AuthModule,
     UserModule,
     ProjectModule,
     ActivityModule,
