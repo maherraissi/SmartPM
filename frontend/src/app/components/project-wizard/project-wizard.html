@@ -20,14 +20,25 @@
   <!-- Step 1: Project Details -->
   <div class="step-content glassmorphism" *ngIf="currentStep === 1">
     <h2>Initiate Aerospace Project</h2>
-    <p>Define the core parameters of your mission.</p>
+    <p>Define the core parameters and timeframe of your mission.</p>
     
     <div class="input-group mt-3">
       <label>Project Name (A/C System)</label>
       <input type="text" [(ngModel)]="projectData.name" placeholder="e.g., Flight Control System V2.1">
     </div>
     
-    <div class="input-group">
+    <div class="row-flex mt-3">
+      <div class="input-group flex-1">
+        <label>Mission Start Date</label>
+        <input type="date" [(ngModel)]="projectData.startDate">
+      </div>
+      <div class="input-group flex-1">
+        <label>Mission End Date</label>
+        <input type="date" [(ngModel)]="projectData.endDate">
+      </div>
+    </div>
+    
+    <div class="input-group mt-3">
       <label>Mission Description</label>
       <textarea rows="4" [(ngModel)]="projectData.description" placeholder="Brief technical overview of the certification goal..."></textarea>
     </div>
@@ -60,14 +71,23 @@
     </div>
 
     <!-- Add Custom Activity Form -->
-    <div class="custom-activity-adder">
-      <div class="input-group">
-        <label>Custom Activity (Optional)</label>
-        <div class="row-flex">
+    <div class="custom-activity-adder mt-4 p-3 glassmorphism">
+      <h3 style="margin-top:0; border-bottom:1px solid #334155; padding-bottom:10px;">Establish Custom Phase</h3>
+      <div class="row-flex">
+        <div class="input-group flex-2">
+          <label>Phase Identifier / Name</label>
           <input type="text" [(ngModel)]="newActivityName" placeholder="Define proprietary phase name...">
-          <button class="btn btn-secondary" (click)="addCustomActivity()">+ Add</button>
+        </div>
+        <div class="input-group flex-1">
+          <label>Target Start Date</label>
+          <input type="date" [(ngModel)]="newActivityStartDate">
+        </div>
+        <div class="input-group flex-1">
+          <label>Target End Date</label>
+          <input type="date" [(ngModel)]="newActivityEndDate">
         </div>
       </div>
+      <button class="btn btn-secondary mt-3" style="width:100%" (click)="addCustomActivity()">+ Register Custom Phase into Timeline</button>
     </div>
   </div>
 

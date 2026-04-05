@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,14 +11,15 @@ import { Router } from '@angular/router';
   styleUrls: ['./project-wizard.scss']
 })
 export class ProjectWizard {
+  private router = inject(Router);
   currentStep: number = 1;
   isDeploying: boolean = false;
-
-  constructor(private router: Router) {}
 
   projectData = {
     name: '',
     description: '',
+    startDate: '',
+    endDate: ''
   };
 
   // DO-178C Predefined Standard Tree
@@ -51,12 +52,20 @@ export class ProjectWizard {
   ];
 
   newActivityName: string = '';
+  newActivityStartDate: string = '';
+  newActivityEndDate: string = '';
 
   nextStep() {
     // Condition to pass Step 1
-    if (this.currentStep === 1 && (!this.projectData.name || !this.projectData.description)) {
-      alert("Please enter Project Name and Description first.");
-      return;
+    if (this.currentStep === 1) {
+      if (!this.projectData.name || !this.projectData.description || !this.projectData.startDate || !this.projectData.endDate) {
+        alert("Please explicitly define Project Name, Description, and its Timeframe (Start & End Dates).");
+        return;
+      }
+      if (new Date(this.projectData.startDate) > new Date(this.projectData.endDate)) {
+        alert("Error: End Date cannot be before Start Date.");
+        return;
+      }
     }
     if (this.currentStep < 3) this.currentStep++;
   }
@@ -87,10 +96,13 @@ export class ProjectWizard {
   }
 
   addCustomActivity() {
-    if (!this.newActivityName.trim()) return;
+    if (!this.newActivityName.trim() || !this.newActivityStartDate || !this.newActivityEndDate) {
+      alert("Please define the Name and Timeframe (Dates) for the Custom Activity.");
+      return;
+    }
     this.activities.push({
       id: `CUST_${new Date().getTime()}`,
-      name: this.newActivityName,
+      name: this.newActivityName + ` (${this.newActivityStartDate} to ${this.newActivityEndDate})`,
       icon: '✨',
       selected: true,
       subActivities: [
@@ -98,6 +110,8 @@ export class ProjectWizard {
       ]
     });
     this.newActivityName = '';
+    this.newActivityStartDate = '';
+    this.newActivityEndDate = '';
   }
 
   deployProject() {
