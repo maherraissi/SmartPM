@@ -1,0 +1,185 @@
+// SCSS Vanilla using Modern CSS variables from styles.scss
+.aerospace-wizard-container {
+  max-width: 850px;
+  margin: 2rem auto;
+  font-family: 'Inter', sans-serif;
+  color: #E2E8F0;
+  animation: fadeIn 0.4s ease-out;
+
+  .stepper-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: #64748B;
+      transition: all 0.3s;
+
+      .circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #1E293B;
+        border: 2px solid #334155;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        transition: all 0.3s;
+      }
+
+      &.active {
+        color: #38BDF8;
+        .circle {
+          background: rgba(56, 189, 248, 0.1);
+          border-color: #38BDF8;
+          box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+      }
+
+      &.completed {
+        color: #10B981;
+        .circle {
+          background: #10B981;
+          border-color: #10B981;
+          color: #0F172A;
+        }
+      }
+    }
+
+    .line {
+      flex: 1;
+      height: 2px;
+      background: #334155;
+      margin: 0 1rem;
+      transform: translateY(-10px);
+    }
+  }
+
+  .step-content {
+    padding: 2.5rem;
+    border-radius: 16px;
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    animation: slideUp 0.3s ease-out;
+
+    h2 { margin-block-start: 0; color: #F8FAFC; }
+    p { color: #94A3B8; margin-bottom: 2rem; }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+
+      label { font-weight: 500; font-size: 0.9rem; color: #CBD5E1; }
+      input, textarea {
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid #334155;
+        color: #F8FAFC;
+        padding: 0.8rem 1rem;
+        border-radius: 8px;
+        transition: border 0.2s;
+        
+        &:focus {
+          border-color: #38BDF8;
+          outline: none;
+        }
+      }
+    }
+
+    .phase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 1rem;
+
+      .phase-card {
+        background: #0F172A;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        padding: 1.5rem 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        .phase-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        h3 { margin: 0; font-size: 1.2rem; color: #F8FAFC; }
+        span { font-size: 0.75rem; color: #64748B; }
+
+        &:hover {
+          transform: translateY(-5px);
+          border-color: #38BDF8;
+          box-shadow: 0 5px 15px rgba(56, 189, 248, 0.15);
+        }
+
+        &.selected {
+          background: rgba(56, 189, 248, 0.1);
+          border-color: #38BDF8;
+          transform: scale(1.05);
+        }
+      }
+    }
+
+    .templates-preview {
+      background: #0F172A;
+      border-radius: 8px;
+      padding: 1rem;
+      border: 1px dashed #334155;
+      
+      .fake-template-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem;
+        border-bottom: 1px solid #1E293B;
+        
+        &:last-child { border-bottom: none; }
+        &.fade-out { opacity: 0.4; text-align: center; justify-content: center; }
+
+        .badge {
+          padding: 0.2rem 0.6rem;
+          border-radius: 4px;
+          font-size: 0.75rem;
+          &.time { background: rgba(56, 189, 248, 0.2); color: #38BDF8; }
+          &.compliance { background: rgba(244, 63, 94, 0.2); color: #F43F5E; }
+          &.risk { background: rgba(245, 158, 11, 0.2); color: #F59E0B; }
+        }
+      }
+    }
+  }
+
+  .wizard-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+
+    .spacer { flex: 1; }
+
+    .btn {
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      
+      &.btn-secondary { background: #334155; color: white; }
+      &.btn-secondary:hover { background: #475569; }
+      
+      &.btn-primary { background: #38BDF8; color: #0F172A; }
+      &.btn-primary:hover { background: #0EA5E9; transform: translateY(-2px); }
+
+      &.btn-success { background: #10B981; color: #0F172A; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+      &.btn-success:hover { background: #059669; transform: scale(1.05); }
+    }
+  }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

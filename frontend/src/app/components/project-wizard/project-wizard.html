@@ -1,1 +1,73 @@
-<p>project-wizard works!</p>
+<div class="aerospace-wizard-container">
+  <!-- Stepper Header -->
+  <div class="stepper-header">
+    <div class="step" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">
+      <div class="circle">1</div>
+      <span>Project Core</span>
+    </div>
+    <div class="line"></div>
+    <div class="step" [class.active]="currentStep === 2" [class.completed]="currentStep > 2">
+      <div class="circle">2</div>
+      <span>DO-178C Phase</span>
+    </div>
+    <div class="line"></div>
+    <div class="step" [class.active]="currentStep === 3">
+      <div class="circle">3</div>
+      <span>Template Injection</span>
+    </div>
+  </div>
+
+  <!-- Step 1: Project Details -->
+  <div class="step-content glassmorphism" *ngIf="currentStep === 1">
+    <h2>Initiate Aerospace Project</h2>
+    <p>Define the core parameters of your mission.</p>
+    
+    <div class="input-group mt-3">
+      <label>Project Name (A/C System)</label>
+      <input type="text" placeholder="e.g., Flight Control System V2.1">
+    </div>
+    
+    <div class="input-group">
+      <label>Mission Description</label>
+      <textarea rows="4" placeholder="Brief technical overview of the certification goal..."></textarea>
+    </div>
+  </div>
+
+  <!-- Step 2: V-Cycle Selection -->
+  <div class="step-content glassmorphism" *ngIf="currentStep === 2">
+    <h2>Select V-Cycle Phase</h2>
+    <p>Which engineering phase are you planning for this project iteration?</p>
+    
+    <div class="phase-grid">
+      <div class="phase-card" *ngFor="let phase of phases" 
+           [class.selected]="projectData.vCycle === phase.id"
+           (click)="selectPhase(phase.id)">
+        <div class="phase-icon">{{ phase.icon }}</div>
+        <h3>{{ phase.id }}</h3>
+        <span>{{ phase.name }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Template Generation -->
+  <div class="step-content glassmorphism" *ngIf="currentStep === 3">
+    <h2>Cockpit Ready: Templates Matrix</h2>
+    <p>SmartPM has automatically prepared the 60 standard DO-178C functions for the <strong>{{ projectData.vCycle || 'Selected' }}</strong> phase.</p>
+
+    <div class="templates-preview">
+      <div class="fake-template-row"><span>📝 Write Requirement Logic</span> <span class="badge time">4h</span></div>
+      <div class="fake-template-row"><span>🔍 Peer Review (Independent)</span> <span class="badge compliance">Strict</span></div>
+      <div class="fake-template-row"><span>🔗 Update Traceability Matrix</span> <span class="badge time">2h</span></div>
+      <div class="fake-template-row"><span>⚠️ Safety Risk Assessment</span> <span class="badge risk">Aero</span></div>
+      <div class="fake-template-row fade-out"><span>... 56 more functions injected ...</span></div>
+    </div>
+  </div>
+
+  <!-- Navigation Buttons -->
+  <div class="wizard-footer">
+    <button class="btn btn-secondary" (click)="prevStep()" *ngIf="currentStep > 1">Back</button>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" (click)="nextStep()" *ngIf="currentStep < 3">Next Phase &rarr;</button>
+    <button class="btn btn-success" (click)="deployProject()" *ngIf="currentStep === 3">Deploy Mission 🚀</button>
+  </div>
+</div>
