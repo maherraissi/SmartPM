@@ -44,4 +44,15 @@ SmartPM n'est pas un système de gestion de tickets classique. C'est une **Engin
 - `venv/` : L'environnement virtuel Python isolé comprenant : fastapi, google-generativeai, langchain-ollama, pypdf, chromadb.
 
 ---
-**Fin du dictionnaire système.** La base de données et l'authentification Git sont entièrement automatisés selon l'arborescence ci-dessus.
+
+## 🔒 Security & Enterprise Patterns (Mise à jour : Avril 2026)
+- **Cerveau IA DO-178C (`ai/main.py`)** : Logique de prompt stricte assignant obligatoirement des "Auteurs" différents des "Reviewers", couplée à une vérification des certifications d'ingénierie des membres de l'équipe (Gating sur les phases HLR, LLR, LLT, HLT).
+- **Backend Idempotency & Upsert (`task.service.ts` & `function-template.service.ts`)** : Patterns Entreprise pour éviter la duplication des tâches métier en cas de "network retries" de l'UI (Idempotency Key sur MongoDB), et un Bulk `upsert` pour charger sans fautes les 60 Templates fonctions aéro.
+- **Moteur Temporel Aéro (`task.service.ts`)** : Algorithme ignorant les week-ends et déduisant dynamiquement la fin de la tâche sur la base des quotas européens : (8h-12h et 14h-17h = 7h/jour).
+- **Sécurité Réseau (API Fortress dans `main.ts`)** : Implémentation globale de `Helmet` (Headers HTTP blindés), `CORS` stricts, et `@nestjs/throttler` (anti-DDoS/Bruteforce bloquant l'IP à 100 req/min).
+- **Sécurité SSO OAuth (`auth/`)** : Module complet `@nestjs/passport` intégrant Google, GitHub, et un algorithme SSO Upsert, finalisant par la génération de `JWT` (Stateless Session) valable strictement pendant le temps d'un "Shift" de travail interne (8 heures).
+- **Sanitisation Mongoose (`user.schema.ts`)** : Interceptor `toJSON` natif qui supprime purement le `passwordHash` et les `providerId` de l'objet à chaque payload de réponse API pour fermer les failles béantes de Leaks.
+- **Interface Cockpit (`frontend/.../project-wizard/`)** : Stepper Angular hyper-moderne basé sur le "Glassmorphism" permettant au Manager d'injecter la Matrice Tempérée dans le Projet via un appel IA central.
+
+---
+**Fin du dictionnaire système.** La base de données, l'authentification Git et OAuth Multi-providers sont désormais intégrés et cartographiés.
