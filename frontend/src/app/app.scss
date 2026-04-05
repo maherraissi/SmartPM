@@ -1,18 +1,18 @@
 .app-container {
   display: flex;
-  height: calc(100vh - 64px); /* Subtract navbar height */
+  height: calc(100vh - 70px);
+  width: 100%;
   overflow: hidden;
 }
 
 .app-content {
   flex: 1;
-  padding: 24px;
   overflow-y: auto;
-  background-color: #f8f9fa;
-}
-
-:host {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+  position: relative;
+  
+  /* Cyber Scrollbar exclusively for content area */
+  &::-webkit-scrollbar { width: 8px; }
+  &::-webkit-scrollbar-track { background: rgba(5, 8, 16, 0.9); }
+  &::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.3); border-radius: 4px; }
+  &::-webkit-scrollbar-thumb:hover { background: #00f3ff; }
 }
