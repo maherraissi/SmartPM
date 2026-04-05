@@ -8,12 +8,12 @@
     <div class="line"></div>
     <div class="step" [class.active]="currentStep === 2" [class.completed]="currentStep > 2">
       <div class="circle">2</div>
-      <span>DO-178C Phase</span>
+      <span>V-Cycle Engineering Tree</span>
     </div>
     <div class="line"></div>
     <div class="step" [class.active]="currentStep === 3">
       <div class="circle">3</div>
-      <span>Template Injection</span>
+      <span>Mission Validation</span>
     </div>
   </div>
 
@@ -24,42 +24,65 @@
     
     <div class="input-group mt-3">
       <label>Project Name (A/C System)</label>
-      <input type="text" placeholder="e.g., Flight Control System V2.1">
+      <input type="text" [(ngModel)]="projectData.name" placeholder="e.g., Flight Control System V2.1">
     </div>
     
     <div class="input-group">
       <label>Mission Description</label>
-      <textarea rows="4" placeholder="Brief technical overview of the certification goal..."></textarea>
+      <textarea rows="4" [(ngModel)]="projectData.description" placeholder="Brief technical overview of the certification goal..."></textarea>
     </div>
   </div>
 
-  <!-- Step 2: V-Cycle Selection -->
+  <!-- Step 2: Complex Predefined Selection -->
   <div class="step-content glassmorphism" *ngIf="currentStep === 2">
-    <h2>Select V-Cycle Phase</h2>
-    <p>Which engineering phase are you planning for this project iteration?</p>
+    <h2>V-Cycle Architecture Selection</h2>
+    <p>Select the strict DO-178C activities and sub-activities required for this project.</p>
     
-    <div class="phase-grid">
-      <div class="phase-card" *ngFor="let phase of phases" 
-           [class.selected]="projectData.vCycle === phase.id"
-           (click)="selectPhase(phase.id)">
-        <div class="phase-icon">{{ phase.icon }}</div>
-        <h3>{{ phase.id }}</h3>
-        <span>{{ phase.name }}</span>
+    <div class="hierarchy-tree">
+      <div class="activity-block" *ngFor="let act of activities">
+        
+        <!-- Parent Activity -->
+        <div class="parent-activity" [class.selected]="act.selected" (click)="toggleActivity(act)">
+          <div class="checkbox-cyber" [class.checked]="act.selected"></div>
+          <span class="icon">{{ act.icon }}</span>
+          <h3>{{ act.name }} <span>({{ act.id }})</span></h3>
+        </div>
+
+        <!-- Child Sub-Activities (Only visible if parent is selected) -->
+        <div class="sub-activities" *ngIf="act.selected">
+          <div class="sub-activity-row" *ngFor="let sub of act.subActivities" (click)="toggleSubActivity(sub, act)">
+            <div class="checkbox-cyber small" [class.checked]="sub.selected"></div>
+            <span>{{ sub.name }}</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Add Custom Activity Form -->
+    <div class="custom-activity-adder">
+      <div class="input-group">
+        <label>Custom Activity (Optional)</label>
+        <div class="row-flex">
+          <input type="text" [(ngModel)]="newActivityName" placeholder="Define proprietary phase name...">
+          <button class="btn btn-secondary" (click)="addCustomActivity()">+ Add</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Step 3: Template Generation -->
+  <!-- Step 3: Mission Review -->
   <div class="step-content glassmorphism" *ngIf="currentStep === 3">
-    <h2>Cockpit Ready: Templates Matrix</h2>
-    <p>SmartPM has automatically prepared the 60 standard DO-178C functions for the <strong>{{ projectData.vCycle || 'Selected' }}</strong> phase.</p>
+    <h2>Mission Structure Verified</h2>
+    <p>The AI Engine has pre-mapped the templates for your selected architecture.</p>
 
-    <div class="templates-preview">
-      <div class="fake-template-row"><span>📝 Write Requirement Logic</span> <span class="badge time">4h</span></div>
-      <div class="fake-template-row"><span>🔍 Peer Review (Independent)</span> <span class="badge compliance">Strict</span></div>
-      <div class="fake-template-row"><span>🔗 Update Traceability Matrix</span> <span class="badge time">2h</span></div>
-      <div class="fake-template-row"><span>⚠️ Safety Risk Assessment</span> <span class="badge risk">Aero</span></div>
-      <div class="fake-template-row fade-out"><span>... 56 more functions injected ...</span></div>
+    <div class="review-warning" *ngIf="!isProjectValid">
+      ⚠️ <strong>Action Required:</strong> You must select at least One Activity and Sub-Activity array from Step 2 to deploy.
+    </div>
+
+    <div class="templates-preview" *ngIf="isProjectValid">
+      <div class="fake-template-row"><span>📝 Requirements Traceability Assignment</span> <span class="badge time">Auto</span></div>
+      <div class="fake-template-row"><span>🤖 Skill-Based Assigner</span> <span class="badge compliance">Strict</span></div>
     </div>
   </div>
 
@@ -68,6 +91,6 @@
     <button class="btn btn-secondary" (click)="prevStep()" *ngIf="currentStep > 1">Back</button>
     <div class="spacer"></div>
     <button class="btn btn-primary" (click)="nextStep()" *ngIf="currentStep < 3">Next Phase &rarr;</button>
-    <button class="btn btn-success" (click)="deployProject()" *ngIf="currentStep === 3">Deploy Mission 🚀</button>
+    <button class="btn btn-success" [disabled]="!isProjectValid" (click)="deployProject()" *ngIf="currentStep === 3">Deploy Mission 🚀</button>
   </div>
 </div>
