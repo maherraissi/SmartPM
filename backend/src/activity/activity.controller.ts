@@ -1,4 +1,12 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import { ActivityService } from './activity.service';
 
-@Controller('activity')
-export class ActivityController {}
+@Controller('activities')
+export class ActivityController {
+  constructor(private readonly activityService: ActivityService) {}
+
+  @Get('templates')
+  async getTemplates() {
+    return this.activityService.getActivityTemplates();
+  }
+}
