@@ -17,7 +17,18 @@ export enum AeroPhase {
   HLT = 'HLT'
 }
 
-@Schema({ timestamps: true })
+@Schema({
+  timestamps: true,
+  toJSON: {
+    transform: (doc, ret: any) => {
+      // ENTERPRISE SECURITY: Never leak passwords or OAuth IDs to the frontend
+      delete ret.passwordHash;
+      delete ret.providerId;
+      delete ret.__v;
+      return ret;
+    }
+  }
+})
 export class User {
   @Prop({ required: true })
   firstName: string;
