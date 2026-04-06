@@ -27,13 +27,20 @@ export class Login {
       const data = await res.json();
       if (data.access_token) {
         localStorage.setItem('token', data.access_token);
-        // Decode token or check role to navigate
-        this.router.navigate(['/manager']);
+        // Decode JWT payload to get role
+        const payload = JSON.parse(atob(data.access_token.split('.')[1]));
+        const role: string = payload.role || 'MEMBER';
+        const routes: Record<string, string> = {
+          ADMIN: '/admin',
+          MANAGER: '/manager',
+          MEMBER: '/member'
+        };
+        this.router.navigate([routes[role] || '/member']);
       } else {
-        alert(data.message || 'Login failed');
+        alert(data.message || 'Identifiants incorrects');
       }
     } catch (err) {
-      alert('Network error');
+      alert('Erreur réseau. Vérifiez votre connexion.');
     } finally {
       this.isLoading = false;
     }

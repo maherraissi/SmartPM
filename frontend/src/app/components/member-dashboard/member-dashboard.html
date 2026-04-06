@@ -1,1 +1,48 @@
-<p>member-dashboard works!</p>
+<div class="member-dashboard">
+  <header class="dashboard-header">
+    <div>
+      <h1>Bonjour, {{ userName }} 👋</h1>
+      <p class="subtitle">Voici vos tâches assignées et votre avancement</p>
+    </div>
+  </header>
+
+  <!-- Personal Stats -->
+  <section class="stats-grid">
+    <div class="stat-card" *ngFor="let s of stats">
+      <div class="stat-icon">{{ s.icon }}</div>
+      <div class="stat-info">
+        <h3>{{ s.value }}</h3>
+        <p>{{ s.label }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Task List -->
+  <section class="tasks-section mt-4">
+    <div class="section-header">
+      <h2>Mes Tâches</h2>
+    </div>
+    <div class="table-card">
+      <table class="tasks-table">
+        <thead>
+          <tr>
+            <th>Tâche</th>
+            <th>Projet</th>
+            <th>Phase</th>
+            <th>Échéance</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let task of tasks" class="task-row">
+            <td class="task-name">{{ task.name }}</td>
+            <td class="task-project">{{ task.project }}</td>
+            <td><span class="phase-badge">{{ task.phase }}</span></td>
+            <td class="task-due">{{ task.due }}</td>
+            <td><span class="status-badge" [ngClass]="getStatusClass(task.status)">{{ getStatusLabel(task.status) }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
