@@ -21,30 +21,29 @@ export class ActivityService implements OnModuleInit {
     const predefinedTemplates = [
       { 
         phaseId: AeroPhase.LLR, 
-        name: 'Low Level Requirements',
+        name: 'Low Level Requirements (LLR)',
         icon: '🧩',
         subActivities: [
-          { id: 'LLR_1', name: 'Detailed Software Design' },
-          { id: 'LLR_2', name: 'Code Construction' },
-          { id: 'LLR_3', name: 'Peer Review' }
+          { id: 'LLR_ARCH', name: 'Architecture Design' },
+          { id: 'LLR_REV',  name: 'Creation & Revue' },
+          { id: 'LLR_CODE', name: 'Code Review' }
         ]
       },
       { 
         phaseId: AeroPhase.LLT, 
-        name: 'Low Level Testing',
+        name: 'Low Level Testing (LLT)',
         icon: '🧪',
         subActivities: [
-          { id: 'LLT_1', name: 'Unit Testing' },
-          { id: 'LLT_2', name: 'Coverage Run (MCDC)' }
+          { id: 'LLT_CRV', name: 'Creation & Revue' }
         ]
       },
       { 
         phaseId: AeroPhase.HLT, 
-        name: 'High Level Testing',
+        name: 'High Level Testing (HLT)',
         icon: '✈️',
         subActivities: [
-          { id: 'HLT_1', name: 'Integration Testing' },
-          { id: 'HLT_2', name: 'Hardware-in-the-Loop (HIL)' }
+          { id: 'HLT_TCH', name: 'Create Test Cases from HLR' },
+          { id: 'HLT_DSC', name: 'Define Scenarios & Cases' }
         ]
       }
     ];

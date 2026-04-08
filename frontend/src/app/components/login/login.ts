@@ -47,10 +47,12 @@ export class Login {
   }
 
   loginWithGoogle() {
+    console.log('Redirecting to Google Auth...');
     window.location.href = 'http://localhost:3000/auth/google';
   }
 
   loginWithGithub() {
+    console.log('Redirecting to Github Auth...');
     window.location.href = 'http://localhost:3000/auth/github';
   }
 }

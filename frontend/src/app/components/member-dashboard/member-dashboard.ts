@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { TaskService } from '../../services/task';
 
 @Component({
   selector: 'app-member-dashboard',
@@ -8,49 +10,99 @@ import { CommonModule } from '@angular/common';
   templateUrl: './member-dashboard.html',
   styleUrls: ['./member-dashboard.scss']
 })
-export class MemberDashboard implements OnInit {
-  userName = 'Utilisateur';
+export class MemberDashboard implements OnInit, OnDestroy {
+  userName = 'Member';
+  activeTab = 'tasks';
   isLoading = false;
+  
+  // Timer state
+  timerActive = false;
+  timerSeconds = 0;
+  timerInterval: any;
 
-  // Stats personnelles
-  stats = [
-    { label: 'Tâches assignées', value: 0, icon: '📋', color: 'blue' },
-    { label: 'En cours', value: 0, icon: '⚙️', color: 'orange' },
-    { label: 'Terminées', value: 0, icon: '✅', color: 'green' },
-    { label: 'En retard', value: 0, icon: '⚠️', color: 'red' },
+  todayTasks: any[] = [];
+  reviewsToDone: any[] = [];
+  performanceStats: any[] = [];
+  trainingTracks = [
+    { name: 'LLT Certification Track', progress: 72, status: 'In Progress' },
+    { name: 'DO-178C Fundamentals', progress: 100, status: 'Certified ✅' }
+  ];
+  teamComments = [
+    { author: 'Sami', msg: 'Verification for SRS-01 is complete. Waiting for review.', time: '10:24 AM' },
+    { author: 'Mariem', msg: 'Remember to upload traceability link.', time: '09:15 AM' }
   ];
 
-  // Tâches personnelles (viendront du backend plus tard)
-  tasks: any[] = [
-    { name: 'Detailed Software Design', project: 'Flight Control v2', phase: 'LLR', status: 'InProgress', due: '2026-04-10' },
-    { name: 'Peer Review', project: 'Flight Control v2', phase: 'LLR', status: 'Pending', due: '2026-04-15' },
-    { name: 'Unit Testing - Module A', project: 'Nose Gear System', phase: 'LLT', status: 'Completed', due: '2026-04-05' },
-  ];
+  constructor(
+    private router: Router,
+    private taskService: TaskService
+  ) {}
 
   ngOnInit() {
-    // Load user name from JWT
+    this.extractUser();
+    this.fetchDashboardData();
+  }
+
+  fetchDashboardData() {
+    this.isLoading = true;
+    this.taskService.getDashboard().subscribe({
+      next: (data) => {
+        this.todayTasks = data.todayTasks;
+        this.reviewsToDone = data.reviewsToDone;
+        this.performanceStats = data.performanceStats;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to fetch member dashboard data', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  extractUser() {
     const token = localStorage.getItem('token');
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        this.userName = payload.email?.split('@')[0] || 'Utilisateur';
+        const emailUser = payload.email?.split('@')[0] || 'Member';
+        this.userName = emailUser.charAt(0).toUpperCase() + emailUser.slice(1);
       } catch {}
     }
-    this.computeStats();
   }
 
-  computeStats() {
-    this.stats[0].value = this.tasks.length;
-    this.stats[1].value = this.tasks.filter(t => t.status === 'InProgress').length;
-    this.stats[2].value = this.tasks.filter(t => t.status === 'Completed').length;
-    this.stats[3].value = this.tasks.filter(t => t.status === 'Pending' && new Date(t.due) < new Date()).length;
+  ngOnDestroy() {
+    if (this.timerInterval) clearInterval(this.timerInterval);
   }
 
-  getStatusClass(status: string): string {
-    return { 'Completed': 'status-done', 'InProgress': 'status-progress', 'Pending': 'status-pending' }[status] || '';
+  toggleTimer() {
+    this.timerActive = !this.timerActive;
+    if (this.timerActive) {
+      this.timerInterval = setInterval(() => this.timerSeconds++, 1000);
+    } else {
+      clearInterval(this.timerInterval);
+    }
   }
 
-  getStatusLabel(status: string): string {
-    return { 'Completed': 'Terminée', 'InProgress': 'En cours', 'Pending': 'En attente' }[status] || status;
+  stopTimer() {
+    if (confirm('Marquer la tâche comme terminée et arrêter le timer?')) {
+      this.timerActive = false;
+      clearInterval(this.timerInterval);
+      this.timerSeconds = 0;
+    }
+  }
+
+  formatTimer(): string {
+    const h = Math.floor(this.timerSeconds / 3600);
+    const m = Math.floor((this.timerSeconds % 3600) / 60);
+    const s = this.timerSeconds % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    window.location.href = '/login';
+  }
+
+  switchTab(tab: string) {
+    this.activeTab = tab;
   }
 }

@@ -7,6 +7,33 @@ import { Task, TaskDocument, TaskStatus } from './schemas/task.schema';
 export class TaskService {
   constructor(@InjectModel(Task.name) private taskModel: Model<TaskDocument>) {}
 
+  async createTask(dto: any): Promise<Task | Task[]> {
+    if (Array.isArray(dto)) {
+      return Promise.all(dto.map(t => this.createTask(t) as Promise<Task>));
+    }
+
+    const authorId = dto.authorId ? dto.authorId.toString() : '';
+    const reviewerId = dto.reviewerId ? dto.reviewerId.toString() : '';
+
+    if (authorId && reviewerId && authorId === reviewerId) {
+      throw new BadRequestException("Violation DO-178C: L'auteur ne peut pas être le réviseur.");
+    }
+
+    const startDate = dto.plannedStartDate ? new Date(dto.plannedStartDate as string) : new Date();
+    const endDate = dto.plannedEndDate 
+      ? new Date(dto.plannedEndDate as string) 
+      : this.calculateBusinessEndDate(startDate, (dto.estimatedDuration as number) || 1);
+
+    const newTask = new this.taskModel({
+      ...dto,
+      plannedStartDate: startDate,
+      plannedEndDate: endDate,
+      status: TaskStatus.TODO,
+    });
+
+    return newTask.save();
+  }
+
   // =========================================================================
   // ENTERPRISE PATTERN: Idempotency Logic
   // Avoids double-execution when Manager retries or network fails.
@@ -88,5 +115,41 @@ export class TaskService {
     }
     
     return current;
+  }
+
+  async getMemberDashboard(memberId: string) {
+    const memberObjectId = new Types.ObjectId(memberId);
+    
+    const [tasks, reviews] = await Promise.all([
+      this.taskModel.find({ authorId: memberObjectId }).lean().exec(),
+      this.taskModel.find({ reviewerId: memberObjectId }).lean().exec()
+    ]);
+
+    // Grouping tasks for "Today" (slots logic placeholder)
+    const todayTasks = tasks.map(t => ({
+      time: '08:00 - 12:00', // Map real start hours in real scenario
+      name: t.title,
+      type: 'Author',
+      project: 'SmartPM',
+      status: t.status === 'IN_PROGRESS' ? 'current' : 'upcoming'
+    }));
+
+    const reviewsToDone = reviews.map(r => ({
+      colleague: 'Team', 
+      task: r.title,
+      project: 'SmartPM',
+      comments: 0
+    }));
+
+    return {
+      todayTasks,
+      reviewsToDone,
+      performanceStats: [
+        { label: 'Tasks Done', value: tasks.filter(t => t.status === TaskStatus.CLOSED).length.toString(), icon: '✅' },
+        { label: 'Avg Time', value: '4.5h', icon: '⏱️' },
+        { label: 'Review Rate', value: '100%', icon: '📈' },
+        { label: 'Quiz Score', value: 'N/A', icon: '🎓' }
+      ]
+    };
   }
 }

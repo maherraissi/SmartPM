@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 import os
 from dotenv import load_dotenv
-import google.generativeai as genai
+from google import genai
 from langchain_ollama import OllamaLLM
 
 load_dotenv()
@@ -11,8 +11,7 @@ load_dotenv()
 app = FastAPI(title="SmartPM AI Service")
 
 # Configure Gemini
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model_gemini = genai.GenerativeModel('gemini-pro')
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Configure Ollama
 ollama_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
@@ -59,7 +58,10 @@ async def auto_plan(request: PlanningRequest):
     Format example: [{{"task_id": "T1", "author_id": "U1", "reviewer_id": "U2"}}]
     """
     try:
-        response = model_gemini.generate_content(prompt)
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
         return {"project_id": request.project_id, "assignments": response.text}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

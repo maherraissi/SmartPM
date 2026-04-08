@@ -1,64 +1,270 @@
-<div class="manager-dashboard">
-  <!-- Clean Corporate Header -->
-  <header class="clean-header">
-    <div class="title-group">
-      <h1>Project Management Dashboard</h1>
-      <span class="subtitle">Overview & Progress Tracking</span>
+<div class="manager-shell">
+  <!-- ═══════════════════════════════════════════════════════ SIDEBAR -->
+  <aside class="manager-sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">💎</span>
+      <div>
+        <div class="brand-title">SmartPM</div>
+        <div class="brand-sub">Gestion Intelligente</div>
+      </div>
     </div>
-    <div class="action-group">
-      <button class="btn btn-primary" (click)="launchWizard()">
-        + Create New Project
+
+    <nav class="sidebar-nav">
+      <button class="nav-item" [class.active]="activeTab==='overview'" (click)="switchTab('overview')">
+        <span class="nav-icon">📊</span><span>Cockpit</span>
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='projects'" (click)="switchTab('projects')">
+        <span class="nav-icon">📁</span><span>Projets</span>
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='archives'" (click)="switchTab('archives')">
+        <span class="nav-icon">📦</span><span>Archives</span>
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='team'" (click)="switchTab('team')">
+        <span class="nav-icon">👥</span><span>Équipe</span>
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='quality'" (click)="switchTab('quality')">
+        <span class="nav-icon">🛡️</span><span>Qualité</span>
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='gantt'" (click)="switchTab('gantt')">
+        <span class="nav-icon">🗓️</span><span>Planning</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="su-avatar">M</div>
+        <div>
+          <div class="su-name">Project Manager</div>
+          <div class="su-role">LEAD</div>
+        </div>
+      </div>
+      <button class="logout-link" (click)="logout()">
+        <span class="nav-icon">🚪</span>
+        <span>Déconnexion</span>
       </button>
     </div>
-  </header>
+  </aside>
 
-  <!-- High-level stats -->
-  <section class="stats-grid mt-4">
-    <div class="stat-card" *ngFor="let stat of stats">
-      <div class="stat-icon">{{ stat.icon }}</div>
-      <div class="stat-details">
-        <h3>{{ stat.value }}</h3>
-        <p>{{ stat.label }}</p>
+  <!-- ═══════════════════════════════════════════════════════ MAIN -->
+  <main class="manager-main">
+    <header class="page-header">
+      <div>
+        <h1>Tour de Contrôle SmartPM</h1>
+        <p class="page-sub">Vue Opérationnelle & Performance des Ressources</p>
       </div>
-    </div>
-  </section>
+      <div class="header-actions">
+        <button class="btn-primary" (click)="launchWizard()">+ Nouveau Projet</button>
+        <button class="btn-outline">Télécharger Rapport</button>
+      </div>
+    </header>
 
-  <!-- Detailed Progress Tracking Section -->
-  <section class="tracking-section mt-4">
-    <div class="neo-card full-width">
-      <div class="card-header">
-        <h2>Active Project: {{ currentProject.name }}</h2>
-        <span class="badge border-green">In Progress</span>
-      </div>
-      
-      <!-- Overall Project Progress -->
-      <div class="main-progress mt-3">
-        <label>Total Completion ({{ currentProject.progress }}%)</label>
-        <div class="progress-bar-container large">
-          <div class="progress-fill" [style.width]="currentProject.progress + '%'"></div>
+    <!-- ════════════════════════════════════ OVERVIEW / COCKPIT ════════════════ -->
+    <div *ngIf="activeTab === 'overview'">
+      <!-- 📊 KPI Cards Section -->
+      <div class="kpi-grid">
+        <div class="kpi-card" *ngFor="let k of kpis" [class.alert]="k.alert">
+          <div class="kpi-top">
+            <span class="kpi-icon">{{ k.icon }}</span>
+            <span class="kpi-trend" [class.danger]="k.alert">{{ k.trend }}</span>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-val">{{ k.value }}</div>
+            <div class="kpi-label">{{ k.label }}</div>
+          </div>
         </div>
       </div>
 
-      <div class="activities-grid mt-4">
-        <!-- Display Phase Progress -->
-        <div class="activity-card" *ngFor="let act of currentProject.activities">
-          <div class="act-header">
-            <h4>{{ act.name }}</h4>
-            <span class="percent">{{ act.progress }}%</span>
+      <!-- 🕒 Planning & Workload Section -->
+      <div class="dashboard-row mt-4">
+        <!-- Heatmap/Workload -->
+        <div class="workload-card">
+          <div class="card-header">
+            <h3>👥 Team Workload Heatmap</h3>
+            <span class="badge">Live</span>
           </div>
-          <div class="progress-bar-container">
-            <div class="progress-fill" [style.width]="act.progress + '%'"></div>
+          <div class="workload-list">
+            <div class="workload-item" *ngFor="let w of workload">
+              <div class="w-info">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <strong>{{ w.name }}</strong>
+                  <small>{{ w.role }}</small>
+                </div>
+                <span class="w-percent">{{ w.utilization }}%</span>
+              </div>
+              <div class="w-bar-container">
+                <div class="w-bar" [style.width]="w.utilization + '%'" [class]="w.status"></div>
+              </div>
+            </div>
           </div>
-          
-          <!-- Sub-Tasks breakdown -->
-          <ul class="sub-tasks mt-3">
-            <li *ngFor="let sub of act.tasks" class="sub-task">
-              <span>{{ sub.name }}</span>
-              <span class="status-badge" [ngClass]="sub.status">{{ sub.status }}</span>
-            </li>
-          </ul>
+        </div>
+
+        <!-- AI Insights -->
+        <div class="ai-insights-card">
+          <div class="card-header">
+            <h3>🤖 Alertes & Suivi des Risques</h3>
+          </div>
+          <div class="insight-list">
+            <div class="insight-item" *ngFor="let i of aiInsights" [class]="'sev-' + i.severity">
+              <span class="msg">{{ i.msg }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🔍 Review Flow & Certifications -->
+      <div class="dashboard-row mt-4">
+        <div class="review-panel flex-2">
+          <div class="card-header">
+            <h3>🔍 Revues en Attente</h3>
+          </div>
+          <table class="simple-table">
+            <thead>
+              <tr>
+                <th>Tâche</th><th>Auteur</th><th>Moy. Temps</th><th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of reviews">
+                <td><strong>{{ r.task }}</strong></td>
+                <td>{{ r.author }}</td>
+                <td>{{ r.time }}</td>
+                <td><span class="badge-status" [class]="r.status">{{ r.status }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cert-panel flex-1">
+          <div class="card-header">
+            <h3>🎓 Certifications & Compétences</h3>
+          </div>
+          <div class="cert-list">
+            <div class="cert-item" *ngFor="let c of certifications">
+              <span>{{ c.name }}</span>
+              <span class="cert-badge">{{ c.status }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🚨 Pulse Alerts -->
+      <div class="alerts-section mt-4">
+        <div class="pulse-alerts">
+          <div class="alert-pulse-item" *ngFor="let a of alerts" [class]="a.type">
+            <span class="pulse-icon">🚨</span>
+            <span>{{ a.msg }}</span>
+          </div>
         </div>
       </div>
     </div>
-  </section>
+
+    <!-- ════════════════════════════════════ PROJECTS TAB ════════════════ -->
+    <div *ngIf="activeTab === 'projects'" class="tab-content-fade">
+      <div class="projects-list-card">
+        <div class="card-header">
+          <h3>📁 Liste des Projets SmartPM</h3>
+          <span class="badge">{{ projects.length }} total</span>
+        </div>
+        <table class="simple-table">
+          <thead>
+            <tr><th>Nom du Projet</th><th>Responsable</th><th>Avancement</th><th>Statut</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of projects">
+              <td><strong>{{ p.name }}</strong></td>
+              <td>Manager</td>
+              <td>{{ p.progress || 0 }}%</td>
+              <td><span class="badge-status" [class]="p.status">{{ p.status || 'Active' }}</span></td>
+              <td>
+                <button class="btn-text" [routerLink]="['/manager/project', p.id]">Détails</button>
+                <button class="btn-text" style="margin-left:8px" (click)="doArchive(p.id)">Archiver</button>
+              </td>
+            </tr>
+            <tr *ngIf="projects.length === 0">
+              <td colspan="5" style="text-align: center; padding: 2rem; color: #94a3b8;">Aucun projet trouvé. Lancez le Wizard pour commencer !</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════ ARCHIVES TAB ════════════════ -->
+    <div *ngIf="activeTab === 'archives'" class="tab-content-fade">
+      <div class="projects-list-card">
+        <div class="card-header">
+          <h3>📦 Projets Archivés</h3>
+          <span class="badge" style="background:#52796f">{{ archivedProjects.length }} total</span>
+        </div>
+        <table class="simple-table">
+          <thead>
+            <tr><th>Nom du Projet</th><th>Responsable</th><th>Avancement</th><th>Statut</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of archivedProjects">
+              <td><strong>{{ p.name }}</strong></td>
+              <td>Manager</td>
+              <td>{{ p.progress || 0 }}%</td>
+              <td><span class="badge-status" style="background:#d1d5db; color:#374151">{{ p.status }}</span></td>
+              <td>
+                <button class="btn-text" style="color: #0288D1;" (click)="doRestore(p.id)">Restaurer</button>
+              </td>
+            </tr>
+            <tr *ngIf="archivedProjects.length === 0">
+              <td colspan="5" style="text-align: center; padding: 2rem; color: #94a3b8;">Aucun projet archivé.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════ QUALITY TAB ════════════════ -->
+    <div *ngIf="activeTab === 'quality'" class="tab-content-fade">
+      <div class="quality-grid">
+        <div class="quality-card">
+          <h3>🛡️ Contrôle Qualité SmartPM</h3>
+          <p>Analyse de la conformité et intégrité des données.</p>
+          <div class="q-stats">
+            <div class="q-stat"><span>Couverture</span><strong>88%</strong></div>
+            <div class="q-stat"><span>Alertes</span><strong>{{ alerts.length }}</strong></div>
+          </div>
+          <button class="btn-primary-sm mt-3">Lancer Audit Qualité</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════ TEAM TAB ════════════════ -->
+    <div *ngIf="activeTab === 'team'" class="tab-content-fade">
+      <div class="team-grid">
+        <div class="team-card" *ngFor="let w of workload">
+          <div class="tc-top">
+            <div class="su-avatar">{{ w.name[0] }}</div>
+            <div class="tc-info">
+              <h4>{{ w.name }}</h4>
+              <p>{{ w.role }}</p>
+            </div>
+          </div>
+          <div class="tc-stats">
+            <div class="tc-stat"><span>Utilisation</span><strong>{{ w.utilization }}%</strong></div>
+            <div class="tc-stat"><span>Assignées</span><strong>{{ w.assignedTasks || 0 }} tâches</strong></div>
+          </div>
+          <button class="btn-outline-sm w-100 mt-3">Voir Profil</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════ GANTT TAB ════════════════ -->
+    <div *ngIf="activeTab === 'gantt'" class="tab-content-fade">
+      <div class="gantt-placeholder">
+        <span class="gp-icon">🗓️</span>
+        <h3>Moteur de Planning Interactif</h3>
+        <p>Affichage dynamique de la timeline d'équipe (créneaux 8-12 / 14-17).</p>
+        <div class="dummy-gantt">
+          <div class="dg-row" *ngFor="let i of [1,2,3]">
+            <div class="dg-label">Eng-{{i}}</div>
+            <div class="dg-bar" [style.width]="(i*20) + '%'" [style.margin-left]="(i*5) + '%'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>

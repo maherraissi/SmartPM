@@ -14,7 +14,7 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req, @Res() res) {
     const tokenParams = await this.authService.validateOAuthUser(req.user);
-    res.redirect(`${process.env.FRONTEND_URL}/manager?token=${tokenParams.access_token}`);
+    res.redirect(`${process.env.FRONTEND_URL}/login?token=${tokenParams.access_token}`);
   }
 
   @Get('github')
@@ -25,7 +25,7 @@ export class AuthController {
   @UseGuards(AuthGuard('github'))
   async githubAuthRedirect(@Req() req, @Res() res) {
     const tokenParams = await this.authService.validateOAuthUser(req.user);
-    res.redirect(`${process.env.FRONTEND_URL}/manager?token=${tokenParams.access_token}`);
+    res.redirect(`${process.env.FRONTEND_URL}/login?token=${tokenParams.access_token}`);
   }
 
   @Post('login')

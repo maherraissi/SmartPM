@@ -1,48 +1,174 @@
-<div class="member-dashboard">
-  <header class="dashboard-header">
-    <div>
-      <h1>Bonjour, {{ userName }} 👋</h1>
-      <p class="subtitle">Voici vos tâches assignées et votre avancement</p>
-    </div>
-  </header>
-
-  <!-- Personal Stats -->
-  <section class="stats-grid">
-    <div class="stat-card" *ngFor="let s of stats">
-      <div class="stat-icon">{{ s.icon }}</div>
-      <div class="stat-info">
-        <h3>{{ s.value }}</h3>
-        <p>{{ s.label }}</p>
+<div class="member-shell">
+  <!-- ═══════════════════════════════════════════════════════ SIDEBAR -->
+  <aside class="member-sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">💻</span>
+      <div>
+        <div class="brand-title">SmartPM</div>
+        <div class="brand-sub">Espace d'Exécution</div>
       </div>
     </div>
-  </section>
 
-  <!-- Task List -->
-  <section class="tasks-section mt-4">
-    <div class="section-header">
-      <h2>Mes Tâches</h2>
+    <nav class="sidebar-nav">
+      <button class="nav-item" [class.active]="activeTab==='tasks'" (click)="switchTab('tasks')">
+        <span class="nav-icon">📌</span><span>Mes Tâches</span>
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='reviews'" (click)="switchTab('reviews')">
+        <span class="nav-icon">🔍</span><span>Revues</span>
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='evidence'" (click)="switchTab('evidence')">
+        <span class="nav-icon">📂</span><span>Preuves / Docs</span>
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='training'" (click)="switchTab('training')">
+        <span class="nav-icon">🎓</span><span>Formations</span>
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='productivity'" (click)="switchTab('productivity')">
+        <span class="nav-icon">📈</span><span>Mes Stats</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="su-avatar">H</div>
+        <div>
+          <div class="su-name">{{ userName }}</div>
+          <div class="su-role">MEMBER</div>
+        </div>
+      </div>
+      <button class="logout-link" (click)="logout()">
+        <span class="nav-icon">🚪</span>
+        <span>Déconnexion</span>
+      </button>
     </div>
-    <div class="table-card">
-      <table class="tasks-table">
-        <thead>
-          <tr>
-            <th>Tâche</th>
-            <th>Projet</th>
-            <th>Phase</th>
-            <th>Échéance</th>
-            <th>Statut</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let task of tasks" class="task-row">
-            <td class="task-name">{{ task.name }}</td>
-            <td class="task-project">{{ task.project }}</td>
-            <td><span class="phase-badge">{{ task.phase }}</span></td>
-            <td class="task-due">{{ task.due }}</td>
-            <td><span class="status-badge" [ngClass]="getStatusClass(task.status)">{{ getStatusLabel(task.status) }}</span></td>
-          </tr>
-        </tbody>
-      </table>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════════════ MAIN -->
+  <main class="member-main">
+    <header class="page-header">
+      <div class="welcome-top">
+        <h1>Bon travail, <span>{{ userName }}</span>!</h1>
+        <p class="page-sub">Planning du jour : Concentration sur les tâches et revues.</p>
+      </div>
+
+      <!-- 🕒 Active Timer Widget -->
+      <div class="timer-widget" [class.active]="timerActive">
+        <div class="timer-info">
+          <span class="timer-label">Chronomètre</span>
+          <span class="timer-value">{{ formatTimer() }}</span>
+        </div>
+        <div class="timer-actions">
+          <button class="timer-btn" (click)="toggleTimer()" [class.paused]="!timerActive">
+            {{ timerActive ? '⏸ Pause' : '▶ Reprendre' }}
+          </button>
+          <button class="timer-btn stop" (click)="stopTimer()">
+            ✅ Terminé
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 🗓 Today's tasks in slots -->
+    <section class="tasks-today-section">
+      <div class="card-header">
+        <h3>📌 Mes Tâches du Jour</h3>
+        <span class="time-slot-badge">8:00 - 12:00 | 14:00 - 17:00</span>
+      </div>
+      <div class="task-grid">
+        <div class="task-slot-card" *ngFor="let t of todayTasks" [class.current]="t.status==='current'">
+          <div class="slot-time">{{ t.time }}</div>
+          <div class="slot-body">
+            <h4>{{ t.name }}</h4>
+            <div class="slot-meta">
+              <span class="badge-role">{{ t.type }}</span>
+              <span class="project-tag">{{ t.project }}</span>
+            </div>
+          </div>
+          <button class="btn-start" *ngIf="t.status==='current'">En cours d'exécution</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="exec-panels mt-4">
+      <!-- 🔍 Tasks to Review -->
+      <div class="review-panel flex-2">
+        <div class="card-header">
+          <h3>🔍 File des Revues de Pairs</h3>
+        </div>
+        <div class="colleague-review-item" *ngFor="let r of reviewsToDone">
+          <div class="cr-info">
+            <strong>{{ r.colleague }}</strong> : {{ r.task }}
+            <p>{{ r.project }} • {{ r.comments }} commentaires en attente</p>
+          </div>
+          <div class="cr-actions">
+            <button class="btn-action-sm">Démarrer la Revue</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 📂 Evidence Upload Space -->
+      <div class="evidence-panel flex-1">
+        <div class="card-header">
+          <h3>📂 Documentation / Preuves</h3>
+        </div>
+        <div class="upload-zone">
+          <span class="upload-icon">☁️</span>
+          <p>Glissez screenshots, docs ou rapports ici</p>
+          <button class="btn-outline-sm">Télécharger une preuve</button>
+        </div>
+      </div>
     </div>
-  </section>
+
+    <div class="exec-panels mt-4">
+      <!-- 💬 Team Feedback & Feed -->
+      <div class="feedback-panel flex-1">
+        <div class="card-header">
+          <h3>💬 Discussion d'Équipe</h3>
+        </div>
+        <div class="comment-list">
+          <div class="comment-item" *ngFor="let c of teamComments">
+            <div class="ci-header">
+              <strong>@{{ c.author }}</strong> • <small>{{ c.time }}</small>
+            </div>
+            <p>{{ c.msg }}</p>
+          </div>
+          <div class="comment-input">
+            <input type="text" placeholder="Écrire un commentaire ou mentionner @...">
+          </div>
+        </div>
+      </div>
+
+      <!-- 🎓 Training progress -->
+      <div class="training-panel flex-1">
+        <div class="card-header">
+          <h3>🎓 Mes Formations & Quiz</h3>
+        </div>
+        <div class="training-track" *ngFor="let tt of trainingTracks">
+          <div class="tt-header">
+            <span>{{ tt.name }}</span>
+            <strong>{{ tt.progress }}%</strong>
+          </div>
+          <div class="tt-progress">
+            <div class="tt-fill" [style.width]="tt.progress + '%'"></div>
+          </div>
+        </div>
+        <button class="btn-quiz mt-3">Passer le Quiz</button>
+      </div>
+
+      <!-- 📈 Personal efficiency -->
+      <div class="productivity-panel flex-1">
+        <div class="card-header">
+          <h3>📈 Tableau de Motivation</h3>
+        </div>
+        <div class="perf-grid">
+          <div class="perf-item" *ngFor="let p of performanceStats">
+            <span class="perf-icon">{{ p.icon }}</span>
+            <div class="perf-data">
+              <div class="p-val">{{ p.value }}</div>
+              <div class="p-label">{{ p.label }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
 </div>

@@ -11,9 +11,9 @@
   position: relative;
   
   &::-webkit-scrollbar { width: 8px; }
-  &::-webkit-scrollbar-track { background: rgba(5, 8, 16, 0.9); }
-  &::-webkit-scrollbar-thumb { background: rgba(0, 243, 255, 0.3); border-radius: 4px; }
-  &::-webkit-scrollbar-thumb:hover { background: #00f3ff; }
+  &::-webkit-scrollbar-track { background: #f4fafa; }
+  &::-webkit-scrollbar-thumb { background: rgba(45, 106, 79, 0.2); border-radius: 4px; }
+  &::-webkit-scrollbar-thumb:hover { background: #2d6a4f; }
 }
 
 // Auth pages: full screen scrollable, no sidebar

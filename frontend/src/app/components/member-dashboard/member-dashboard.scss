@@ -1,69 +1,180 @@
-.member-dashboard {
-  padding: 2rem;
+// ═══════════════════════════════════════════════════════════════════
+// SmartPM Member Dashboard — Execution Workspace Theme
+// ═══════════════════════════════════════════════════════════════════
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+// ── Design Tokens ────────────────────────────────────────────────────
+$green:        #2dbd6b;
+$green-dark:   #2E7D32;
+$blue:         #0288D1;
+$bg-base:      #F5F5DC;
+$bg-surface:   #FAFAF7;
+$bg-card:      #FAFAF7;
+$text-primary: #1b4332;
+$text-muted:   #52796f;
+$border:       rgba(45, 189, 107, 0.1);
+$radius-md:    16px;
+$sidebar-w:    230px;
+$transition:   0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$red:          #d32f2f;
+
+.member-shell {
+  display: flex;
+  min-height: 100vh;
+  background: $bg-base;
   font-family: 'Inter', sans-serif;
-  color: #e2e8f0;
-
-  .dashboard-header {
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-    padding-bottom: 1.5rem; margin-bottom: 2rem;
-    h1 { margin: 0; font-size: 1.7rem; color: #fff; }
-    .subtitle { margin: 0.3rem 0 0; color: #64748b; font-size: 0.9rem; }
-  }
-
-  .mt-4 { margin-top: 2rem; }
+  color: $text-primary;
 }
 
-.stats-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.2rem;
-  .stat-card {
-    background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 12px; padding: 1.3rem; display: flex; align-items: center; gap: 1rem;
-    transition: transform 0.2s;
-    &:hover { transform: translateY(-3px); border-color: rgba(59,130,246,0.3); }
-    .stat-icon { font-size: 1.8rem; }
-    .stat-info {
-      h3 { margin: 0; font-size: 1.8rem; color: #fff; font-weight: 700; }
-      p { margin: 0; color: #64748b; font-size: 0.8rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+// ══════════════════════════════════ SIDEBAR ══════════════════════════
+.member-sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: $sidebar-w;
+  height: 100vh;
+  background: $bg-surface;
+  border-right: 1px solid $border;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+
+  .sidebar-brand {
+    display: flex; align-items: center; gap: 12px; padding: 24px 20px; border-bottom: 1px solid $border;
+    .brand-icon { font-size: 24px; }
+    .brand-title { font-size: 16px; font-weight: 800; color: $green; }
+    .brand-sub { font-size: 10px; color: $text-muted; text-transform: uppercase; letter-spacing: 1px; }
+  }
+
+  .sidebar-nav {
+    flex: 1; padding: 16px 12px;
+    .nav-item {
+      width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+      border-radius: 12px; margin-bottom: 4px; border: none; background: transparent;
+      color: $text-muted; font-weight: 600; font-size: 14px; cursor: pointer; transition: all $transition;
+      &:hover { background: rgba($green, 0.05); color: $green; }
+      &.active { background: rgba($green, 0.12); color: $green; font-weight: 700; box-shadow: 0 4px 12px rgba($green, 0.1); }
+      .nav-icon { font-size: 18px; }
+    }
+  }
+
+  .sidebar-footer {
+    padding: 20px; border-top: 1px solid $border;
+    .sidebar-user {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+      .su-avatar { width: 36px; height: 36px; border-radius: 50%; background: $blue; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+      .su-name { font-size: 13px; font-weight: 700; }
+      .su-role { font-size: 10px; color: $text-muted; text-transform: uppercase; }
     }
   }
 }
 
-.section-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 1rem;
-  h2 { margin: 0; color: #fff; font-size: 1.2rem; }
+.logout-link {
+  display: flex; align-items: center; gap: 10px; padding: 8px 16px; width: fit-content; margin: 0 auto;
+  border-radius: 30px; border: 1px solid rgba($red, 0.2); background: transparent;
+  color: $red; font-size: 10px; font-weight: 800; cursor: pointer; transition: all $transition;
+  text-transform: uppercase; letter-spacing: 1px; justify-content: center;
+  &:hover { background: $red; color: #fff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba($red, 0.2); }
 }
 
-.table-card {
-  background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 12px; overflow: hidden;
+// ══════════════════════════════════ MAIN CONTENT ══════════════════════════
+.member-main {
+  margin-left: $sidebar-w;
+  flex: 1; padding: 2.5rem;
 }
 
-.tasks-table {
-  width: 100%; border-collapse: collapse;
-  thead tr {
-    background: rgba(255,255,255,0.03);
-    th { padding: 0.9rem 1.2rem; text-align: left; font-size: 0.73rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.page-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;
+  .welcome-top {
+    h1 { font-size: 2rem; font-weight: 800; letter-spacing: -1.2px; margin: 0; span { color: $green; } }
+    .page-sub { color: $text-muted; font-weight: 500; font-size: 1rem; }
   }
-  .task-row {
-    border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s;
-    &:last-child { border-bottom: none; }
-    &:hover { background: rgba(255,255,255,0.02); }
-    td { padding: 0.9rem 1.2rem; font-size: 0.9rem; vertical-align: middle; }
+}
+
+// 🕒 Timer Widget ─────────────────────────────
+.timer-widget {
+  background: $bg-card; padding: 12px 20px; border-radius: 16px; border: 1px solid $border; display: flex; align-items: center; gap: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02); transition: all 0.5s;
+  &.active { border-color: $green; box-shadow: 0 4px 20px rgba($green, 0.1); }
+  .timer-info { display: flex; flex-direction: column; 
+    .timer-label { font-size: 10px; text-transform: uppercase; font-weight: 800; color: $text-muted; letter-spacing: 1px; }
+    .timer-value { font-size: 1.5rem; font-weight: 800; color: $text-primary; font-variant-numeric: tabular-nums; }
   }
-  .task-name { color: #e2e8f0; font-weight: 500; }
-  .task-project { color: #94a3b8; }
-  .task-due { color: #64748b; font-size: 0.85rem; }
+  .timer-actions { display: flex; gap: 8px; }
+  .timer-btn { 
+    background: $green; color: #fff; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: all 0.3s;
+    &.paused { background: $blue; }
+    &.stop { background: #fff; color: $green; border: 2px solid $green; &:hover { background: $green; color: #fff; } }
+  }
 }
 
-.phase-badge {
-  padding: 0.25rem 0.6rem; border-radius: 5px; font-size: 0.72rem; font-weight: 700;
-  background: rgba(59,130,246,0.1); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2);
+.feedback-panel { background: $bg-card; border: 1px solid $border; border-radius: $radius-md; padding: 1.5rem;
+  .comment-list { display: flex; flex-direction: column; gap: 12px; margin-top: 10px;
+    .comment-item { 
+      background: #fdfefd; padding: 10px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.02);
+      .ci-header { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; strong { color: $green; } }
+      p { font-size: 12px; margin: 0; color: $text-primary; line-height: 1.4; }
+    }
+    .comment-input input {
+      width: 100%; padding: 10px; border-radius: 8px; border: 1px solid $border; font-size: 12px; outline: none;
+      &:focus { border-color: $green; box-shadow: 0 0 0 3px rgba($green, 0.05); }
+    }
+  }
 }
 
-.status-badge {
-  padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-  &.status-done { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
-  &.status-progress { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); }
-  &.status-pending { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+// 🗓 Task Today Section ────────────────────────
+.tasks-today-section {
+  background: $bg-card; padding: 1.5rem; border-radius: $radius-md; border: 1px solid $border;
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;
+    h3 { font-size: 1.1rem; font-weight: 800; margin: 0; }
+    .time-slot-badge { background: #f1f1e6; color: $text-muted; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 12px; }
+  }
+}
+
+.task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;
+  .task-slot-card {
+    background: #ffffff; border: 1.5px solid rgba(0,0,0,0.03); border-radius: 16px; padding: 1.5rem; transition: all 0.4s; position: relative; overflow: hidden;
+    &::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: rgba(0,0,0,0.05); }
+    &.current { border-color: $green; &::before { background: $green; } box-shadow: 0 8px 24px rgba($green, 0.08); }
+    .slot-time { font-size: 11px; font-weight: 800; color: $green; text-transform: uppercase; margin-bottom: 10px; }
+    h4 { font-size: 1.25rem; font-weight: 800; margin: 0 0 12px; letter-spacing: -0.5px; }
+    .slot-meta { display: flex; gap: 10px; align-items: center; 
+      .badge-role { background: rgba($blue, 0.1); color: $blue; font-size: 10px; font-weight: 800; padding: 2px 10px; border-radius: 20px; }
+      .project-tag { font-size: 11px; font-weight: 700; color: $text-muted; }
+    }
+    .btn-start { margin-top: 1.5rem; width: 100%; padding: 10px; background: $green; color: #fff; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; }
+  }
+}
+
+.exec-panels { display: flex; gap: 1.5rem; .flex-2 { flex: 2; } .flex-1 { flex: 1; } }
+.mt-4 { margin-top: 1.5rem; }
+
+// ── Review & Evidence ──────────────────────────
+.review-panel, .evidence-panel, .training-panel, .productivity-panel { background: $bg-card; padding: 1.5rem; border-radius: $radius-md; border: 1px solid $border; }
+
+.colleague-review-item {
+  display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.03);
+  .cr-info { strong { color: $green; } p { font-size: 11px; color: $text-muted; margin: 2px 0 0; } }
+  .btn-action-sm { background: $green; color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; }
+}
+
+.upload-zone {
+  height: 120px; border: 2px dashed rgba($green, 0.2); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center;
+  .upload-icon { font-size: 2rem; } p { font-size: 11px; color: $text-muted; margin: 0; }
+  .btn-outline-sm { background: transparent; border: 1px solid $green; color: $green; font-size: 10px; font-weight: 800; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: all 0.3s;
+    &:hover { background: $green; color: #fff; }
+  }
+}
+
+// ── Training & Performance ──────────────────────
+.training-track { margin-bottom: 1rem;
+  .tt-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+  .tt-progress { height: 6px; background: rgba(0,0,0,0.05); border-radius: 10px; .tt-fill { height: 100%; border-radius: 10px; background: $green; transition: width 1s; } }
+}
+.btn-quiz { width: 100%; background: $blue; color: #fff; border: none; padding: 10px; border-radius: 10px; font-weight: 800; font-size: 12px; cursor: pointer; }
+
+.perf-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;
+  .perf-item { background: #ffffff; border: 1px solid rgba(0,0,0,0.03); padding: 1rem; border-radius: 12px; display: flex; align-items: center; gap: 12px;
+    .perf-icon { font-size: 20px; } .p-val { font-size: 16px; font-weight: 800; } .p-label { font-size: 9px; color: $text-muted; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  }
 }

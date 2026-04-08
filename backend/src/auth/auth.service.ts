@@ -39,8 +39,8 @@ export class AuthService {
       // User doesn't exist, we Insert them safely based on Auth Provider
       user = await this.userModel.create({
         email: profile.email,
-        firstName: profile.firstName,
-        lastName: profile.lastName,
+        firstName: profile.firstName || 'Unknown',
+        lastName: profile.lastName || 'Unknown',
         provider: profile.provider,
         providerId: profile.providerId,
         isActive: true
@@ -50,12 +50,23 @@ export class AuthService {
       if (!user.providerId) {
         user.provider = profile.provider;
         user.providerId = profile.providerId;
+        // Fix for ValidationError: Path `firstName` is required on existing incomplete docs
+        if (!user.firstName) user.firstName = profile.firstName || 'Unknown';
+        if (!user.lastName) user.lastName = profile.lastName || 'Unknown';
+        
+        // Also avoid validation lock by using findByIdAndUpdate instead of save()
+        // Or we can just save since we added the fallbacks it will pass validation.
         await user.save();
       }
     }
 
-    // Token creation tailored for 8-hours aerospace shifts
-    const payload = { email: user.email, sub: user._id, role: user.role };
+    // Explicitly guarantee role presence for JWT payload
+    const payload = { 
+      email: user.email, 
+      sub: user._id, 
+      role: user.role || 'MEMBER' 
+    };
+    
     return {
       access_token: this.jwtService.sign(payload),
     };

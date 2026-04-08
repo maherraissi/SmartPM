@@ -16,6 +16,8 @@ import { TrainingModule } from './training/training.module';
 import { CertificationModule } from './certification/certification.module';
 import { AiIntegrationModule } from './ai-integration/ai-integration.module';
 import { AuthModule } from './auth/auth.module';
+import { AdminModule } from './admin/admin.module';
+import { BackupReplicationService } from './backup-replication.service';
 
 @Module({
   imports: [
@@ -32,12 +34,21 @@ import { AuthModule } from './auth/auth.module';
         const uri = env === 'cloud' 
           ? configService.get<string>('MONGODB_CLOUD_URI') 
           : configService.get<string>('MONGODB_LOCAL_URI');
-        console.log(`🔌 Connecting to MongoDB in [${env.toUpperCase()}] mode.`);
-        return { uri };
+        console.log(`🔌 DB_ENV: [${env.toUpperCase()}]`);
+        console.log(`🔌 MONGODB_URI: ${uri}`); // 👈 HIGH VISIBILITY LOG
+        return {
+          uri,
+          serverSelectionTimeoutMS: 5000,   // fail fast if Mongo not reachable
+          socketTimeoutMS: 10000,            // max 10s per operation
+          connectTimeoutMS: 5000,
+          maxPoolSize: 10,
+          bufferCommands: false,             // don't buffer ops when disconnected
+        };
       },
       inject: [ConfigService],
     }),
     AuthModule,
+    AdminModule,
     UserModule,
     ProjectModule,
     ActivityModule,
@@ -56,7 +67,8 @@ import { AuthModule } from './auth/auth.module';
       // Globally binding the Throttler to protect ALL routes simultaneously
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
-    }
+    },
+    BackupReplicationService,
   ],
 })
 export class AppModule {}

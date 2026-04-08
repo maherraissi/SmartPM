@@ -1,0 +1,230 @@
+<div class="detail-shell">
+  <!-- Header -->
+  <header class="detail-header">
+    <div class="header-left">
+      <button class="btn-back" (click)="goBack()">← Retour</button>
+      <div class="project-info" *ngIf="projectData">
+        <h1>{{ projectData.project.name }}</h1>
+        <span class="status-badge" [class]="projectData.project.status">{{ projectData.project.status }}</span>
+      </div>
+    </div>
+    <div class="header-right" *ngIf="projectData">
+       <div class="project-progress">
+          <small>Progression Globale</small>
+          <div class="progress-bar">
+             <div class="progress-fill" [style.width.%]="projectData.project.progressPercentage || 0"></div>
+          </div>
+       </div>
+    </div>
+  </header>
+
+  <!-- Error / Loading State -->
+  <div class="loading-overlay" *ngIf="isLoading || errorMessage">
+    <div class="spinner" *ngIf="isLoading && !errorMessage"></div>
+    <p *ngIf="isLoading && !errorMessage">Chargement de la structure du projet...</p>
+    
+    <div class="error-box" *ngIf="errorMessage">
+       <span class="error-icon">⚠️</span>
+       <p>{{ errorMessage }}</p>
+       <button class="btn-primary" (click)="loadProjectDetails()">Réessayer</button>
+    </div>
+  </div>
+
+  <!-- Structure View -->
+  <div class="structure-container" *ngIf="projectData && !isLoading">
+    <div class="activity-block" *ngFor="let act of projectData.activities">
+      <div class="activity-header">
+        <span class="phase-tag">{{ act.phase }}</span>
+        <h2>{{ act.name }}</h2>
+      </div>
+
+      <div class="sub-activity-grid">
+        <div class="sub-card" *ngFor="let sub of act.subActivities">
+          <div class="sub-header">
+            <h3>{{ sub.category }}</h3>
+            <div class="sub-activity-actions">
+              <button class="btn-action primary" (click)="openAddTaskModal(sub._id)" title="Ajouter une fonction">
+                <span class="icon">+</span> Fonction
+              </button>
+              <button class="btn-action secondary" (click)="openAddDocModal(sub._id)" *ngIf="isDocCategory(sub.category)" title="Ajouter un document">
+                <span class="icon">📎</span> Doc
+              </button>
+            </div>
+          </div>
+
+          <!-- Documents List -->
+          <div class="sub-docs-mini" *ngIf="sub.attachedFiles?.length > 0">
+             <div class="mini-doc" *ngFor="let file of sub.attachedFiles">
+                <span class="icon">📄</span>
+                <a [href]="file.url" target="_blank">{{ file.name }}</a>
+             </div>
+          </div>
+
+          <!-- Task List -->
+          <div class="task-list">
+            <div class="task-item" *ngFor="let task of sub.tasks">
+              <div class="task-top">
+                <span class="task-title">{{ task.title }}</span>
+                <span class="task-duration">
+                  {{ task.estimatedDuration }}h 
+                  <small>({{ (task.estimatedDuration / 7).toFixed(1) }} jrs)</small>
+                </span>
+              </div>
+              
+              <div class="task-dates">
+                <div class="date-box">
+                  <small>Début:</small> {{ task.plannedStartDate | date:'dd/MM/yyyy' }}
+                </div>
+                <div class="date-box">
+                  <small>Fin:</small> {{ task.plannedEndDate | date:'dd/MM/yyyy' }}
+                </div>
+              </div>
+
+              <div class="task-assignments">
+                <div class="assignment">
+                  <small>Auteur:</small> 
+                  <span class="member-name">{{ getMemberName(task.authorId) }}</span>
+                </div>
+                <div class="assignment" *ngIf="task.reviewerId">
+                  <small>Revue:</small> 
+                  <span class="member-name">{{ getMemberName(task.reviewerId) }}</span>
+                </div>
+              </div>
+
+              <div class="task-status">
+                 <span class="badge-mini" [class]="task.status">{{ task.status }}</span>
+                 <a class="doc-badge" *ngIf="task.evidenceLinks?.length > 0" [href]="task.evidenceLinks[0]" target="_blank" title="Voir document">📎</a>
+              </div>
+            </div>
+            
+            <div class="no-tasks" *ngIf="sub.tasks.length === 0">
+              Aucune fonction définie.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task Modal (Multi) -->
+  <div class="modal-backdrop" *ngIf="showTaskModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Ajouter des Fonctions</h2>
+        <button class="btn-close" (click)="closeTaskModal()">×</button>
+      </div>
+      <form (ngSubmit)="submitTask()" #taskForm="ngForm">
+        <div class="task-rows-container">
+          <div class="task-row-card" *ngFor="let t of newTasks; let i = index">
+            <div class="row-header">
+              <h3>Fonction #{{ i + 1 }}</h3>
+              <button type="button" class="btn-remove" (click)="removeTaskRow(i)" *ngIf="newTasks.length > 1">×</button>
+            </div>
+
+            <div class="form-group">
+              <label>Titre de la fonction</label>
+              <input type="text" [name]="'title'+i" [(ngModel)]="t.title" required placeholder="Ex: Validation SRS">
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>Durée (h)</label>
+                <input type="number" [name]="'duration'+i" [(ngModel)]="t.estimatedDuration" required min="1" (input)="onTaskDateChange(i)">
+              </div>
+              <div class="form-group flex-1">
+                <label>Début</label>
+                <input type="datetime-local" [name]="'startDate'+i" [(ngModel)]="t.plannedStartDate" required (change)="onTaskDateChange(i)">
+              </div>
+              <div class="form-group flex-1">
+                <label>Fin</label>
+                <input type="datetime-local" [name]="'endDate'+i" [(ngModel)]="t.plannedEndDate" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label>Auteur</label>
+                <select [name]="'authorId'+i" [(ngModel)]="t.authorId" required>
+                  <option value="" disabled>Choisir...</option>
+                  <option *ngFor="let m of members" [value]="m._id">{{ m.firstName }} {{ m.lastName }}</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label>Revue</label>
+                <select [name]="'reviewerId'+i" [(ngModel)]="t.reviewerId" required>
+                  <option value="" disabled>Choisir...</option>
+                  <option *ngFor="let m of members" [value]="m._id">{{ m.firstName }} {{ m.lastName }}</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+               <label>Lien Document (SRS/Design...)</label>
+               <input type="text" [name]="'doc'+i" [(ngModel)]="t.docLink" placeholder="https://...">
+            </div>
+
+            <div class="error-msg" *ngIf="t.authorId && t.reviewerId && t.authorId === t.reviewerId">
+               ⚠️ L'auteur ne peut pas être le réviseur.
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn-add-row" (click)="addTaskRow()">+ Ajouter une autre fonction</button>
+
+        <div class="modal-footer mt-4">
+          <button type="button" class="btn-secondary" (click)="closeTaskModal()">Annuler</button>
+          <button type="submit" class="btn-primary" [disabled]="!taskForm.valid">
+            Créer les fonctions
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Document Modal -->
+  <div class="modal-backdrop" *ngIf="showDocModal">
+    <div class="modal-content small-modal">
+      <div class="modal-header">
+        <h2>📎 Attacher un Document</h2>
+        <button class="btn-close" (click)="closeDocModal()">×</button>
+      </div>
+      
+      <div class="doc-type-toggle">
+        <button [class.active]="!useFile" (click)="useFile = false">🌐 Lien</button>
+        <button [class.active]="useFile" (click)="useFile = true">📁 Fichier</button>
+      </div>
+
+      <form (ngSubmit)="submitDoc()" #docForm="ngForm">
+         <div class="form-group" *ngIf="!useFile">
+           <label>Nom du document</label>
+           <input type="text" name="docName" [(ngModel)]="newDoc.name" required placeholder="Ex: Manual_V1.pdf">
+         </div>
+         <div class="form-group" *ngIf="!useFile">
+           <label>Lien du fichier (Drive, SharePoint...)</label>
+           <input type="text" name="docUrl" [(ngModel)]="newDoc.url" required placeholder="https://...">
+         </div>
+
+         <div class="form-group" *ngIf="useFile">
+           <label>Sélectionner un fichier local</label>
+           <div class="file-drop-zone">
+             <input type="file" (change)="onFileSelected($event)" id="fileInput">
+             <div class="drop-text" *ngIf="!selectedFile">
+                <span>📂</span> Cliquez ou glissez un fichier ici
+             </div>
+             <div class="selected-file-info" *ngIf="selectedFile">
+                <strong>{{ selectedFile.name }}</strong>
+                <small>{{ (selectedFile.size / 1024).toFixed(1) }} KB</small>
+             </div>
+           </div>
+         </div>
+
+         <div class="modal-footer mt-4">
+            <button type="button" class="btn-secondary" (click)="closeDocModal()">Annuler</button>
+            <button type="submit" class="btn-primary" [disabled]="!useFile ? !docForm.valid : !selectedFile">
+               {{ useFile ? 'Uploader et Attacher' : 'Attacher le lien' }}
+            </button>
+         </div>
+      </form>
+    </div>
+  </div>
+</div>
