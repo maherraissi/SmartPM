@@ -4,9 +4,10 @@
  "scripts": {
   "start:backend": "cd backend && npm run start:dev",
   "start:frontend": "cd frontend && npm start",
-  "start:ai": "cd ai && .\\venv\\Scripts\\activate && uvicorn main:app --reload --port 8000",
-  "dev": "concurrently \"npm run start:backend\" \"npm run start:frontend\" \"npm run start:ai\"",
-  "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install && cd ../ai && python -m venv venv && .\\venv\\Scripts\\activate && pip install fastapi uvicorn google-generativeai langchain-ollama pydantic-settings"
+  "start:ai": "cd ai && .\\venv\\Scripts\\python.exe -m uvicorn main:app --reload --port 8000",
+  "start:ollama": "ollama serve",
+  "dev": "concurrently --kill-others \"npm run start:backend\" \"npm run start:frontend\" \"npm run start:ai\" \"npm run start:ollama\"",
+  "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install && cd ../ai && python -m venv venv && .\\venv\\Scripts\\pip install fastapi uvicorn google-generativeai motor pydantic openai ollama"
  },
  "devDependencies": {
   "concurrently": "^8.2.2"
