@@ -1,58 +1,76 @@
-# Historique & Architecture du projet SmartPM (Aéronautique DO-178C)
+# 🚀 Architecture & Historique du Système SmartPM (Norme DO-178C)
 
-Ce document trace l'historique de la création de la plateforme, son but, ainsi que le dictionnaire exhaustif des fichiers créés et leur rôle exact.
-
-## 🎯 Raison d'être du projet
-SmartPM n'est pas un système de gestion de tickets classique. C'est une **Engineering Execution & Competency Platform** conçue pour l'Aéronautique orientée sur le cycle de vie **DO-178C**. Elle gère le "V-cycle" et les règles de ségrégation des rôles (Skills-based access) pour assurer la conformité des artefacts produits. 
-
-## 🏗️ Architecture Globale (Triade BFA)
-1. **[B]ackend** : NestJS (Node.js) + Mongoose connecté à MongoDB Atlas. 
-2. **[F]rontend** : Angular (Standalone) structuré avec des Dashboards spécifiques.
-3. **[A]I Service** : FastAPI (Python) traitant avec Ollama (Local LLM), Gemini (Google Cloud RAG) et ChromaDB (Vector DB).
+Ce document constitue le registre central de la plateforme SmartPM. Il détaille la structure technique, les choix technologiques et le rôle de chaque composant pour assurer la conformité aux standards aéronautiques de haut niveau.
 
 ---
 
-## 📁 Dictionnaire des Fichiers Clés
+## 🏗️ Vision & Architecture Globale
+SmartPM est une **Engineering Execution & Competency Platform** dédiée au cycle de vie logiciel **DO-178C**. Elle ne se contente pas de gérer des tickets, elle orchestre la production d'artefacts critiques avec une ségrégation stricte des rôles.
 
-### 1️⃣ Racine du Projet (`/`)
-- `package.json` : Orchestrateur central avec *concurrently* pour lancer le Backend, le Frontend et le microservice d'IA en une seule commande (`npm run dev`).
-- `README.md` : La documentation officielle pour toute l'équipe (Développeurs, Admins, DevOps).
-- `historique.txt` : Le registre exhaustif documentant la nature et l'évolution du projet.
-
-### 2️⃣ Backend NestJS (`/backend/src/`)
-*Moteur de l'application gérant la base de données MongoDB, l'API REST, et la logique.*
-- `app.module.ts` : Point d'entrée du backend, charge la BDD (MongoDB Atlas) via Mongoose et orchestre tous les modules métier.
-- `user/schemas/user.schema.ts` : Structure MongoDB incluant les rôles (`ADMIN`, `MANAGER`, `MEMBER`) et la Matrice de Certifications (`AeroPhase`). 
-- `project/schemas/project.schema.ts` : Entité mère de la plateforme (Le Projet Aéro complet).
-- `task/schemas/task.schema.ts` : Le cœur atomique du compliance. Contient des IDs stricts pour `authorId` et `reviewerId` pour garantir la règle : Reviewer ≠ Author. Il intègre aussi les métriques de tracking de temps (estimated/actual).
-- `function-template/schemas/function-template.schema.ts` : Librairie préconfigurée par l'admin stockant les "60 fonctions" standards requises par les cycles LLR/LLT.
-- `*/...module.ts` : Déclarations d'injection de dépendances pour relier les schémas, services et les API REST (Controller) de chaque entité.
-
-### 3️⃣ Frontend Angular (`/frontend/src/`)
-*Une interface Single-Page (SPA) utilisant Angular 18+ mode Standalone.*
-- `app/app.ts` : Point d'entrée du composant principal "App" gérant le routeur.
-- `app/app.routes.ts` : Définition de la navigation (Logique des Dashboards `Manager`, `Admin`, `Member`).
-- `app/app.html` et `app/app.scss` : Template général et styles instanciant la Navbar, la Sidebar et gérant le flex-layout structuré de l'application complète. 
-- `styles.scss` : La charte graphique globale "Aéro" (Variable CSS en Vanilla).
-- `/components/` : Différents Dashboards Standalone gérant l'UX (ManagerDashboard pour l'auto-planning, MemberDashboard pour les tâches et formations en cours).
-- `/services/` : Ensemble des clients HTTP permettant au frontend de consommer les endpoints de NestJS et FastAPI en arrière-plan.
-
-### 4️⃣ Intelligence Artificielle (`/ai/`)
-*Microservice Python tournant sur le port 8000. Le cerveau autonome du projet.*
-- `main.py` : Application FastAPI. Expose les routes `/plan` (Gemini), `/risk` (Ollama), et intègre les outils vectoriels (ChromaDB).
-- `.env` : Contient les clés permettant d'interroger Gemini et l'adresse de l'Ollama local.
-- `venv/` : L'environnement virtuel Python isolé comprenant : fastapi, google-generativeai, langchain-ollama, pypdf, chromadb.
+### 🧩 La Triade Technologique :
+1.  **Backend (Port 3000)** : Développé avec **NestJS**, moteur robuste gérant la logique métier, l'authentification et les connexions à la base de données **MongoDB Atlas**.
+2.  **Frontend (Port 4200)** : Une Single-Page Application (SPA) moderne sous **Angular 18+** (mode Standalone), offrant des interfaces "Cockpit" pour chaque profil d'utilisateur.
+3.  **AI Service (Port 8000)** : Microservice **Python (FastAPI)** agissant comme le cerveau intelligent pour l'auto-planning, l'analyse de risques et le support technique via LLM.
 
 ---
 
-## 🔒 Security & Enterprise Patterns (Mise à jour : Avril 2026)
-- **Cerveau IA DO-178C (`ai/main.py`)** : Logique de prompt stricte assignant obligatoirement des "Auteurs" différents des "Reviewers", couplée à une vérification des certifications d'ingénierie des membres de l'équipe (Gating sur les phases HLR, LLR, LLT, HLT).
-- **Backend Idempotency & Upsert (`task.service.ts` & `function-template.service.ts`)** : Patterns Entreprise pour éviter la duplication des tâches métier en cas de "network retries" de l'UI (Idempotency Key sur MongoDB), et un Bulk `upsert` pour charger sans fautes les 60 Templates fonctions aéro.
-- **Moteur Temporel Aéro (`task.service.ts`)** : Algorithme ignorant les week-ends et déduisant dynamiquement la fin de la tâche sur la base des quotas européens : (8h-12h et 14h-17h = 7h/jour).
-- **Création Groupée & Indépendance (Avril 2026)** : Implémentation d'un système de création de tâches en masse avec validation temps réel de l'indépendance (Auteur ≠ Réviseur). Support de l'ajout dynamique de lignes dans le formulaire manager.
-- **Gestion Documentaire Avancée (`project-detail`)** : Système hybride permettant l'attachement de documents via des liens (URL Drive/SharePoint) ou par upload direct de fichiers locaux (Simulation Drag & Drop intégrée).
-- **Audit UI Cockpit** : Refonte de la vue "Project Detail" avec un affichage large (1600px+), un tri automatique par cycle de vie DO-178C (Creation -> Review -> Architecture) et une interface "Wow" utilisant des dégradés de couleurs et des effets de lévitation sur les cartes.
-- **Watchdogs de Stabilité** : Mise en place de gardiens de chargement (Timeout 5s) et de gestion d'erreurs granulaires dans le frontend pour éviter les blocages de l'interface et assurer une fluidité maximale.
+## 📁 Dictionnaire Exhaustif des Fichiers
+
+### 1. 📂 Racine du Projet (`/`)
+*   `package.json` : Définit les scripts de démarrage synchronisés via `concurrently`. La commande `npm run dev` lance simultanément le Backend, le Frontend et l'IA.
+*   `README.md` : Guide d'installation et de configuration globale.
+*   `historique.txt` : Ce document (votre source de vérité).
+
+### 2. ⚙️ Backend Services (`/backend/src/`)
+*Structuré par domaines métier (Modules).*
+
+#### 👥 Users & Auth (`/user/`)
+*   `user.schema.ts` : Définit l'utilisateur aéronautique avec ses **certifications** (HLR, LLR, LLT, etc.) et ses rôles (`ADMIN`, `MANAGER`, `MEMBER`).
+*   `user.service.ts` : Gère le cycle de vie des membres et les matrices de compétences.
+
+#### 📊 Projects & Teams (`/project/`)
+*   `project.schema.ts` : Structure les projets avec suivi de progression, dates clés et assignation d'équipe.
+*   `project.service.ts` : Cœur de la gestion de projet, incluant la logique complexe de déploiement et de statistiques.
+
+#### 📝 Tasks & Compliance (`/task/`)
+*   `task.schema.ts` : Fichier CRITIQUE. Gère l'indépendance obligatoire (**Author != Reviewer**). Stocke les IDs de conformité et le tracking temporel.
+*   `task.service.ts` : Implémente le **Moteur Temporel Aéro** (calcul des dates ignorant les week-ends, basé sur 7h/jour).
+
+#### 🔔 Notifications & Templates
+*   `notification.service.ts` : Envoie des alertes en temps réel lors de l'assignation de tâches ou de commentaires.
+*   `function-template.schema.ts` : Bibliothèque de plus de 60 fonctions standards pré-approuvées pour les phases de développement.
+
+### 3. 🎨 Frontend App (`/frontend/src/app/`)
+*Interface utilisateur haut de gamme.*
+
+#### 🧩 Composants Clés (`/components/`)
+*   `ai-chatbot/` : Interface de l'assistant SmartPM (Design "Glassmorphism").
+*   `manager-dashboard/` : Vue de gestion pour les managers (Auto-planning AI, suivi de charge).
+*   `member-dashboard/` : Vue simplifiée pour les ingénieurs (Tâches en cours, formations).
+*   `project-wizard/` : Formulaire par étapes pour la création de projets avec sélection intelligente de l'équipe.
+*   `project-detail/` : Interface "Wow" affichant les détails d'un projet, les métriques et les interactions.
+
+#### 📡 Services & Guards (`/services/`, `/guards/`)
+*   `ai.ts` : Client pour communiquer avec le service Python (Streaming de réponses).
+*   `project.ts` & `task.ts` : Appels API vers le backend NestJS.
+*   `auth-guard.ts` : Protège les routes selon les rôles utilisateurs.
+
+### 4. 🧠 Intelligence Artificielle (`/ai/`)
+*Moteur de décision basé sur les LLMs.*
+
+*   `main.py` : Application FastAPI.
+    *   **Route `/chat`** : Utilise **Gemini 2.5 Flash** (primaire) et **OpenAI gpt-4o-mini** (fallback) pour répondre aux questions sur les données du projet.
+    *   **Logic de Prompt** : Injecte le contexte MongoDB en temps réel pour des réponses précisées.
+*   `.env` : Clés API Cloud (Google & OpenAI).
+*   `venv/` : Environnement Python isolé avec les dépendances (FastAPI, Google AI, Motor).
 
 ---
-**Fin du dictionnaire système.** La base de données, l'authentification Git, les systèmes de création groupée et de gestion documentaire sont désormais intégrés et cartographiés.
+
+## 🛠️ Fonctionnalités Spécifiques & Sécurité
+*   **Règle d'Indépendance (DO-178C)** : Le système interdit nativement qu'une personne soit à la fois auteur et vérificateur d'une même tâche.
+*   **Audit Trail** : Chaque action sur une tâche est tracée.
+*   **UI Cockpit** : Design professionnel avec dégradés harmonieux, effets de lévitation ("hover") et réactivité maximale.
+*   **IA Contextuelle** : L'IA ne discute pas "génériquement", elle connaît vos projets, vos tâches et votre équipe grâce à l'intégration directe de MongoDB.
+
+---
+**Dernière mise à jour : 15 Avril 2026** - *Standardisation des noms de fichiers, correction du service IA (Gemini/OpenAI) et mise à jour des structures de données MongoDB.*
