@@ -17,6 +17,8 @@ import { CertificationModule } from './certification/certification.module';
 import { AiIntegrationModule } from './ai-integration/ai-integration.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminModule } from './admin/admin.module';
+import { NotificationModule } from './notification/notification.module';
+import { CommentModule } from './comment/comment.module';
 import { BackupReplicationService } from './backup-replication.service';
 
 @Module({
@@ -34,8 +36,10 @@ import { BackupReplicationService } from './backup-replication.service';
         const uri = env === 'cloud' 
           ? configService.get<string>('MONGODB_CLOUD_URI') 
           : configService.get<string>('MONGODB_LOCAL_URI');
-        console.log(`🔌 DB_ENV: [${env.toUpperCase()}]`);
-        console.log(`🔌 MONGODB_URI: ${uri}`); // 👈 HIGH VISIBILITY LOG
+        console.log('================================================');
+        console.log(`🚀 DB MODE: ${env.toUpperCase()}`);
+        console.log(`🚀 TARGET: ${env === 'cloud' ? 'ATLAS CLUSTER' : 'LOCAL MONGODB'}`);
+        console.log('================================================');
         return {
           uri,
           serverSelectionTimeoutMS: 5000,   // fail fast if Mongo not reachable
@@ -59,6 +63,8 @@ import { BackupReplicationService } from './backup-replication.service';
     TrainingModule,
     CertificationModule,
     AiIntegrationModule,
+    NotificationModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [
