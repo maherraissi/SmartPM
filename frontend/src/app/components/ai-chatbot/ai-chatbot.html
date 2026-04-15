@@ -1,0 +1,74 @@
+<!-- 🤖 Floating Button -->
+<div class="chatbot-fab" (click)="toggle()" [class.open]="isOpen" title="SmartPM AI">
+  <span class="fab-emoji" *ngIf="isOpen">✕</span>
+  <svg *ngIf="!isOpen" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="16" y1="16" x2="16.01" y2="16"/>
+  </svg>
+  <div class="fab-ring" *ngIf="!isOpen"></div>
+</div>
+
+<!-- 💬 Chat Panel -->
+<div class="chatbot-panel" [class.open]="isOpen">
+
+  <!-- Header -->
+  <div class="cp-header">
+    <div class="cp-header-left">
+      <div class="cp-avatar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="16" y1="16" x2="16.01" y2="16"/>
+        </svg>
+      </div>
+      <div>
+        <div class="cp-title">SmartPM <span class="ai-badge">AI</span></div>
+      </div>
+    </div>
+    <button class="cp-close" (click)="toggle()">✕</button>
+  </div>
+
+  <!-- Messages -->
+  <div class="cp-body" #chatBody>
+    <ng-container *ngFor="let msg of messages">
+      <div class="cp-msg" *ngIf="msg.content || msg.role === 'user'"
+           [class.user]="msg.role === 'user'"
+           [class.bot]="msg.role === 'assistant'">
+        <div class="msg-av" *ngIf="msg.role === 'assistant'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="16" y1="16" x2="16.01" y2="16"/>
+          </svg>
+        </div>
+        <div class="msg-bubble" [innerHTML]="formatContent(msg.content)"></div>
+      </div>
+    </ng-container>
+
+    <!-- Typing indicator -->
+    <div class="cp-msg bot" *ngIf="isTyping">
+      <div class="msg-av">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="16" y1="16" x2="16.01" y2="16"/>
+        </svg>
+      </div>
+      <div class="msg-bubble typing">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="cp-input-row">
+    <textarea
+      class="cp-input"
+      [(ngModel)]="userInput"
+      (keydown)="onKeydown($event)"
+      placeholder="Posez votre question..."
+      rows="1">
+    </textarea>
+    <button class="cp-send" (click)="sendMessage()" [disabled]="!userInput.trim() || isTyping">
+      <span *ngIf="!isTyping">↑</span>
+      <span class="sending-dot" *ngIf="isTyping"></span>
+    </button>
+  </div>
+
+</div>
+
+<!-- Backdrop -->
+<div class="cp-backdrop" *ngIf="isOpen" (click)="toggle()"></div>
