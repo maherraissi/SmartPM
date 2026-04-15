@@ -2,10 +2,10 @@
   <!-- ═══════════════════════════════════════════════════════ SIDEBAR -->
   <aside class="member-sidebar">
     <div class="sidebar-brand">
-      <span class="brand-icon">💻</span>
+      <div class="brand-icon">🛡️</div>
       <div>
         <div class="brand-title">SmartPM</div>
-        <div class="brand-sub">Espace d'Exécution</div>
+        <div class="brand-sub">Console d'Exécution</div>
       </div>
     </div>
 
@@ -15,6 +15,9 @@
       </button>
       <button class="nav-item" [class.active]="activeTab==='reviews'" (click)="switchTab('reviews')">
         <span class="nav-icon">🔍</span><span>Revues</span>
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='projects'" (click)="switchTab('projects')">
+        <span class="nav-icon">📁</span><span>Mes Projets</span>
       </button>
       <button class="nav-item" [class.active]="activeTab==='evidence'" (click)="switchTab('evidence')">
         <span class="nav-icon">📂</span><span>Preuves / Docs</span>
@@ -50,25 +53,135 @@
         <p class="page-sub">Planning du jour : Concentration sur les tâches et revues.</p>
       </div>
 
-      <!-- 🕒 Active Timer Widget -->
-      <div class="timer-widget" [class.active]="timerActive">
-        <div class="timer-info">
-          <span class="timer-label">Chronomètre</span>
-          <span class="timer-value">{{ formatTimer() }}</span>
+      <div class="header-actions">
+        <!-- 🕒 Active Timer Widget -->
+        <div class="timer-widget" [class.active]="timerRunning">
+          <div class="timer-info">
+            <span class="timer-label">Chronomètre</span>
+            <span class="timer-value">{{ formatTimer(timerTime) }}</span>
+          </div>
+          <div class="timer-actions">
+            <button class="timer-btn" (click)="stopTimer()" *ngIf="timerRunning">
+              ⏸
+            </button>
+            <button class="timer-btn" (click)="startTimer()" *ngIf="!timerRunning && activeTask">
+              ▶
+            </button>
+            <button class="timer-btn stop" (click)="finishTask()" [disabled]="!activeTask">
+              ✅
+            </button>
+          </div>
         </div>
-        <div class="timer-actions">
-          <button class="timer-btn" (click)="toggleTimer()" [class.paused]="!timerActive">
-            {{ timerActive ? '⏸ Pause' : '▶ Reprendre' }}
+
+        <!-- 🔔 Notifications Bell -->
+        <div class="notif-wrapper">
+          <button class="btn-notif" (click)="toggleNotifs()">
+            <span class="bell-icon">🔔</span>
+            <span class="notif-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
           </button>
-          <button class="timer-btn stop" (click)="stopTimer()">
-            ✅ Terminé
-          </button>
+          
+          <div class="notif-dropdown" *ngIf="showNotifs">
+            <div class="notif-header">
+              <span>Flux de Notifications</span>
+              <span class="badge-count" *ngIf="unreadCount > 0">{{ unreadCount }} Nouveau</span>
+            </div>
+            <div class="notif-list">
+              <div class="notif-item" *ngFor="let n of notifications" [class.unread]="!n.isRead" (click)="markRead(n._id)">
+                <div class="notif-title">
+                  <span class="notif-dot" *ngIf="!n.isRead"></span>
+                  {{ n.title }}
+                </div>
+                <div class="notif-body">{{ n.message }}</div>
+                <div class="notif-time">{{ n.createdAt | date:'HH:mm' }} • SmartPM Bot</div>
+              </div>
+              <div class="no-notif" *ngIf="notifications.length === 0">Aucune notification</div>
+            </div>
+          </div>
         </div>
       </div>
     </header>
 
+    <!-- 📁 PROJECTS TAB -->
+    <div *ngIf="activeTab === 'projects'" class="projects-tab">
+      <div class="tab-header">
+        <h3>📂 Mes Projets Actifs</h3>
+        <p>Vue d'ensemble des cycles de certification auxquels vous participez.</p>
+      </div>
+
+      <div class="projects-grid-mem">
+        <div class="project-card-mem" *ngFor="let p of myProjects">
+          <div class="p-status" [attr.data-status]="p.status">{{ p.status }}</div>
+          <div class="p-info">
+            <h4>{{ p.name }}</h4>
+            <p>{{ p.description }}</p>
+          </div>
+          <div class="p-stats">
+            <span>👥 {{ p.membersCount }} experts</span>
+            <span>🗓️ Fin: {{ p.endDate | date:'mediumDate' }}</span>
+          </div>
+          <button class="btn-goto" (click)="enterProject(p)">Accéder au Dossier</button>
+        </div>
+        
+        <div class="no-data" *ngIf="myProjects.length === 0">
+          <span class="icon">📁</span>
+          <p>Aucun projet actif pour le moment.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📁 PROJECT DETAIL TAB -->
+    <div *ngIf="activeTab === 'project-detail'" class="project-detail-view">
+      <div class="detail-header">
+        <button class="btn-back" (click)="exitProject()">⬅ Retour aux Projets</button>
+        <div class="header-main">
+          <h2>{{ selectedProject?.name }}</h2>
+          <span class="p-status-badge">{{ selectedProject?.status }}</span>
+        </div>
+        <p class="p-desc">{{ selectedProject?.description }}</p>
+      </div>
+
+      <div class="task-explorer">
+        <div class="explorer-header">
+          <h3>📦 Inventaire des Missions & Sous-Activités</h3>
+          <span class="task-count">{{ projectTasks.length }} Tâches assignées</span>
+        </div>
+
+        <div class="task-table-wrapper">
+          <table class="premium-table">
+            <thead>
+              <tr>
+                <th>Tâche / Mission</th>
+                <th>Sous-Activité</th>
+                <th>Rôle</th>
+                <th>Status</th>
+                <th>Échéance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of projectTasks" [class.done]="t.status === 'CLOSED'">
+                <td>
+                  <div class="task-title-cell">
+                    <span class="task-indicator" [class.review]="t.role === 'Réviseur'"></span>
+                    {{ t.title }}
+                  </div>
+                </td>
+                <td><span class="category-badge">{{ t.category }}</span></td>
+                <td><span class="role-badge" [class.rev]="t.role === 'Réviseur'">{{ t.role }}</span></td>
+                <td><span class="status-pill" [attr.data-status]="t.status">{{ t.status }}</span></td>
+                <td>{{ t.deadline | date:'mediumDate' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="no-tasks-full" *ngIf="projectTasks.length === 0">
+          <p>Aucune tâche ne vous est assignée personnellement sur ce projet pour le moment.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- 🗓 Today's tasks in slots -->
-    <section class="tasks-today-section">
+    <section class="tasks-today-section" *ngIf="activeTab === 'tasks'">
       <div class="card-header">
         <h3>📌 Mes Tâches du Jour</h3>
         <span class="time-slot-badge">8:00 - 12:00 | 14:00 - 17:00</span>
@@ -81,14 +194,18 @@
             <div class="slot-meta">
               <span class="badge-role">{{ t.type }}</span>
               <span class="project-tag">{{ t.project }}</span>
+              <span class="duration-tag">⏱️ {{ t.duration }}h</span>
             </div>
           </div>
-          <button class="btn-start" *ngIf="t.status==='current'">En cours d'exécution</button>
+          <div class="slot-actions">
+            <button class="btn-start" *ngIf="t.status === 'upcoming'" (click)="startTask(t)">Démarrer</button>
+            <button class="btn-running" *ngIf="t.status === 'current'" disabled>En cours...</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <div class="exec-panels mt-4">
+    <div class="exec-panels mt-4" *ngIf="activeTab === 'tasks'">
       <!-- 🔍 Tasks to Review -->
       <div class="review-panel flex-2">
         <div class="card-header">
@@ -118,7 +235,7 @@
       </div>
     </div>
 
-    <div class="exec-panels mt-4">
+    <div class="exec-panels mt-4" *ngIf="activeTab === 'tasks'">
       <!-- 💬 Team Feedback & Feed -->
       <div class="feedback-panel flex-1">
         <div class="card-header">
@@ -132,7 +249,7 @@
             <p>{{ c.msg }}</p>
           </div>
           <div class="comment-input">
-            <input type="text" placeholder="Écrire un commentaire ou mentionner @...">
+            <input type="text" [(ngModel)]="newCommentText" (keyup.enter)="sendComment()" placeholder="Écrire un commentaire ou mentionner @...">
           </div>
         </div>
       </div>
@@ -171,4 +288,8 @@
       </div>
     </div>
   </main>
+
+  <!-- 🤖 SmartPM AI Chatbot -->
+  <app-ai-chatbot></app-ai-chatbot>
+
 </div>

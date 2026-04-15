@@ -10,9 +10,12 @@ import { User, UserSchema } from '../user/schemas/user.schema'; // 👈 Importan
 import { Task, TaskSchema } from '../task/schemas/task.schema';
 import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 
+import { NotificationModule } from '../notification/notification.module';
+
 @Module({
   imports: [
     PassportModule,
+    NotificationModule,
     MongooseModule.forFeature([
       { name: Project.name, schema: ProjectSchema },
       { name: Activity.name, schema: ActivitySchema },

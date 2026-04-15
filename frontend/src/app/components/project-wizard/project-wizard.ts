@@ -1,7 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { UserService, User } from '../../services/user';
+import { ProjectService } from '../../services/project';
 
 @Component({
   selector: 'app-project-wizard',
@@ -10,10 +12,22 @@ import { Router } from '@angular/router';
   templateUrl: './project-wizard.html',
   styleUrls: ['./project-wizard.scss']
 })
-export class ProjectWizard {
-  private router = inject(Router);
+export class ProjectWizard implements OnInit {
+  public router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private userService = inject(UserService);
+  private projectService = inject(ProjectService);
+  
   currentStep: number = 1;
   isDeploying: boolean = false;
+  deploymentSuccess: boolean = false;
+  newProjectId: string = '';
+  isEditMode: boolean = false;
+  editingProjectId: string = '';
+
+  
+  availableMembers: User[] = [];
+  selectedMemberIds: string[] = [];
 
   projectData = {
     name: '',
@@ -22,8 +36,49 @@ export class ProjectWizard {
     endDate: ''
   };
 
-  // DO-178C Predefined Standard Tree (Updated per User Specs)
-  // DO-178C Predefined Standard Tree (Tailored for Aerospace V-Cycle)
+  ngOnInit() {
+    this.fetchMembers();
+    this.route.queryParams.subscribe(params => {
+      if (params['edit']) {
+        this.isEditMode = true;
+        this.editingProjectId = params['edit'];
+        this.loadProjectData(this.editingProjectId);
+      }
+    });
+  }
+
+  loadProjectData(id: string) {
+    this.projectService.getProjectStructure(id).subscribe({
+      next: (data: any) => {
+        this.projectData = {
+          name: data.name,
+          description: data.description,
+          startDate: data.targetStartDate?.split('T')[0] || '',
+          endDate: data.targetEndDate?.split('T')[0] || ''
+        };
+        this.selectedMemberIds = data.teamMembers || [];
+        // Map activities if needed, but for now we focus on basic info
+      }
+    });
+  }
+
+  fetchMembers() {
+    (this.userService.getAllUsers() as any).subscribe({
+      next: (users: User[]) => {
+        this.availableMembers = users.filter((u: User) => u.role === 'MEMBER');
+      }
+    });
+  }
+
+  toggleMember(id: string) {
+    if (this.selectedMemberIds.includes(id)) {
+      this.selectedMemberIds = this.selectedMemberIds.filter(mid => mid !== id);
+    } else {
+      this.selectedMemberIds.push(id);
+    }
+  }
+
+  // ... (rest of activities data)
   activities = [
     { 
       id: 'LLR', name: 'Low Level Requirements (LLR)',
@@ -93,18 +148,21 @@ export class ProjectWizard {
   nextStep() {
     this.errorMessage = '';
 
-    // Condition to pass Step 1
     if (this.currentStep === 1) {
       if (!this.projectData.name || !this.projectData.description || !this.projectData.startDate || !this.projectData.endDate) {
-        this.errorMessage = "Veuillez définir le Nom, la Description et les Dates (Début & Fin) du projet.";
-        return;
-      }
-      if (new Date(this.projectData.startDate) > new Date(this.projectData.endDate)) {
-        this.errorMessage = "Erreur : La date de fin ne peut pas être antérieure à la date de début.";
+        this.errorMessage = "Veuillez définir le Nom, la Description et les Dates.";
         return;
       }
     }
-    if (this.currentStep < 3) this.currentStep++;
+    
+    if (this.currentStep === 2) {
+        if (this.selectedMemberIds.length === 0) {
+            this.errorMessage = "Vous devez sélectionner au moins un membre pour l'équipe.";
+            return;
+        }
+    }
+
+    if (this.currentStep < 4) this.currentStep++;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -112,30 +170,25 @@ export class ProjectWizard {
     if (this.currentStep > 1) this.currentStep--;
   }
 
-  // Check if at least one Activity and its Sub-Activity is selected
   get isProjectValid(): boolean {
     return this.activities.some(act => 
       act.selected && act.subActivities.some(sub => sub.selected)
-    );
+    ) && this.selectedMemberIds.length > 0;
   }
 
   toggleActivity(act: any) {
     act.selected = !act.selected;
-    // Auto-select children if turning ON, or turn OFF children if OFF
     act.subActivities.forEach((sub: any) => sub.selected = act.selected);
   }
 
   toggleSubActivity(sub: any, act: any) {
     sub.selected = !sub.selected;
-    // If a sub becomes selected, the parent must be selected logically
-    if (sub.selected) {
-      act.selected = true;
-    }
+    if (sub.selected) act.selected = true;
   }
 
   addCustomActivity() {
     if (!this.newActivityName.trim() || !this.newActivityStartDate || !this.newActivityEndDate) {
-      alert("Veuillez définir le nom et les dates pour la phase personnalisée.");
+      this.openModal('confirm', 'Données Manquantes', "Veuillez définir le nom et les dates de l'activité.", '', () => {});
       return;
     }
     this.activities.push({
@@ -145,123 +198,128 @@ export class ProjectWizard {
       selected: true,
       startDate: this.newActivityStartDate,
       endDate: this.newActivityEndDate,
-      subActivities: [
-        { 
-          id: `CUST_SUB_${new Date().getTime()}`, 
-          name: 'Configuration initiale', 
-          selected: true,
-          startDate: this.newActivityStartDate,
-          endDate: this.newActivityEndDate
-        }
-      ]
+      subActivities: [{ id: `C_S_${new Date().getTime()}`, name: 'Init', selected: true, startDate: this.newActivityStartDate, endDate: this.newActivityEndDate }]
     });
     this.newActivityName = '';
   }
 
   addSubActivity(act: any) {
-    this.openModal('input', 'Nouvelle Sous-Activité', `Ajouter une tâche à la phase "${act.name}"`, '', (val) => {
+    this.openModal('input', 'Nouvelle Sous-Activité', `Ajouter à "${act.name}"`, '', (val) => {
       if (val) {
-        act.subActivities.push({
-          id: `SUB_${new Date().getTime()}`,
-          name: val,
-          selected: true,
-          startDate: act.startDate || '',
-          endDate: act.endDate || ''
-        });
+        act.subActivities.push({ id: `S_${new Date().getTime()}`, name: val, selected: true, startDate: '', endDate: '' });
         act.selected = true;
       }
     });
   }
 
   editActivity(act: any) {
-    this.openModal('input', 'Modifier l\'Activité', 'Entrez le nouveau nom de la phase :', act.name, (val) => {
-      if (val) act.name = val;
-    });
+    this.openModal('input', 'Modifier', 'Nom :', act.name, (val) => { if (val) act.name = val; });
   }
 
   editActivityDates(act: any) {
-    this.openModal('dates', 'Calendrier de l\'Activité', `Définir les dates pour "${act.name}"`, '', (res) => {
-      if (res) {
-        act.startDate = res.start;
-        act.endDate = res.end;
-      }
+    this.openModal('dates', 'Dates', `Dates pour "${act.name}"`, '', (res) => {
+      if (res) { act.startDate = res.start; act.endDate = res.end; }
     }, act.startDate, act.endDate);
   }
 
   deleteActivity(act: any) {
-    this.openModal('confirm', 'Supprimer l\'Activité', `Voulez-vous vraiment supprimer "${act.name}" ?`, '', () => {
+    this.openModal('confirm', 'Supprimer', `Supprimer "${act.name}" ?`, '', () => {
       this.activities = this.activities.filter(a => a !== act);
     });
   }
 
   editSubActivity(sub: any) {
-    this.openModal('input', 'Modifier la Sous-Activité', 'Nouveau nom de la tâche :', sub.name, (val) => {
-      if (val) sub.name = val;
-    });
-  }
-
-  editSubActivityDates(sub: any) {
-    this.openModal('dates', 'Calendrier de la Tâche', `Définir les dates pour "${sub.name}"`, '', (res) => {
-      if (res) {
-        sub.startDate = res.start;
-        sub.endDate = res.end;
-      }
-    }, sub.startDate, sub.endDate);
+    this.openModal('input', 'Modifier', 'Nom :', sub.name, (val) => { if (val) sub.name = val; });
   }
 
   deleteSubActivity(sub: any, act: any) {
-    this.openModal('confirm', 'Supprimer la Tâche', `Supprimer "${sub.name}" ?`, '', () => {
+    this.openModal('confirm', 'Supprimer', `Supprimer "${sub.name}" ?`, '', () => {
       act.subActivities = act.subActivities.filter((s: any) => s !== sub);
     });
   }
 
   async deployProject() {
-    if (!this.isProjectValid) {
-      alert("Erreur : Vous devez sélectionner au moins une phase et une sous-activité pour continuer.");
+    const hasActivity = this.activities.some(a => a.selected && a.subActivities.some((s: any) => s.selected));
+    const hasMembers = this.selectedMemberIds.length > 0;
+
+    if (!hasActivity || !hasMembers) {
+      this.openModal('confirm', 'Erreur de Validation', `Projet invalide.\n- Activités sélectionnées: ${hasActivity}\n- Membres sélectionnés: ${hasMembers}`, '', () => {});
       return;
     }
-    
-    // UI Loading State (AI Simulation & Network Sync)
+
     this.isDeploying = true;
-    
     const selectedTree = this.activities.filter(a => a.selected).map(a => ({
-      id: a.id.split('_')[0], // Retain base LLR, LLT, etc.
+      id: a.id.split('_')[0],
       name: a.name,
-      subs: a.subActivities.filter(s => s.selected)
+      subActivities: a.subActivities.filter((s: any) => s.selected).map((s: any) => ({ name: s.name }))
     }));
-    
+
     const payload = {
       ...this.projectData,
+      teamMembers: this.selectedMemberIds,
       activities: selectedTree
     };
-    
+
+    console.log('[DEPLOY] Payload envoyé:', JSON.stringify(payload, null, 2));
+
+    const endpoint = this.isEditMode ? `http://localhost:3000/projects/${this.editingProjectId}` : 'http://localhost:3000/projects/deploy';
+    const method = this.isEditMode ? 'POST' : 'POST'; // Backend controller has @Post(':id') for update too
+
     try {
       const token = localStorage.getItem('token') || '';
-      const res = await fetch('http://localhost:3000/projects/deploy', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+      const res = await fetch(endpoint, {
+        method: method,
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(payload)
       });
 
+      console.log('[DEPLOY] Réponse HTTP status:', res.status);
+
       if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        console.error('Deploy failed:', err);
-        alert(`Erreur de déploiement : ${err?.message || res.status}`);
+        let errMsg = `HTTP ${res.status}`;
+        try {
+          const err = await res.json();
+          console.error('[DEPLOY] Erreur backend:', err);
+          errMsg = err?.message || errMsg;
+        } catch {
+          const text = await res.text();
+          console.error('[DEPLOY] Erreur texte brut:', text);
+          errMsg = text || errMsg;
+        }
+        this.openModal('confirm', 'Erreur Déploiement', errMsg, '', () => {});
         this.isDeploying = false;
         return;
       }
 
       const data = await res.json();
-      console.log('🚀 Synchronisation réussie :', data);
+      console.log('[DEPLOY] Succès:', data);
       this.isDeploying = false;
-      this.router.navigate(['/manager']);
+      this.deploymentSuccess = true;
+      this.newProjectId = data.projectId;
+      
+      // Auto-navigation after 2s or user click
+      setTimeout(() => {
+        if (this.deploymentSuccess) this.finishWizard();
+      }, 3000);
+
     } catch (err) {
-      console.error('Failed to sync to backend:', err);
-      alert('Échec de la connexion au serveur.');
+      console.error('[DEPLOY] Exception réseau:', err);
+      this.openModal('confirm', 'Échec Réseau', (err as any)?.message || String(err), '', () => {});
       this.isDeploying = false;
     }
   }
+
+  finishWizard() {
+    if (this.newProjectId) {
+      this.router.navigate(['/manager/project', this.newProjectId]);
+    } else {
+      this.router.navigate(['/manager']);
+    }
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    this.router.navigate(['/login']);
+  }
 }
+

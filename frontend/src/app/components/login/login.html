@@ -46,4 +46,14 @@
 
     <p class="footer-link">Pas encore de compte ? <a routerLink="/register">S'inscrire</a></p>
   </div>
+
+  <!-- 💎 Custom Pro Alert -->
+  <div class="modal-backdrop" *ngIf="customAlert.show" (click)="customAlert.show = false">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-icon">🔔</div>
+      <h3>{{ customAlert.title }}</h3>
+      <p>{{ customAlert.message }}</p>
+      <button class="btn-auth" (click)="customAlert.show = false">D'accord</button>
+    </div>
+  </div>
 </div>

@@ -1,5 +1,12 @@
 <div class="smartpm-wizard-container">
-  <!-- 🌿 Stepper Indicator -->
+  <!-- 🚪 Top Bar / Logout -->
+  <div class="wizard-top-bar" style="display: flex; justify-content: flex-end; margin-bottom: 2rem;">
+    <button class="btn-logout-wizard" (click)="logout()" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px;">
+      <span>🚪</span> Déconnexion
+    </button>
+  </div>
+
+  <!-- 🌿 Stepper Indicator (Updated to 4 steps) -->
   <div class="stepper-header">
     <div class="step" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">
       <div class="circle">1</div>
@@ -8,18 +15,23 @@
     <div class="line" [class.active]="currentStep > 1"></div>
     <div class="step" [class.active]="currentStep === 2" [class.completed]="currentStep > 2">
       <div class="circle">2</div>
-      <span>Phases</span>
+      <span>Équipe</span>
     </div>
     <div class="line" [class.active]="currentStep > 2"></div>
-    <div class="step" [class.active]="currentStep === 3">
+    <div class="step" [class.active]="currentStep === 3" [class.completed]="currentStep > 3">
       <div class="circle">3</div>
+      <span>Phases</span>
+    </div>
+    <div class="line" [class.active]="currentStep > 3"></div>
+    <div class="step" [class.active]="currentStep === 4">
+      <div class="circle">4</div>
       <span>Validation</span>
     </div>
   </div>
 
   <!-- 📦 Stage 1: Initiating Project -->
   <div class="step-content" *ngIf="currentStep === 1">
-    <h2>Lancer un Nouveau Projet</h2>
+    <h2>{{ isEditMode ? 'Modifier le Projet' : 'Lancer un Nouveau Projet' }}</h2>
     <p>Définissez les paramètres globaux et le calendrier de votre projet SmartPM.</p>
     
     <div class="field-group">
@@ -32,7 +44,6 @@
       <textarea class="wiz-area" rows="4" [(ngModel)]="projectData.description" placeholder="Aperçu technique ou résumé du projet..."></textarea>
     </div>
 
-    <!-- 📅 Calendrier Section -->
     <div class="date-section mt-4">
       <div class="section-tag">Calendrier du Projet</div>
       <div class="row-flex">
@@ -47,15 +58,38 @@
       </div>
     </div>
 
-    <!-- 🚨 Inline Error Feedbacks -->
     <div class="error-box mt-3 anim-pop" *ngIf="errorMessage">
       <p>⚠️ {{ errorMessage }}</p>
     </div>
   </div>
 
-  <!-- 📦 Stage 2: Architecture & Tree -->
+  <!-- 📦 Stage 2: Team Selection (NEW) -->
   <div class="step-content" *ngIf="currentStep === 2">
+    <h2>Sélection de l'Équipe</h2>
+    <p>Choisissez les membres qui participeront à cette mission. Ils recevront une notification automatique.</p>
+    
+    <div class="member-selection-grid">
+      <div class="member-card" *ngFor="let member of availableMembers" 
+           [class.selected]="selectedMemberIds.includes(member._id)"
+           (click)="toggleMember(member._id)">
+        <div class="member-avatar">{{ member.firstName[0] }}{{ member.lastName[0] }}</div>
+        <div class="member-info">
+          <span class="member-name">{{ member.firstName }} {{ member.lastName }}</span>
+          <span class="member-role">{{ member.certifications?.[0] || 'Member' }}</span>
+        </div>
+        <div class="member-check"></div>
+      </div>
+    </div>
+
+    <div class="error-box mt-3 anim-pop" *ngIf="errorMessage">
+      <p>⚠️ {{ errorMessage }}</p>
+    </div>
+  </div>
+
+  <!-- 📦 Stage 3: Architecture & Tree -->
+  <div class="step-content" *ngIf="currentStep === 3">
     <h2>Configuration des Phases & Tâches</h2>
+    <p>Définissez la structure DO-178C et les livrables associés.</p>
     
     <div class="hierarchy-tree">
       <div class="activity-block" *ngFor="let act of activities">
@@ -64,16 +98,13 @@
           <div class="act-info">
              <h3>{{ act.name }} <span class="badge">{{ act.id }}</span></h3>
              <div class="act-dates" *ngIf="act.startDate || act.endDate">
-               📅 {{ act.startDate || '...' }} &rarr; {{ act.endDate || '...' }}
-             </div>
-             <div class="act-dates placeholder" *ngIf="!act.startDate && !act.endDate">
-               🕒 Cliquez sur ✏️ pour définir les dates
+                📅 {{ act.startDate || '...' }} &rarr; {{ act.endDate || '...' }}
              </div>
           </div>
           <div class="act-actions">
-            <button class="btn-icon" (click)="$event.stopPropagation(); editActivityDates(act)" title="Définir Dates">🕒</button>
-            <button class="btn-icon" (click)="$event.stopPropagation(); editActivity(act)" title="Modifier">✏️</button>
-            <button class="btn-icon delete" (click)="$event.stopPropagation(); deleteActivity(act)" title="Supprimer">🗑️</button>
+            <button class="btn-icon" (click)="$event.stopPropagation(); editActivityDates(act)">🕒</button>
+            <button class="btn-icon" (click)="$event.stopPropagation(); editActivity(act)">✏️</button>
+            <button class="btn-icon delete" (click)="$event.stopPropagation(); deleteActivity(act)">🗑️</button>
           </div>
           <div class="p-check" [class.active]="act.selected"></div>
         </div>
@@ -83,76 +114,60 @@
             <div class="s-check" [class.active]="sub.selected"></div>
             <div class="sub-info">
               <span class="sub-name">{{ sub.name }}</span>
-              <span class="sub-time" *ngIf="sub.startDate">({{ sub.startDate }} &rarr; {{ sub.endDate }})</span>
-            </div>
-            <div class="sub-actions">
-              <button class="btn-icon-sm" (click)="$event.stopPropagation(); editSubActivityDates(sub)">🕒</button>
-              <button class="btn-icon-sm" (click)="$event.stopPropagation(); editSubActivity(sub)">✏️</button>
-              <button class="btn-icon-sm delete" (click)="$event.stopPropagation(); deleteSubActivity(sub, act)">🗑️</button>
             </div>
           </div>
-          <!-- ➕ Add Sub-Activity Button -->
-          <div class="add-sub-trigger" (click)="addSubActivity(act)">
-            <span class="plus-icon">+</span> Ajouter une Sous-Activité
-          </div>
+          <div class="add-sub-trigger" (click)="addSubActivity(act)">+ Ajouter une Sous-Activité</div>
         </div>
-      </div>
-    </div>
-
-    <!-- Establish Custom Phase -->
-    <div class="mt-4 p-4" style="background:#f8fafc; border: 2px dashed #cbd5e1; border-radius: 20px;">
-      <h3 style="margin:0 0 1.5rem 0; font-size:1.1rem; color:#1e293b;">🚀 Ajouter une Activité Principale</h3>
-      <div class="row-flex">
-        <div class="field-group flex-2">
-          <label>Nom de l'activité</label>
-          <input type="text" class="wiz-input" [(ngModel)]="newActivityName" placeholder="ex: Développement Backend...">
-        </div>
-        <div class="field-group flex-1">
-          <label>Date Début</label>
-          <input type="date" class="wiz-input" [(ngModel)]="newActivityStartDate">
-        </div>
-        <div class="field-group flex-1">
-          <label>Date Fin</label>
-          <input type="date" class="wiz-input" [(ngModel)]="newActivityEndDate">
-        </div>
-        <button class="btn-w btn-deploy mt-3" style="height:50px; margin-top:28px;" (click)="addCustomActivity()">
-          + Ajouter l'Activité
-        </button>
       </div>
     </div>
   </div>
 
-  <!-- 📦 Stage 3: Verification & Readiness -->
-  <div class="step-content" *ngIf="currentStep === 3">
-    <h2>Vérification du Projet</h2>
-    <p>Vérifiez une dernière fois avant de générer le moteur de gestion SmartPM.</p>
+  <!-- 📦 Stage 4: Verification -->
+  <div class="step-content" *ngIf="currentStep === 4 && !deploymentSuccess">
+    <h2>Vérification Finale</h2>
+    <p>Dernier aperçu avant le lancement opérationnel.</p>
 
     <div class="review-grid">
-      <div class="review-item"><strong>Nom du Projet:</strong> <span>{{ projectData.name }}</span></div>
+      <div class="review-item"><strong>Nom de mission:</strong> <span>{{ projectData.name }}</span></div>
       <div class="review-item"><strong>Calendrier:</strong> <span>{{ projectData.startDate }} &rarr; {{ projectData.endDate }}</span></div>
-      <div class="review-item"><strong>Sélection des Phases:</strong> <span class="badge-green">Prêt</span></div>
-      <div class="review-item"><strong>Moteur de Gestion:</strong> <span>SmartPM Intelligent</span></div>
+      <div class="review-item"><strong>Membres:</strong> <span>{{ selectedMemberIds.length }} assignés</span></div>
+      <div class="review-item"><strong>Configuration:</strong> <span class="badge-green">Validée</span></div>
+    </div>
+  </div>
+
+  <!-- 📦 Stage: Success (NEW) -->
+  <div class="wizard-step anim-fade" *ngIf="deploymentSuccess">
+    <div class="success-icon">{{ isEditMode ? '💾' : '🚀' }}</div>
+    <h2>{{ isEditMode ? 'Modifications Enregistrées !' : 'Projet Lancé avec Succès !' }}</h2>
+    <p>La mission <b>{{ projectData.name }}</b> a été mise à jour avec succès.</p>
+    
+    <div class="success-details mt-4">
+       <div class="check-item">✅ Base de données synchronisée</div>
+       <div class="check-item">✅ Équipe notifiée ({{ selectedMemberIds.length }} membres)</div>
+       <div class="check-item">✅ Structure DO-178C initialisée (LLR, LLT, HLT)</div>
     </div>
 
-    <div class="mt-4" *ngIf="!isProjectValid" style="color:#ef4444; font-size:0.9rem; text-align:center;">
-      ⚠️ Veuillez sélectionner au moins une phase dans l'étape 2.
-    </div>
+    <button class="btn-w btn-deploy mt-5" (click)="finishWizard()">
+       Ouvrir le Projet &rarr;
+    </button>
   </div>
 
   <!-- 🛠️ Navigation Actions -->
-  <div class="wizard-footer">
+  <div class="wizard-footer" *ngIf="!deploymentSuccess">
     <button class="btn-w btn-back" (click)="prevStep()" *ngIf="currentStep > 1">
        <span>&larr;</span> Retour
     </button>
-    <div class="spacer" *ngIf="currentStep === 1"></div>
+    <button class="btn-w btn-back" (click)="router.navigate(['/manager'])" *ngIf="currentStep === 1">
+       <span>&larr;</span> Retour
+    </button>
     
-    <button class="btn-w btn-next" [disabled]="!projectData.name" (click)="nextStep()" *ngIf="currentStep < 3">
+    <button class="btn-w btn-next" (click)="nextStep()" *ngIf="currentStep < 4">
       Suivant <span>&rarr;</span>
     </button>
     
-    <button class="btn-w btn-deploy" [disabled]="!isProjectValid || isDeploying" (click)="deployProject()" *ngIf="currentStep === 3">
-      <span *ngIf="!isDeploying">Lancer le Projet 🚀</span>
-      <span *ngIf="isDeploying">⚙️ Création en cours...</span>
+    <button class="btn-w btn-deploy" [disabled]="!isProjectValid || isDeploying" (click)="deployProject()" *ngIf="currentStep === 4">
+      <span *ngIf="!isDeploying">{{ isEditMode ? 'Enregistrer les Modifications 💾' : 'Lancer le Projet 🚀' }}</span>
+      <span *ngIf="isDeploying">{{ isEditMode ? '⚙️ Mise à jour...' : '⚙️ Déploiement...' }}</span>
     </button>
   </div>
 </div>

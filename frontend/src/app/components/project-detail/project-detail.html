@@ -2,35 +2,44 @@
   <!-- Header -->
   <header class="detail-header">
     <div class="header-left">
-      <button class="btn-back" (click)="goBack()">← Retour</button>
+      <button class="btn-back" (click)="goBack()">← Dashboard</button>
       <div class="project-info" *ngIf="projectData">
         <h1>{{ projectData.project.name }}</h1>
-        <span class="status-badge" [class]="projectData.project.status">{{ projectData.project.status }}</span>
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+           <span class="status-badge" [class]="projectData.project.status">{{ projectData.project.status }}</span>
+           <span style="color: #64748b; font-size: 0.9rem; font-weight: 500;">Cockpit de Pilotage DO-178C</span>
+        </div>
       </div>
     </div>
     <div class="header-right" *ngIf="projectData">
        <div class="project-progress">
-          <small>Progression Globale</small>
+          <small>Progression Mission</small>
           <div class="progress-bar">
              <div class="progress-fill" [style.width.%]="projectData.project.progressPercentage || 0"></div>
           </div>
+          <div style="margin-top: 5px; font-weight: 800; color: #10b981; font-size: 0.9rem;">{{ projectData.project.progressPercentage || 0 }}% Complété</div>
        </div>
     </div>
   </header>
 
-  <!-- Error / Loading State -->
-  <div class="loading-overlay" *ngIf="isLoading || errorMessage">
-    <div class="spinner" *ngIf="isLoading && !errorMessage"></div>
-    <p *ngIf="isLoading && !errorMessage">Chargement de la structure du projet...</p>
+  <!-- Error / Loading State (CONSERVA LE FIX) -->
+  <div class="loading-overlay" *ngIf="isLoading || errorMessage" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 100px;">
+    <div class="spinner" *ngIf="isLoading && !errorMessage" style="width: 50px; height: 50px; border: 5px solid #e2e8f0; border-top-color: #10b981; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <p *ngIf="isLoading && !errorMessage" style="margin-top: 20px; font-weight: 700; color: #1e293b;">Synchronisation des données satellite...</p>
     
-    <div class="error-box" *ngIf="errorMessage">
-       <span class="error-icon">⚠️</span>
-       <p>{{ errorMessage }}</p>
-       <button class="btn-primary" (click)="loadProjectDetails()">Réessayer</button>
+    <div class="error-box" *ngIf="errorMessage" style="background: #fee2e2; border: 1px solid #fecaca; padding: 40px; border-radius: 24px; text-align: center; max-width: 500px;">
+       <span class="error-icon" style="font-size: 3rem; display: block; margin-bottom: 20px;">🚨</span>
+       <h3 style="color: #991b1b; font-weight: 900; margin-bottom: 10px;">Échec de Connexion</h3>
+       <p style="color: #b91c1c; font-weight: 500; margin-bottom: 25px;">{{ errorMessage }}</p>
+       <button class="btn-primary" (click)="loadProjectDetails()" style="background: #dc2626; color: white; border: none; padding: 12px 30px; border-radius: 12px; font-weight: 800; cursor: pointer;">Tenter une reconnexion</button>
     </div>
   </div>
 
-  <!-- Structure View -->
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+
+  <!-- Structure View (Original Functional Version) -->
   <div class="structure-container" *ngIf="projectData && !isLoading">
     <div class="activity-block" *ngFor="let act of projectData.activities">
       <div class="activity-header">
@@ -46,7 +55,7 @@
               <button class="btn-action primary" (click)="openAddTaskModal(sub._id)" title="Ajouter une fonction">
                 <span class="icon">+</span> Fonction
               </button>
-              <button class="btn-action secondary" (click)="openAddDocModal(sub._id)" *ngIf="isDocCategory(sub.category)" title="Ajouter un document">
+              <button class="btn-action secondary" (click)="openAddDocModal(sub._id)" *ngIf="isDocCategory(sub.category, act.phase)" title="Ajouter un document">
                 <span class="icon">📎</span> Doc
               </button>
             </div>
@@ -106,7 +115,7 @@
     </div>
   </div>
 
-  <!-- Task Modal (Multi) -->
+  <!-- Task Modal (FULL VERSION restored) -->
   <div class="modal-backdrop" *ngIf="showTaskModal">
     <div class="modal-content">
       <div class="modal-header">
@@ -181,7 +190,7 @@
     </div>
   </div>
 
-  <!-- Document Modal -->
+  <!-- Document Modal (RESTORED) -->
   <div class="modal-backdrop" *ngIf="showDocModal">
     <div class="modal-content small-modal">
       <div class="modal-header">
@@ -227,4 +236,22 @@
       </form>
     </div>
   </div>
+
+  <!-- 💎 Custom Pro Alert -->
+  <div class="modal-backdrop" *ngIf="customAlert.show" (click)="customAlert.show = false">
+    <div class="modal-content small-modal" (click)="$event.stopPropagation()" style="text-align: center;">
+      <div style="font-size: 3.5rem; margin-bottom: 20px;">🔔</div>
+      <h2 style="margin-bottom: 15px;">{{ customAlert.title }}</h2>
+      <p style="color: #64748b; line-height: 1.6; margin-bottom: 30px;">{{ customAlert.message }}</p>
+      <button class="btn-primary" (click)="customAlert.show = false" style="width: 100%;">D'accord</button>
+    </div>
+  </div>
+  <!-- 🔬 AI Tools Panel (Ollama) — Inline dans le projet -->
+  <div class="structure-container" style="padding-bottom: 0;" *ngIf="projectData && !isLoading">
+    <app-ai-tools-panel [projectId]="projectId || ''"></app-ai-tools-panel>
+  </div>
+
+  <!-- 🤖 SmartPM AI Chatbot (Gemini) — Floating -->
+  <app-ai-chatbot></app-ai-chatbot>
+
 </div>

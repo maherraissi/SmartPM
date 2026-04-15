@@ -21,4 +21,12 @@ export class TaskService {
   createTask(dto: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, dto, { headers: this.headers() });
   }
+
+  getProjectTasks(projectId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/project/${projectId}`, { headers: this.headers() });
+  }
+
+  updateTaskStatus(taskId: string, status: string): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/${taskId}/status`, { status }, { headers: this.headers() });
+  }
 }

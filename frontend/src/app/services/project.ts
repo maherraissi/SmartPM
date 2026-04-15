@@ -38,4 +38,12 @@ export class ProjectService {
   getProjectStructure(id: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/${id}/structure`, { headers: this.headers() });
   }
+
+  deleteProject(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.headers() });
+  }
+
+  updateProject(id: string, payload: any): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}`, payload, { headers: this.headers() });
+  }
 }

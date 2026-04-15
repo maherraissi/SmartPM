@@ -38,3 +38,33 @@ body.no-shell {
     display: none !important;
   }
 }
+
+/* 🚀 Emergency Dashboard Layout Guard */
+.no-shell .manager-shell {
+  display: flex !important;
+  flex-direction: row !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 9999;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.no-shell .manager-sidebar {
+  width: 260px !important;
+  min-width: 260px !important;
+  flex-shrink: 0 !important;
+  height: 100vh !important;
+  background: #ffffff !important;
+  border-right: 1px solid #e2e8f0 !important;
+}
+
+.no-shell .manager-main {
+  flex: 1 !important;
+  height: 100vh !important;
+  overflow-y: auto !important;
+  margin-left: 0 !important;
+}

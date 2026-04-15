@@ -13,6 +13,11 @@ import { Router, RouterModule } from '@angular/router';
 export class Login {
   loginData = { email: '', password: '' };
   isLoading = false;
+  customAlert = { show: false, title: '', message: '' };
+
+  showAlert(title: string, message: string) {
+    this.customAlert = { show: true, title, message };
+  }
 
   constructor(private router: Router) {}
 
@@ -37,10 +42,10 @@ export class Login {
         };
         this.router.navigate([routes[role] || '/member']);
       } else {
-        alert(data.message || 'Identifiants incorrects');
+        this.showAlert('Accès Refusé', data.message || 'Identifiants incorrects');
       }
     } catch (err) {
-      alert('Erreur réseau. Vérifiez votre connexion.');
+      this.showAlert('Erreur Connexion', 'Erreur réseau. Vérifiez votre connexion.');
     } finally {
       this.isLoading = false;
     }

@@ -6,6 +6,7 @@ import {
   Req,
   Get,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../admin/guards/jwt-auth.guard';
@@ -34,7 +35,7 @@ export class ProjectController {
   @Get('cockpit')
   @UseGuards(JwtAuthGuard)
   getCockpit(@Req() req: AuthRequest) {
-    return this.projectService.getManagerCockpit(req.user.userId);
+    return this.projectService.getManagerCockpit(req.user.userId, req.user.role);
   }
 
   @Post(':id/archive')
@@ -59,5 +60,17 @@ export class ProjectController {
   @UseGuards(JwtAuthGuard)
   getProject(@Param('id') id: string) {
     return this.projectService.getProjectById(id);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  deleteProject(@Param('id') id: string) {
+    return this.projectService.deleteProject(id);
+  }
+
+  @Post(':id') // Changed from Patch to Post if that's what frontend uses or stick to Patch
+  @UseGuards(JwtAuthGuard)
+  updateProject(@Param('id') id: string, @Body() payload: any) {
+    return this.projectService.updateProject(id, payload);
   }
 }

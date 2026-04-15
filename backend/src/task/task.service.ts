@@ -2,15 +2,27 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Task, TaskDocument, TaskStatus } from './schemas/task.schema';
+import { SubActivity, SubActivityDocument } from '../sub-activity/schemas/sub-activity.schema';
+import { Project, ProjectDocument, ProjectStatus } from '../project/schemas/project.schema';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class TaskService {
-  constructor(@InjectModel(Task.name) private taskModel: Model<TaskDocument>) {}
+  constructor(
+    @InjectModel(Task.name) private taskModel: Model<TaskDocument>,
+    @InjectModel(SubActivity.name) private subModel: Model<SubActivityDocument>,
+    @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
+    private notificationService: NotificationService
+  ) {}
 
   async createTask(dto: any): Promise<Task | Task[]> {
     if (Array.isArray(dto)) {
       return Promise.all(dto.map(t => this.createTask(t) as Promise<Task>));
     }
+
+    const sub = await this.subModel.findById(dto.subActivityId).lean().exec();
+    const projectName = sub?.projectName || 'Projet Inconnu';
+    const categoryName = sub?.category || 'Général';
 
     const authorId = dto.authorId ? dto.authorId.toString() : '';
     const reviewerId = dto.reviewerId ? dto.reviewerId.toString() : '';
@@ -31,42 +43,87 @@ export class TaskService {
       status: TaskStatus.TODO,
     });
 
-    return newTask.save();
+    const savedTask = await newTask.save();
+    
+    // NOTIFICATION : Alerter l'auteur avec toutes les infos
+    if (authorId) {
+      const msg = `🚀 Nouvelle mission assignée !\n` +
+                 `Projet: ${projectName}\n` +
+                 `Module: ${categoryName}\n` +
+                 `Tâche: ${dto.title}\n` +
+                 `Échéance: ${new Date(endDate).toLocaleDateString()}\n` +
+                 `Charge estimée: ${dto.estimatedDuration}h`;
+                 
+      await this.notificationService.create(
+        authorId,
+        '🚀 Nouvelle Tâche DO-178C',
+        msg,
+        'TASK_ASSIGNED'
+      );
+    }
+
+    return savedTask;
   }
 
-  // =========================================================================
-  // ENTERPRISE PATTERN: Idempotency Logic
-  // Avoids double-execution when Manager retries or network fails.
-  // =========================================================================
   async createTasksWithIdempotency(taskDtos: any[], idempotencyKey: string) {
     try {
-      // 1. Verify if the identical transaction was already successfully processed
       const existing = await this.taskModel.find({ idempotencyKey });
-      if (existing.length > 0) {
-        console.log(`[IDEMPOTENCY] Network retry detected. Bypassing execution for key: ${idempotencyKey}`);
-        return existing; // Safely return the cached result
-      }
+      if (existing.length > 0) return existing;
 
-      // 2. Perform the operation idempotently
       const tasksToCreate = taskDtos.map(t => ({ ...t, idempotencyKey }));
-      return await this.taskModel.insertMany(tasksToCreate);
-      
-    } catch (error) {
-      if (error.code === 11000) { // MongoDB Unique constraint violation fallback
-        return await this.taskModel.find({ idempotencyKey });
+      const savedTasks = await this.taskModel.insertMany(tasksToCreate);
+
+      // Notify owners for all created tasks
+      for (const t of savedTasks) {
+        if (t.authorId) {
+          await this.notificationService.create(
+            t.authorId.toString(),
+            'Nouvelle Mission',
+            `Nouvelle tâche générée : ${t.title}`,
+            'TASK_ASSIGNED'
+          );
+        }
       }
+      return savedTasks;
+
+    } catch (error: any) {
+      if (error.code === 11000) return await this.taskModel.find({ idempotencyKey });
       throw error;
     }
   }
 
-  // =========================================================================
-  // 1. COMPLIANCE ENGINE (DO-178C Independence Rule)
-  // =========================================================================
+  async updateStatus(taskId: string, status: TaskStatus, memberId: string): Promise<Task> {
+    const task = await this.taskModel.findById(taskId);
+    if (!task) throw new BadRequestException('Tâche non trouvée');
+
+    // Validation des droits
+    const isAuthor = task.authorId.toString() === memberId;
+    const isReviewer = task.reviewerId?.toString() === memberId;
+
+    if (!isAuthor && !isReviewer) {
+      throw new BadRequestException("Vous n'êtes pas autorisé à modifier cette tâche.");
+    }
+
+    task.status = status;
+    const saved = await task.save();
+
+    // Logique de notification auto
+    if (status === TaskStatus.READY_FOR_REVIEW && isAuthor && task.reviewerId) {
+       await this.notificationService.create(
+         task.reviewerId.toString(),
+         '🏁 Tâche prête pour Revue',
+         `L'auteur a terminé la tâche : ${task.title}. Votre revue est attendue.`,
+         'REVIEW_REQUIRED'
+       );
+    }
+
+    return saved;
+  }
+
   async assignReviewer(taskId: string, reviewerId: string): Promise<Task> {
     const task = await this.taskModel.findById(taskId);
     if (!task) throw new BadRequestException('Task not found');
     
-    // GOLDEN RULE: Strict separation of roles
     if (task.authorId.toString() === reviewerId.toString()) {
       throw new BadRequestException('DO-178C Violation: The author of the task cannot act as its reviewer.');
     }
@@ -74,82 +131,125 @@ export class TaskService {
     task.reviewerId = new Types.ObjectId(reviewerId);
     task.status = TaskStatus.READY_FOR_REVIEW;
     
-    return task.save();
+    const savedTask = await task.save();
+
+    // NOTIFICATION : Alerter le réviseur
+    await this.notificationService.create(
+      reviewerId,
+      'Revue Requise',
+      `Une nouvelle revue est attendue pour la tâche : ${task.title}`,
+      'REVIEW_REQUIRED'
+    );
+
+    return savedTask;
   }
 
-  // =========================================================================
-  // 2. AUTOMATIC TIME SCHEDULER ENGINE (Company Standard: 7 hours/day)
-  // Working Hours: 08:00 to 12:00 AND 14:00 to 17:00 (No Weekends)
-  // =========================================================================
   calculateBusinessEndDate(startDate: Date, estimatedHours: number): Date {
     let current = new Date(startDate);
     let remainingHours = estimatedHours;
 
     while (remainingHours > 0) {
       const day = current.getDay();
-      
-      // Skip Weekends (0 = Sunday, 6 = Saturday)
       if (day === 0 || day === 6) {
         current.setDate(current.getDate() + 1);
-        current.setHours(8, 0, 0, 0); // Jump to next morning
+        current.setHours(8, 0, 0, 0);
         continue;
       }
 
       const hour = current.getHours();
-      
-      if (hour < 8) {
-        // Fast-forward to 08:00 AM
-        current.setHours(8, 0, 0, 0);
-      } else if (hour >= 12 && hour < 14) {
-        // Fast-forward lunch break to 14:00 PM
-        current.setHours(14, 0, 0, 0);
-      } else if (hour >= 17) {
-        // Shift over to the next day at 08:00 AM
+      if (hour < 8) current.setHours(8, 0, 0, 0);
+      else if (hour >= 12 && hour < 14) current.setHours(14, 0, 0, 0);
+      else if (hour >= 17) {
         current.setDate(current.getDate() + 1);
         current.setHours(8, 0, 0, 0);
       } else {
-        // We are deeply inside valid working hours! Consume 1 hour of work.
         current.setHours(current.getHours() + 1);
         remainingHours -= 1;
       }
     }
-    
     return current;
   }
 
   async getMemberDashboard(memberId: string) {
     const memberObjectId = new Types.ObjectId(memberId);
     
-    const [tasks, reviews] = await Promise.all([
-      this.taskModel.find({ authorId: memberObjectId }).lean().exec(),
-      this.taskModel.find({ reviewerId: memberObjectId }).lean().exec()
+    const [authorTasks, reviewerTasks, myProjects] = await Promise.all([
+      this.taskModel.find({ authorId: memberObjectId, status: { $ne: TaskStatus.CLOSED } })
+        .populate('subActivityId')
+        .lean()
+        .exec(),
+      this.taskModel.find({ reviewerId: memberObjectId, status: TaskStatus.READY_FOR_REVIEW })
+        .populate('subActivityId')
+        .lean()
+        .exec(),
+      this.projectModel.find({ teamMembers: memberObjectId, status: { $ne: ProjectStatus.ARCHIVED } })
+        .lean()
+        .exec()
     ]);
 
-    // Grouping tasks for "Today" (slots logic placeholder)
-    const todayTasks = tasks.map(t => ({
-      time: '08:00 - 12:00', // Map real start hours in real scenario
+    const todayTasks = authorTasks.map(t => ({
+      id: t._id,
+      time: t.plannedStartDate ? new Date(t.plannedStartDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'ASAP',
       name: t.title,
       type: 'Author',
-      project: 'SmartPM',
-      status: t.status === 'IN_PROGRESS' ? 'current' : 'upcoming'
+      project: (t as any).subActivityId?.projectName || 'SmartPM',
+      status: t.status === TaskStatus.IN_PROGRESS ? 'current' : 'upcoming',
+      duration: t.estimatedDuration
     }));
 
-    const reviewsToDone = reviews.map(r => ({
-      colleague: 'Team', 
+    const reviewsToDone = reviewerTasks.map(r => ({
+      id: r._id,
+      colleague: 'Collègue', 
       task: r.title,
-      project: 'SmartPM',
+      project: (r as any).subActivityId?.projectName || 'SmartPM',
       comments: 0
+    }));
+
+    const formattedProjects = myProjects.map(p => ({
+      id: p._id,
+      name: p.name,
+      description: p.description,
+      status: p.status,
+      membersCount: p.teamMembers?.length || 0,
+      endDate: p.targetEndDate
     }));
 
     return {
       todayTasks,
       reviewsToDone,
+      myProjects: formattedProjects,
       performanceStats: [
-        { label: 'Tasks Done', value: tasks.filter(t => t.status === TaskStatus.CLOSED).length.toString(), icon: '✅' },
-        { label: 'Avg Time', value: '4.5h', icon: '⏱️' },
-        { label: 'Review Rate', value: '100%', icon: '📈' },
-        { label: 'Quiz Score', value: 'N/A', icon: '🎓' }
+        { label: 'Projets Actifs', value: myProjects.length.toString(), icon: '📁' },
+        { label: 'Tâches à faire', value: (authorTasks.filter(t => t.status !== TaskStatus.CLOSED).length).toString(), icon: '✅' },
+        { label: 'Taux de Revue', value: '100%', icon: '📈' },
+        { label: 'Certifications', value: (myProjects.length > 0 ? '2' : '1'), icon: '🎓' }
       ]
     };
+  }
+
+  async getProjectTasks(projectId: string, memberId: string) {
+    const projId = new Types.ObjectId(projectId);
+    const mId = new Types.ObjectId(memberId);
+
+    const subActivities = await this.subModel.find({ projectId: projId }).lean().exec();
+    const subIds = subActivities.map(s => s._id);
+
+    const tasks = await this.taskModel.find({
+      subActivityId: { $in: subIds },
+      $or: [{ authorId: mId }, { reviewerId: mId }]
+    })
+    .populate('subActivityId')
+    .lean()
+    .exec();
+
+    return tasks.map(t => ({
+      id: t._id,
+      title: t.title,
+      status: t.status,
+      category: (t as any).subActivityId?.category || 'Général',
+      role: t.authorId.toString() === memberId ? 'Auteur' : 'Réviseur',
+      deadline: t.plannedEndDate,
+      duration: t.estimatedDuration
+    }));
   }
 }
