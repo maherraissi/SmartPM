@@ -1,88 +1,88 @@
-# 🚀 Architecture & Historique du Système SmartPM (Norme DO-178C)
+# 🚀 Architecture & Historique du Système SmartPM 
 
 Ce document constitue le registre central de la plateforme SmartPM. Il détaille la structure technique, les choix technologiques et le rôle de chaque composant pour assurer la conformité aux standards aéronautiques de haut niveau.
 
 ---
 
 ## 🏗️ Vision & Architecture Globale
-SmartPM est une **Engineering Execution & Competency Platform** dédiée au cycle de vie logiciel **DO-178C**. Elle ne se contente pas de gérer des tickets, elle orchestre la production d'artefacts critiques avec une ségrégation stricte des rôles.
+SmartPM est une **Engineering Execution & Competency Platform** dédiée au cycle de vie logiciel. Elle ne se contente pas de gérer des tickets, elle orchestre la production d'artefacts critiques avec une ségrégation stricte des rôles.
 
 ### 🧩 La Triade Technologique :
-1.  **Backend (Port 3000)** : Développé avec **NestJS**, moteur robuste gérant la logique métier, l'authentification et les connexions à la base de données **MongoDB Atlas**. Utilisation de Mongoose pour la modélisation des données.
-2.  **Frontend (Port 4200)** : Une Single-Page Application (SPA) moderne sous **Angular 18+** (mode Standalone), offrant des interfaces "Cockpit" pour chaque profil d'utilisateur. Design system basé sur le "Glassmorphism" et des micro-animations premium.
-3.  **AI Service (Port 8000)** : Microservice **Python (FastAPI)** agissant comme le cerveau intelligent pour l'auto-planning, l'analyse de risques et le support technique via LLM.
+1. **Backend (Port 3000)** : Développé avec **NestJS**, moteur robuste gérant la logique métier, l'authentification et les connexions à la base de données **MongoDB Atlas**. Utilisation de Mongoose pour la modélisation des données.
+2. **Frontend (Port 4200)** : Une Single-Page Application (SPA) moderne sous **Angular 18+** (mode Standalone), offrant des interfaces "Cockpit" pour chaque profil d'utilisateur. Design system basé sur le "Glassmorphism" et des micro-animations premium.
+3. **AI Service (Port 8000)** : Microservice **Python (FastAPI)** agissant comme le cerveau intelligent pour l'auto-planning, l'analyse de risques et le support technique via LLM.
 
 ---
 
 ## 📁 Dictionnaire Exhaustif des Fichiers
 
 ### 1. 📂 Racine du Projet (`/`)
-*   `package.json` : Définit les scripts de démarrage synchronisés via `concurrently`. La commande `npm run dev` lance simultanément le Backend, le Frontend et l'IA.
-*   `README.md` : Guide d'installation et de configuration globale.
-*   `historique.txt` : Ce document (votre source de vérité).
-*   `check-db.ts` / `check-db.js` : Scripts de diagnostic pour vérifier la connectivité MongoDB et l'intégrité des données dans les environnements cloud.
+*  `package.json` : Définit les scripts de démarrage synchronisés via `concurrently`. La commande `npm run dev` lance simultanément le Backend, le Frontend et l'IA.
+*  `README.md` : Guide d'installation et de configuration globale.
+*  `historique.txt` : Ce document (votre source de vérité).
+*  `check-db.ts` / `check-db.js` : Scripts de diagnostic pour vérifier la connectivité MongoDB et l'intégrité des données dans les environnements cloud.
 
 ### 2. ⚙️ Backend Services (`/backend/src/`)
 *Structuré par domaines métier (Modules).*
 
 #### 👥 Users & Auth (`/auth/` & `/user/`)
-*   `user.schema.ts` : Définit l'utilisateur aéronautique avec ses **certifications** (HLR, LLR, LLT, etc.) et ses rôles (`ADMIN`, `MANAGER`, `MEMBER`).
-*   `auth.controller.ts` : Gère la sécurité, le JWT et la redirection intelligente post-connexion selon le rôle.
+*  `user.schema.ts` : Définit l'utilisateur aéronautique avec ses **certifications** (HLR, LLR, LLT, etc.) et ses rôles (`ADMIN`, `MANAGER`, `MEMBER`).
+*  `auth.controller.ts` : Gère la sécurité, le JWT et la redirection intelligente post-connexion selon le rôle.
 
 #### 📊 Projects & Teams (`/project/`)
-*   `project.schema.ts` : Structure les projets avec suivi de progression, dates clés et assignation d'équipe.
-*   `project.service.ts` : Cœur de la gestion de projet, incluant le déploiement automatique, la gestion des archives (Restaurer/Supprimer) et le calcul des métriques de charge.
+*  `project.schema.ts` : Structure les projets avec suivi de progression, dates clés et assignation d'équipe.
+*  `project.service.ts` : Cœur de la gestion de projet, incluant le déploiement automatique, la gestion des archives (Restaurer/Supprimer) et le calcul des métriques de charge.
 
 #### 📝 Tasks & Compliance (`/task/`)
-*   `task.schema.ts` : Fichier CRITIQUE. Gère l'indépendance obligatoire (**Author != Reviewer**). Stocke les IDs de conformité, les artifacts liés et le tracking temporel.
-*   `task.service.ts` : Implémente le **Moteur Temporel Aéro** (calcul des dates ignorant les week-ends, basé sur 7h/jour).
+*  `task.schema.ts` : Fichier CRITIQUE. Gère l'indépendance obligatoire (**Author != Reviewer**). Stocke les IDs de conformité, les artifacts liés et le tracking temporel.
+*  `task.service.ts` : Implémente le **Moteur Temporel Aéro** (calcul des dates ignorant les week-ends, basé sur 7h/jour).
 
 #### 🔔 NOUVEAU : Notifications & Alertes (`/notification/`)
-*   `notification.schema.ts` : Modèle pour les alertes (Type: Tâche assignée, commentaire reçu, alerte de délai).
-*   `notification.service.ts` : Système d'alertes en temps réel intégré au cycle de vie des tâches.
+*  `notification.schema.ts` : Modèle pour les alertes (Type: Tâche assignée, commentaire reçu, alerte de délai).
+*  `notification.service.ts` : Système d'alertes en temps réel intégré au cycle de vie des tâches.
 
 #### 💬 NOUVEAU : System de Commentaires (`/comment/`)
-*   `comment.schema.ts` : Permet la collaboration sur les tâches avec un historique immuable pour l'audit DO-178C.
-*   `comment.service.ts` : Gère la création et la récupération des fils de discussion par tâche.
+*  `comment.schema.ts` : Permet la collaboration sur les tâches avec un historique immuable pour l'audit .
+*  `comment.service.ts` : Gère la création et la récupération des fils de discussion par tâche.
 
 #### 🧠 AI-Integration (`/ai-integration/`)
-*   `ai-integration.service.ts` : Pont entre le backend NestJS et le microservice Python. Prépare le contexte (data mapping) pour que l'IA puisse répondre avec précision.
+*  `ai-integration.service.ts` : Pont entre le backend NestJS et le microservice Python. Prépare le contexte (data mapping) pour que l'IA puisse répondre avec précision.
 
 ### 3. 🎨 Frontend App (`/frontend/src/app/`)
 *Interface utilisateur haut de gamme.*
 
 #### 🧩 Composants Clés (`/components/`)
-*   `ai-assistant/` : Widget flottant intelligent accessible partout.
-*   `ai-chatbot/` : Interface de discussion plein écran (Design "Glassmorphism").
-*   `ai-tools-panel/` : Panneau d'outils rapides alimentés par l'IA (Analyse de risque, Résumé de doc).
-*   `manager-dashboard/` : Vue stratégique avec cockpit de pilotage (Auto-planning AI, suivi de charge visuel).
-*   `member-dashboard/` : Vue opérationnelle pour les ingénieurs (Focus sur les tâches critiques et conformité).
-*   `project-wizard/` : Assistant de création de projet ultra-premium avec sélection d'équipe basée sur les compétences.
+*  `ai-assistant/` : Widget flottant intelligent accessible partout.
+*  `ai-chatbot/` : Interface de discussion plein écran (Design "Glassmorphism").
+*  `ai-tools-panel/` : Panneau d'outils rapides alimentés par l'IA (Analyse de risque, Résumé de doc).
+*  `manager-dashboard/` : Vue stratégique avec cockpit de pilotage (Auto-planning AI, suivi de charge visuel).
+*  `member-dashboard/` : Vue opérationnelle pour les ingénieurs (Focus sur les tâches critiques et conformité).
+*  `project-wizard/` : Assistant de création de projet ultra-premium avec sélection d'équipe basée sur les compétences.
 
 #### 📡 Services (`/services/`)
-*   `ai.ts` : Gestion du streaming des réponses LLM et des outils IA.
-*   `notification.ts` : Service de polling/websockets pour les alertes utilisateur.
-*   `comment.ts` : Logic frontend pour la collaboration en temps réel.
+*  `ai.ts` : Gestion du streaming des réponses LLM et des outils IA.
+*  `notification.ts` : Service de polling/websockets pour les alertes utilisateur.
+*  `comment.ts` : Logic frontend pour la collaboration en temps réel.
 
 ### 4. 🧠 Intelligence Artificielle (`/ai/`)
 *Moteur de décision basé sur les LLMs.*
 
-*   `main.py` : Application FastAPI.
-    *   **Route `/chat`** : Utilise **Gemini 2.0 Flash** (vitesse extrême) avec **OpenAI gpt-4o-mini** en secours.
-    *   **Context-Aware Analysis** : L'IA accède directement à MongoDB via **Motor** pour analyser les données réelles sans intervention humaine.
-*   `test_mongo.py` : Script de validation de la connexion IA -> Database.
+*  `main.py` : Application FastAPI.
+  *  **Route `/chat`** : Utilise **Gemini 2.0 Flash** (vitesse extrême) avec **OpenAI gpt-4o-mini** en secours.
+  *  **Context-Aware Analysis** : L'IA accède directement à MongoDB via **Motor** pour analyser les données réelles sans intervention humaine.
+*  `test_mongo.py` : Script de validation de la connexion IA -> Database.
 
 ---
 
 ## 🛠️ Fonctionnalités Spécifiques & Sécurité
-*   **Règle d'Indépendance (DO-178C)** : Le système interdit nativement qu'une personne soit à la fois auteur et vérificateur d'une même tâche.
-*   **Audit Trail Premium** : Chaque action (commentaire, changement de statut, assignation) est enregistrée avec un timestamp précis et l'ID de l'acteur.
-*   **UI Cockpit Professional** : Design "Dark Mode" par défaut avec accents bleus aéronautiques, typographie "Outfit" et animations fluides.
-*   **IA Prédictive** : Capable de suggérer des dates de fin de projet en analysant la charge de l'équipe et la complexité des tâches.
+*  **Règle d'Indépendance ()** : Le système interdit nativement qu'une personne soit à la fois auteur et vérificateur d'une même tâche.
+*  **Audit Trail Premium** : Chaque action (commentaire, changement de statut, assignation) est enregistrée avec un timestamp précis et l'ID de l'acteur.
+*  **UI Cockpit Professional** : Design "Dark Mode" par défaut avec accents bleus aéronautiques, typographie "Outfit" et animations fluides.
+*  **IA Prédictive** : Capable de suggérer des dates de fin de projet en analysant la charge de l'équipe et la complexité des tâches.
 
 ---
 **Dernière mise à jour : 15 Avril 2026**
-*   **Ajout des modules de Notifications et Commentaires.**
-*   **Intégration du Assistant AI Flottant et du Tools Panel.**
-*   **Standardisation des services Backend et déploiement du système de diagnostic DB.**
-*   **Correction des erreurs de sérialisation JSON pour les objets complexes MongoDB.**
+*  **Ajout des modules de Notifications et Commentaires.**
+*  **Intégration du Assistant AI Flottant et du Tools Panel.**
+*  **Standardisation des services Backend et déploiement du système de diagnostic DB.**
+*  **Correction des erreurs de sérialisation JSON pour les objets complexes MongoDB.**

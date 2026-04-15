@@ -1,213 +1,213 @@
 <!-- 🤖 Floating AI Button -->
 <div class="ai-fab" (click)="toggleChat()" [class.open]="isOpen" title="SmartPM AI Assistant">
-  <div class="fab-icon">{{ isOpen ? '✕' : '🤖' }}</div>
-  <div class="fab-pulse" *ngIf="!isOpen"></div>
-  <div class="status-dot" [class.online]="ollamaStatus === 'online'" [class.offline]="ollamaStatus === 'offline'"></div>
+ <div class="fab-icon">{{ isOpen ? '✕' : '🤖' }}</div>
+ <div class="fab-pulse" *ngIf="!isOpen"></div>
+ <div class="status-dot" [class.online]="ollamaStatus === 'online'" [class.offline]="ollamaStatus === 'offline'"></div>
 </div>
 
 <!-- 💬 AI Panel -->
 <div class="ai-panel" [class.open]="isOpen">
 
-  <!-- Header -->
-  <div class="ai-header">
-    <div class="ai-header-left">
-      <div class="ai-avatar">🤖</div>
-      <div>
-        <div class="ai-title">SmartPM AI</div>
-        <div class="ai-subtitle">
-          <span class="status-badge" [class.online]="ollamaStatus === 'online'" [class.offline]="ollamaStatus === 'offline'">
-            {{ ollamaStatus === 'online' ? '● Ollama actif' : '● Ollama hors ligne' }}
-          </span>
-          &nbsp;·&nbsp;
-          <span class="status-badge online">● Gemini actif</span>
-        </div>
-      </div>
+ <!-- Header -->
+ <div class="ai-header">
+  <div class="ai-header-left">
+   <div class="ai-avatar">🤖</div>
+   <div>
+    <div class="ai-title">SmartPM AI</div>
+    <div class="ai-subtitle">
+     <span class="status-badge" [class.online]="ollamaStatus === 'online'" [class.offline]="ollamaStatus === 'offline'">
+      {{ ollamaStatus === 'online' ? '● Ollama actif' : '● Ollama hors ligne' }}
+     </span>
+     &nbsp;·&nbsp;
+     <span class="status-badge online">● Gemini actif</span>
     </div>
-    <button class="close-btn" (click)="toggleChat()">✕</button>
+   </div>
+  </div>
+  <button class="close-btn" (click)="toggleChat()">✕</button>
+ </div>
+
+ <!-- Tab Navigation -->
+ <div class="ai-tabs">
+  <button class="ai-tab" [class.active]="activePanel === 'chat'" (click)="setPanel('chat')">
+   💬 Chat
+  </button>
+  <button class="ai-tab" [class.active]="activePanel === 'simulator'" (click)="setPanel('simulator')">
+   🔬 Simulator
+  </button>
+  <button class="ai-tab" [class.active]="activePanel === 'report'" (click)="setPanel('report')">
+   📊 Rapport
+  </button>
+  <button class="ai-tab" [class.active]="activePanel === 'alerts'" (click)="setPanel('alerts'); loadAlerts()">
+   🚨 Alertes
+  </button>
+ </div>
+
+ <!-- ── CHAT PANEL ─────────────────────────── -->
+ <div class="panel-body" *ngIf="activePanel === 'chat'">
+
+  <!-- Messages -->
+  <div class="chat-body" #chatBody>
+   <div class="message" *ngFor="let msg of messages" [class.user]="msg.role === 'user'" [class.bot]="msg.role === 'assistant'">
+    <div class="msg-avatar" *ngIf="msg.role === 'assistant'">🤖</div>
+    <div class="msg-bubble" [innerHTML]="formatContent(msg.content)"></div>
+    <div class="msg-avatar user-av" *ngIf="msg.role === 'user'">👤</div>
+   </div>
+
+   <!-- Typing indicator -->
+   <div class="message bot" *ngIf="isTyping">
+    <div class="msg-avatar">🤖</div>
+    <div class="msg-bubble typing">
+     <span></span><span></span><span></span>
+    </div>
+   </div>
   </div>
 
-  <!-- Tab Navigation -->
-  <div class="ai-tabs">
-    <button class="ai-tab" [class.active]="activePanel === 'chat'" (click)="setPanel('chat')">
-      💬 Chat
-    </button>
-    <button class="ai-tab" [class.active]="activePanel === 'simulator'" (click)="setPanel('simulator')">
-      🔬 Simulator
-    </button>
-    <button class="ai-tab" [class.active]="activePanel === 'report'" (click)="setPanel('report')">
-      📊 Rapport
-    </button>
-    <button class="ai-tab" [class.active]="activePanel === 'alerts'" (click)="setPanel('alerts'); loadAlerts()">
-      🚨 Alertes
-    </button>
+  <!-- Quick Prompts -->
+  <div class="quick-prompts">
+   <button class="q-btn" (click)="sendQuickPrompt('Donne-moi un résumé des bonnes pratiques ')">📋 Tips</button>
+   <button class="q-btn" (click)="sendQuickPrompt('Comment réduire les risques dans un projet aéronautique ?')">🎯 Réduire risques</button>
+   <button class="q-btn" (click)="sendQuickPrompt('Quelles sont les phases critiques d\'une certification ?')">✈️ Certification</button>
   </div>
 
-  <!-- ── CHAT PANEL ─────────────────────────── -->
-  <div class="panel-body" *ngIf="activePanel === 'chat'">
+  <!-- Input -->
+  <div class="chat-input-row">
+   <textarea
+    class="chat-input"
+    [(ngModel)]="userInput"
+    (keydown)="onKeydown($event)"
+    placeholder="Posez une question à SmartPM AI... (Entrée pour envoyer)"
+    rows="1"
+   ></textarea>
+   <button class="send-btn" (click)="sendMessage()" [disabled]="!userInput.trim() || isTyping">
+    {{ isTyping ? '⏳' : '➤' }}
+   </button>
+  </div>
+ </div>
 
-    <!-- Messages -->
-    <div class="chat-body" #chatBody>
-      <div class="message" *ngFor="let msg of messages" [class.user]="msg.role === 'user'" [class.bot]="msg.role === 'assistant'">
-        <div class="msg-avatar" *ngIf="msg.role === 'assistant'">🤖</div>
-        <div class="msg-bubble" [innerHTML]="formatContent(msg.content)"></div>
-        <div class="msg-avatar user-av" *ngIf="msg.role === 'user'">👤</div>
-      </div>
-
-      <!-- Typing indicator -->
-      <div class="message bot" *ngIf="isTyping">
-        <div class="msg-avatar">🤖</div>
-        <div class="msg-bubble typing">
-          <span></span><span></span><span></span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick Prompts -->
-    <div class="quick-prompts">
-      <button class="q-btn" (click)="sendQuickPrompt('Donne-moi un résumé des bonnes pratiques DO-178C')">📋 DO-178C Tips</button>
-      <button class="q-btn" (click)="sendQuickPrompt('Comment réduire les risques dans un projet aéronautique ?')">🎯 Réduire risques</button>
-      <button class="q-btn" (click)="sendQuickPrompt('Quelles sont les phases critiques d\'une certification ?')">✈️ Certification</button>
-    </div>
-
-    <!-- Input -->
-    <div class="chat-input-row">
-      <textarea
-        class="chat-input"
-        [(ngModel)]="userInput"
-        (keydown)="onKeydown($event)"
-        placeholder="Posez une question à SmartPM AI... (Entrée pour envoyer)"
-        rows="1"
-      ></textarea>
-      <button class="send-btn" (click)="sendMessage()" [disabled]="!userInput.trim() || isTyping">
-        {{ isTyping ? '⏳' : '➤' }}
-      </button>
-    </div>
+ <!-- ── SIMULATOR PANEL ────────────────────── -->
+ <div class="panel-body" *ngIf="activePanel === 'simulator'">
+  <div class="panel-intro">
+   <div class="panel-icon">🔬</div>
+   <h3>Simulateur IA (Ollama)</h3>
+   <p>Analyse complète du projet avec prédiction d'avancement et évaluation des risques.</p>
+   <div class="no-project-warn" *ngIf="!projectId">
+    ⚠️ Naviguez vers un projet pour activer le simulateur.
+   </div>
+   <button class="ai-action-btn" (click)="runSimulator()" [disabled]="isSimulating || !projectId">
+    <span *ngIf="!isSimulating">🚀 Lancer la Simulation</span>
+    <span *ngIf="isSimulating" class="loading-dots">⚙️ Analyse en cours<span></span><span></span><span></span></span>
+   </button>
   </div>
 
-  <!-- ── SIMULATOR PANEL ────────────────────── -->
-  <div class="panel-body" *ngIf="activePanel === 'simulator'">
-    <div class="panel-intro">
-      <div class="panel-icon">🔬</div>
-      <h3>Simulateur IA (Ollama)</h3>
-      <p>Analyse complète du projet avec prédiction d'avancement et évaluation des risques.</p>
-      <div class="no-project-warn" *ngIf="!projectId">
-        ⚠️ Naviguez vers un projet pour activer le simulateur.
-      </div>
-      <button class="ai-action-btn" (click)="runSimulator()" [disabled]="isSimulating || !projectId">
-        <span *ngIf="!isSimulating">🚀 Lancer la Simulation</span>
-        <span *ngIf="isSimulating" class="loading-dots">⚙️ Analyse en cours<span></span><span></span><span></span></span>
-      </button>
+  <!-- Results -->
+  <div class="sim-results" *ngIf="simulatorResult && !isSimulating">
+   <div class="sim-header">
+    <div class="risk-badge" [style.background]="getRiskColor(simulatorResult.riskLevel) + '20'" [style.color]="getRiskColor(simulatorResult.riskLevel)" [style.border-color]="getRiskColor(simulatorResult.riskLevel)">
+     Risque {{ simulatorResult.riskLevel }} — {{ simulatorResult.riskScore }}/100
     </div>
-
-    <!-- Results -->
-    <div class="sim-results" *ngIf="simulatorResult && !isSimulating">
-      <div class="sim-header">
-        <div class="risk-badge" [style.background]="getRiskColor(simulatorResult.riskLevel) + '20'" [style.color]="getRiskColor(simulatorResult.riskLevel)" [style.border-color]="getRiskColor(simulatorResult.riskLevel)">
-          Risque {{ simulatorResult.riskLevel }} — {{ simulatorResult.riskScore }}/100
-        </div>
-        <div class="delivery-badge" [class.on-time]="simulatorResult.onTime" [class.late]="!simulatorResult.onTime">
-          {{ simulatorResult.onTime ? '✅ Dans les délais' : '🔴 Retard prévu' }}
-        </div>
-      </div>
-
-      <div class="sim-prediction">
-        <span class="pred-label">Livraison prévue</span>
-        <span class="pred-value">{{ simulatorResult.predictedCompletion }}</span>
-      </div>
-
-      <div class="sim-summary">{{ simulatorResult.summary }}</div>
-
-      <div class="sim-section" *ngIf="simulatorResult.recommendations?.length">
-        <div class="sim-section-title">💡 Recommandations</div>
-        <div class="sim-item rec" *ngFor="let r of simulatorResult.recommendations">{{ r }}</div>
-      </div>
-
-      <div class="sim-section" *ngIf="simulatorResult.criticalPath?.length">
-        <div class="sim-section-title">⚡ Chemin Critique</div>
-        <div class="sim-item crit" *ngFor="let c of simulatorResult.criticalPath">{{ c }}</div>
-      </div>
+    <div class="delivery-badge" [class.on-time]="simulatorResult.onTime" [class.late]="!simulatorResult.onTime">
+     {{ simulatorResult.onTime ? '✅ Dans les délais' : '🔴 Retard prévu' }}
     </div>
+   </div>
+
+   <div class="sim-prediction">
+    <span class="pred-label">Livraison prévue</span>
+    <span class="pred-value">{{ simulatorResult.predictedCompletion }}</span>
+   </div>
+
+   <div class="sim-summary">{{ simulatorResult.summary }}</div>
+
+   <div class="sim-section" *ngIf="simulatorResult.recommendations?.length">
+    <div class="sim-section-title">💡 Recommandations</div>
+    <div class="sim-item rec" *ngFor="let r of simulatorResult.recommendations">{{ r }}</div>
+   </div>
+
+   <div class="sim-section" *ngIf="simulatorResult.criticalPath?.length">
+    <div class="sim-section-title">⚡ Chemin Critique</div>
+    <div class="sim-item crit" *ngFor="let c of simulatorResult.criticalPath">{{ c }}</div>
+   </div>
+  </div>
+ </div>
+
+ <!-- ── REPORT PANEL ───────────────────────── -->
+ <div class="panel-body" *ngIf="activePanel === 'report'">
+  <div class="panel-intro">
+   <div class="panel-icon">📊</div>
+   <h3>Rapport Exécutif IA</h3>
+   <p>Génère un rapport professionnel complet basé sur les données actuelles du projet.</p>
+   <div class="no-project-warn" *ngIf="!projectId">
+    ⚠️ Naviguez vers un projet pour générer un rapport.
+   </div>
+   <button class="ai-action-btn" (click)="generateReport()" [disabled]="isGeneratingReport || !projectId">
+    <span *ngIf="!isGeneratingReport">📄 Générer le Rapport</span>
+    <span *ngIf="isGeneratingReport" class="loading-dots">📝 Rédaction en cours<span></span><span></span><span></span></span>
+   </button>
   </div>
 
-  <!-- ── REPORT PANEL ───────────────────────── -->
-  <div class="panel-body" *ngIf="activePanel === 'report'">
-    <div class="panel-intro">
-      <div class="panel-icon">📊</div>
-      <h3>Rapport Exécutif IA</h3>
-      <p>Génère un rapport professionnel complet basé sur les données actuelles du projet.</p>
-      <div class="no-project-warn" *ngIf="!projectId">
-        ⚠️ Naviguez vers un projet pour générer un rapport.
-      </div>
-      <button class="ai-action-btn" (click)="generateReport()" [disabled]="isGeneratingReport || !projectId">
-        <span *ngIf="!isGeneratingReport">📄 Générer le Rapport</span>
-        <span *ngIf="isGeneratingReport" class="loading-dots">📝 Rédaction en cours<span></span><span></span><span></span></span>
-      </button>
+  <!-- Report content -->
+  <div class="report-content" *ngIf="reportResult && !isGeneratingReport">
+   <div class="report-header">
+    <div class="report-title">{{ reportResult.title }}</div>
+    <div class="health-chip" [style.color]="getHealthColor(reportResult.healthStatus)">
+     ● {{ reportResult.healthStatus }}
     </div>
+   </div>
 
-    <!-- Report content -->
-    <div class="report-content" *ngIf="reportResult && !isGeneratingReport">
-      <div class="report-header">
-        <div class="report-title">{{ reportResult.title }}</div>
-        <div class="health-chip" [style.color]="getHealthColor(reportResult.healthStatus)">
-          ● {{ reportResult.healthStatus }}
-        </div>
-      </div>
+   <div class="report-summary">{{ reportResult.executiveSummary }}</div>
 
-      <div class="report-summary">{{ reportResult.executiveSummary }}</div>
-
-      <div class="report-kpis" *ngIf="reportResult.kpis?.length">
-        <div class="kpi-chip" *ngFor="let kpi of reportResult.kpis" [class]="kpi.status?.toLowerCase()">
-          <span class="kpi-lbl">{{ kpi.label }}</span>
-          <span class="kpi-val">{{ kpi.value }}</span>
-        </div>
-      </div>
-
-      <div class="report-section" *ngFor="let sec of reportResult.sections">
-        <div class="rs-title">{{ sec.title }}</div>
-        <div class="rs-content">{{ sec.content }}</div>
-      </div>
-
-      <div class="report-footer">Généré le {{ reportResult.generatedAt | date:'dd/MM/yyyy HH:mm' }}</div>
+   <div class="report-kpis" *ngIf="reportResult.kpis?.length">
+    <div class="kpi-chip" *ngFor="let kpi of reportResult.kpis" [class]="kpi.status?.toLowerCase()">
+     <span class="kpi-lbl">{{ kpi.label }}</span>
+     <span class="kpi-val">{{ kpi.value }}</span>
     </div>
+   </div>
+
+   <div class="report-section" *ngFor="let sec of reportResult.sections">
+    <div class="rs-title">{{ sec.title }}</div>
+    <div class="rs-content">{{ sec.content }}</div>
+   </div>
+
+   <div class="report-footer">Généré le {{ reportResult.generatedAt | date:'dd/MM/yyyy HH:mm' }}</div>
+  </div>
+ </div>
+
+ <!-- ── ALERTS PANEL ───────────────────────── -->
+ <div class="panel-body" *ngIf="activePanel === 'alerts'">
+  <div class="panel-intro" *ngIf="!alertsResult.length && !isLoadingAlerts">
+   <div class="panel-icon">🚨</div>
+   <h3>Alertes Intelligentes</h3>
+   <p>Détecte automatiquement les risques et anomalies dans votre projet.</p>
+   <div class="no-project-warn" *ngIf="!projectId">
+    ⚠️ Naviguez vers un projet pour analyser les alertes.
+   </div>
+   <button class="ai-action-btn" (click)="loadAlerts()" [disabled]="isLoadingAlerts || !projectId">
+    🔍 Analyser les Risques
+   </button>
   </div>
 
-  <!-- ── ALERTS PANEL ───────────────────────── -->
-  <div class="panel-body" *ngIf="activePanel === 'alerts'">
-    <div class="panel-intro" *ngIf="!alertsResult.length && !isLoadingAlerts">
-      <div class="panel-icon">🚨</div>
-      <h3>Alertes Intelligentes</h3>
-      <p>Détecte automatiquement les risques et anomalies dans votre projet.</p>
-      <div class="no-project-warn" *ngIf="!projectId">
-        ⚠️ Naviguez vers un projet pour analyser les alertes.
-      </div>
-      <button class="ai-action-btn" (click)="loadAlerts()" [disabled]="isLoadingAlerts || !projectId">
-        🔍 Analyser les Risques
-      </button>
-    </div>
-
-    <div class="loading-state" *ngIf="isLoadingAlerts">
-      <div class="loading-spinner">⚙️</div>
-      <p>Analyse des risques en cours...</p>
-    </div>
-
-    <div class="alerts-list" *ngIf="alertsResult.length && !isLoadingAlerts">
-      <div class="alerts-list-header">
-        <span>{{ alertsResult.length }} alertes détectées</span>
-        <button class="refresh-btn" (click)="loadAlerts()">🔄 Rafraîchir</button>
-      </div>
-      <div class="alert-card" *ngFor="let alert of alertsResult"
-           [style.border-left-color]="getAlertColor(alert.type)"
-           [style.background]="getAlertColor(alert.type) + '08'">
-        <div class="alert-icon">{{ getAlertIcon(alert.type) }}</div>
-        <div class="alert-body">
-          <div class="alert-title">{{ alert.title }}</div>
-          <div class="alert-msg">{{ alert.message }}</div>
-          <div class="alert-action" *ngIf="alert.action">→ {{ alert.action }}</div>
-        </div>
-        <div class="alert-type-badge" [style.color]="getAlertColor(alert.type)">{{ alert.type }}</div>
-      </div>
-    </div>
+  <div class="loading-state" *ngIf="isLoadingAlerts">
+   <div class="loading-spinner">⚙️</div>
+   <p>Analyse des risques en cours...</p>
   </div>
+
+  <div class="alerts-list" *ngIf="alertsResult.length && !isLoadingAlerts">
+   <div class="alerts-list-header">
+    <span>{{ alertsResult.length }} alertes détectées</span>
+    <button class="refresh-btn" (click)="loadAlerts()">🔄 Rafraîchir</button>
+   </div>
+   <div class="alert-card" *ngFor="let alert of alertsResult"
+      [style.border-left-color]="getAlertColor(alert.type)"
+      [style.background]="getAlertColor(alert.type) + '08'">
+    <div class="alert-icon">{{ getAlertIcon(alert.type) }}</div>
+    <div class="alert-body">
+     <div class="alert-title">{{ alert.title }}</div>
+     <div class="alert-msg">{{ alert.message }}</div>
+     <div class="alert-action" *ngIf="alert.action">→ {{ alert.action }}</div>
+    </div>
+    <div class="alert-type-badge" [style.color]="getAlertColor(alert.type)">{{ alert.type }}</div>
+   </div>
+  </div>
+ </div>
 
 </div>
 

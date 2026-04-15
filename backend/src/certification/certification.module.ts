@@ -5,8 +5,8 @@ import { CertificationController } from './certification.controller';
 import { Certification, CertificationSchema } from './schemas/certification.schema';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Certification.name, schema: CertificationSchema }])],
-  providers: [CertificationService],
-  controllers: [CertificationController]
+ imports: [MongooseModule.forFeature([{ name: Certification.name, schema: CertificationSchema }])],
+ providers: [CertificationService],
+ controllers: [CertificationController]
 })
 export class CertificationModule {}

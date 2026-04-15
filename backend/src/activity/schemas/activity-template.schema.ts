@@ -6,17 +6,17 @@ export type ActivityTemplateDocument = ActivityTemplate & Document;
 
 @Schema({ timestamps: true })
 export class ActivityTemplate {
-  @Prop({ type: String, enum: AeroPhase, required: true, unique: true })
-  phaseId: AeroPhase;
+ @Prop({ type: String, enum: AeroPhase, required: true, unique: true })
+ phaseId: AeroPhase;
 
-  @Prop({ required: true })
-  name: string;
+ @Prop({ required: true })
+ name: string;
 
-  @Prop({ required: true })
-  icon: string;
+ @Prop({ required: true })
+ icon: string;
 
-  @Prop({ type: [{ id: String, name: String }] })
-  subActivities: { id: string; name: string }[];
+ @Prop({ type: [{ id: String, name: String }] })
+ subActivities: { id: string; name: string }[];
 }
 
 export const ActivityTemplateSchema = SchemaFactory.createForClass(ActivityTemplate);

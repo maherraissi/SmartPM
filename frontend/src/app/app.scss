@@ -1,25 +1,25 @@
 .app-container {
-  display: flex;
-  height: calc(100vh - 70px);
-  width: 100%;
-  overflow: hidden;
+ display: flex;
+ height: calc(100vh - 70px);
+ width: 100%;
+ overflow: hidden;
 }
 
 .app-content {
-  flex: 1;
-  overflow-y: auto;
-  position: relative;
-  
-  &::-webkit-scrollbar { width: 8px; }
-  &::-webkit-scrollbar-track { background: #f4fafa; }
-  &::-webkit-scrollbar-thumb { background: rgba(45, 106, 79, 0.2); border-radius: 4px; }
-  &::-webkit-scrollbar-thumb:hover { background: #2d6a4f; }
+ flex: 1;
+ overflow-y: auto;
+ position: relative;
+ 
+ &::-webkit-scrollbar { width: 8px; }
+ &::-webkit-scrollbar-track { background: #f4fafa; }
+ &::-webkit-scrollbar-thumb { background: rgba(45, 106, 79, 0.2); border-radius: 4px; }
+ &::-webkit-scrollbar-thumb:hover { background: #2d6a4f; }
 }
 
 // Auth pages: full screen scrollable, no sidebar
 .auth-full {
-  width: 100%;
-  min-height: 100vh;
-  overflow-y: auto;
-  display: block;
+ width: 100%;
+ min-height: 100vh;
+ overflow-y: auto;
+ display: block;
 }

@@ -6,22 +6,22 @@ export type FunctionTemplateDocument = FunctionTemplate & Document;
 
 @Schema({ timestamps: true })
 export class FunctionTemplate {
-  @Prop({ required: true })
-  title: string;
+ @Prop({ required: true })
+ title: string;
 
-  @Prop()
-  description: string;
+ @Prop()
+ description: string;
 
-  // e.g. "LLR", "HLT"... To filter templates easily based on the context
-  @Prop({ type: String, enum: AeroPhase, required: true })
-  targetPhase: AeroPhase;
+ // e.g. "LLR", "HLT"... To filter templates easily based on the context
+ @Prop({ type: String, enum: AeroPhase, required: true })
+ targetPhase: AeroPhase;
 
-  // e.g., "Creation", "Review", "Architecture"
-  @Prop({ required: true })
-  category: string;
+ // e.g., "Creation", "Review", "Architecture"
+ @Prop({ required: true })
+ category: string;
 
-  @Prop({ type: Number, required: true }) // Default estimation to pre-fill tasks
-  defaultEstimatedDuration: number;
+ @Prop({ type: Number, required: true }) // Default estimation to pre-fill tasks
+ defaultEstimatedDuration: number;
 }
 
 export const FunctionTemplateSchema = SchemaFactory.createForClass(FunctionTemplate);

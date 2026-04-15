@@ -9,16 +9,16 @@ import { Task, TaskSchema } from '../task/schemas/task.schema';
 import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 
 @Module({
-  imports: [
-    ConfigModule,
-    PassportModule,
-    MongooseModule.forFeature([
-      { name: Project.name, schema: ProjectSchema },
-      { name: Task.name, schema: TaskSchema },
-    ]),
-  ],
-  providers: [AiIntegrationService, JwtStrategy],
-  controllers: [AiIntegrationController],
-  exports: [AiIntegrationService],
+ imports: [
+  ConfigModule,
+  PassportModule,
+  MongooseModule.forFeature([
+   { name: Project.name, schema: ProjectSchema },
+   { name: Task.name, schema: TaskSchema },
+  ]),
+ ],
+ providers: [AiIntegrationService, JwtStrategy],
+ controllers: [AiIntegrationController],
+ exports: [AiIntegrationService],
 })
 export class AiIntegrationModule {}

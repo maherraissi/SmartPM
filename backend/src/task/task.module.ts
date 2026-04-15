@@ -8,15 +8,15 @@ import { Project, ProjectSchema } from '../project/schemas/project.schema';
 import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: Task.name, schema: TaskSchema },
-      { name: SubActivity.name, schema: SubActivitySchema },
-      { name: Project.name, schema: ProjectSchema }
-    ]),
-    NotificationModule
-  ],
-  providers: [TaskService],
-  controllers: [TaskController]
+ imports: [
+  MongooseModule.forFeature([
+   { name: Task.name, schema: TaskSchema },
+   { name: SubActivity.name, schema: SubActivitySchema },
+   { name: Project.name, schema: ProjectSchema }
+  ]),
+  NotificationModule
+ ],
+ providers: [TaskService],
+ controllers: [TaskController]
 })
 export class TaskModule {}

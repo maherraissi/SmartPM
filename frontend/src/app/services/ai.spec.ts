@@ -3,14 +3,14 @@ import { TestBed } from '@angular/core/testing';
 import { Ai } from './ai';
 
 describe('Ai', () => {
-  let service: Ai;
+ let service: Ai;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Ai);
-  });
+ beforeEach(() => {
+  TestBed.configureTestingModule({});
+  service = TestBed.inject(Ai);
+ });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+ it('should be created', () => {
+  expect(service).toBeTruthy();
+ });
 });

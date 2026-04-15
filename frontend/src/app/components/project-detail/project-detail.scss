@@ -1,137 +1,137 @@
-// 🛰️ SmartPM Aerospace Planning (DO-178C Standard)
+// 🛰️ SmartPM Aerospace Planning ( Standard)
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
-$primary:      #10b981;   // Emerald Green
-$primary-dark: #064e3b;   // Deep Forest
+$primary:   #10b981;  // Emerald Green
+$primary-dark: #064e3b;  // Deep Forest
 $primary-light:#d1fae5;
-$bg:           #f8fafe;   // Sleek icy white
-$text:         #1e293b;   
-$muted:        #64748b;   
-$border:       rgba(226, 232, 240, 0.8);
-$glow:         0 10px 30px rgba(16, 185, 129, 0.15);
-$red:          #ef4444;
+$bg:      #f8fafe;  // Sleek icy white
+$text:     #1e293b;  
+$muted:    #64748b;  
+$border:    rgba(226, 232, 240, 0.8);
+$glow:     0 10px 30px rgba(16, 185, 129, 0.15);
+$red:     #ef4444;
 
 .detail-shell {
-  min-height: 100vh;
-  background: $bg;
-  color: $text;
-  font-family: 'Outfit', sans-serif;
-  padding: 50px 60px;
+ min-height: 100vh;
+ background: $bg;
+ color: $text;
+ font-family: 'Outfit', sans-serif;
+ padding: 50px 60px;
 }
 
 // ── Header Mission ───────────────────────────────────────────────────
 .detail-header {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px;
-  
-  .header-left {
-    display: flex; align-items: center; gap: 30px;
-    .btn-back { background: #fff; color: $primary-dark; border: 1px solid $border; padding: 12px 24px; border-radius: 14px; cursor: pointer; font-weight: 800; transition: 0.3s; &:hover { transform: translateX(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); } }
-    h1 { font-size: 2.8rem; font-weight: 900; margin: 0; 
-      background: linear-gradient(135deg, $text 0%, $primary-dark 100%);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      letter-spacing: -1.5px;
-    }
-    .status-badge { background: $primary-light; color: $primary-dark; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 800; border: 1px solid #d1fae5; }
+ display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px;
+ 
+ .header-left {
+  display: flex; align-items: center; gap: 30px;
+  .btn-back { background: #fff; color: $primary-dark; border: 1px solid $border; padding: 12px 24px; border-radius: 14px; cursor: pointer; font-weight: 800; transition: 0.3s; &:hover { transform: translateX(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); } }
+  h1 { font-size: 2.8rem; font-weight: 900; margin: 0; 
+   background: linear-gradient(135deg, $text 0%, $primary-dark 100%);
+   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+   letter-spacing: -1.5px;
   }
+  .status-badge { background: $primary-light; color: $primary-dark; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 800; border: 1px solid #d1fae5; }
+ }
 
-  .header-right {
-    .project-progress {
-      text-align: right; width: 300px;
-      small { color: $muted; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; font-size: 11px; }
-      .progress-bar { height: 10px; background: #e2e8f0; border-radius: 10px; margin-top: 8px; overflow: hidden; .progress-fill { height: 100%; background: linear-gradient(90deg, #34d399, #10b981); box-shadow: 0 0 10px rgba(16,185,129,0.3); } }
-    }
+ .header-right {
+  .project-progress {
+   text-align: right; width: 300px;
+   small { color: $muted; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; font-size: 11px; }
+   .progress-bar { height: 10px; background: #e2e8f0; border-radius: 10px; margin-top: 8px; overflow: hidden; .progress-fill { height: 100%; background: linear-gradient(90deg, #34d399, #10b981); box-shadow: 0 0 10px rgba(16,185,129,0.3); } }
   }
+ }
 }
 
 // ── Activity Sequence (The "Phase" Blocks) ───────────────────────────
 .activity-block {
-  margin-bottom: 60px;
-  
-  .activity-header {
-    display: flex; align-items: center; gap: 20px; margin-bottom: 30px;
-    &::after { content: ''; flex: 1; height: 2px; background: linear-gradient(to right, #e2e8f0, transparent); }
-    .phase-tag { background: $primary-dark; color: #fff; font-weight: 800; padding: 6px 16px; border-radius: 10px; font-size: 0.75rem; text-transform: uppercase; }
-    h2 { font-size: 1.8rem; font-weight: 900; color: $primary-dark; margin: 0; }
-  }
+ margin-bottom: 60px;
+ 
+ .activity-header {
+  display: flex; align-items: center; gap: 20px; margin-bottom: 30px;
+  &::after { content: ''; flex: 1; height: 2px; background: linear-gradient(to right, #e2e8f0, transparent); }
+  .phase-tag { background: $primary-dark; color: #fff; font-weight: 800; padding: 6px 16px; border-radius: 10px; font-size: 0.75rem; text-transform: uppercase; }
+  h2 { font-size: 1.8rem; font-weight: 900; color: $primary-dark; margin: 0; }
+ }
 
-  .sub-activity-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 30px;
-  }
+ .sub-activity-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 30px;
+ }
 }
 
 // ── Sub-Activity Cards (The Functional Boxes) ────────────────────────
 .sub-card {
-  background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); 
-  border: 1px solid rgba(255,255,255,0.9); border-radius: 28px; padding: 30px; transition: 0.4s;
-  box-shadow: 0 15px 35px -10px rgba(0,0,0,0.03);
-  &:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08); }
+ background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); 
+ border: 1px solid rgba(255,255,255,0.9); border-radius: 28px; padding: 30px; transition: 0.4s;
+ box-shadow: 0 15px 35px -10px rgba(0,0,0,0.03);
+ &:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08); }
 
-  .sub-header {
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
-    h3 { font-size: 1.25rem; color: $primary-dark; font-weight: 900; margin: 0; }
-    .sub-activity-actions { display: flex; gap: 10px; }
-  }
+ .sub-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;
+  h3 { font-size: 1.25rem; color: $primary-dark; font-weight: 900; margin: 0; }
+  .sub-activity-actions { display: flex; gap: 10px; }
+ }
 
-  .btn-action {
-    background: $primary-light; border: 1px solid rgba($primary, 0.2); color: $primary-dark; padding: 8px 16px; border-radius: 12px; cursor: pointer; font-size: 0.8rem; font-weight: 800; transition: 0.3s;
-    &:hover { background: $primary; color: #fff; transform: scale(1.05); }
-    &.secondary { background: #f1f5f9; border-color: #e2e8f0; color: #475569; }
-  }
+ .btn-action {
+  background: $primary-light; border: 1px solid rgba($primary, 0.2); color: $primary-dark; padding: 8px 16px; border-radius: 12px; cursor: pointer; font-size: 0.8rem; font-weight: 800; transition: 0.3s;
+  &:hover { background: $primary; color: #fff; transform: scale(1.05); }
+  &.secondary { background: #f1f5f9; border-color: #e2e8f0; color: #475569; }
+ }
 }
 
 // ── Task Items (The Rows) ────────────────────────────────────────────
 .task-list {
-  display: flex; flex-direction: column; gap: 15px;
-  .no-tasks { padding: 40px; text-align: center; color: $muted; font-style: italic; border: 2px dashed #e2e8f0; border-radius: 20px; font-size: 0.95rem; }
+ display: flex; flex-direction: column; gap: 15px;
+ .no-tasks { padding: 40px; text-align: center; color: $muted; font-style: italic; border: 2px dashed #e2e8f0; border-radius: 20px; font-size: 0.95rem; }
 }
 
 .task-item {
-  background: #fff; border-radius: 20px; padding: 20px; border: 1px solid #f1f5f9;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
-  transition: 0.3s;
-  &:hover { border-color: $primary; transform: scale(1.01); box-shadow: 0 10px 20px rgba(0,0,0,0.04); }
+ background: #fff; border-radius: 20px; padding: 20px; border: 1px solid #f1f5f9;
+ box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+ transition: 0.3s;
+ &:hover { border-color: $primary; transform: scale(1.01); box-shadow: 0 10px 20px rgba(0,0,0,0.04); }
 
-  .task-top {
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
-    .task-title { font-weight: 800; color: $text; font-size: 1rem; }
-    .task-duration { font-size: 0.75rem; color: $primary-dark; font-weight: 800; background: $primary-light; padding: 4px 10px; border-radius: 8px; }
-  }
+ .task-top {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+  .task-title { font-weight: 800; color: $text; font-size: 1rem; }
+  .task-duration { font-size: 0.75rem; color: $primary-dark; font-weight: 800; background: $primary-light; padding: 4px 10px; border-radius: 8px; }
+ }
 
-  .task-dates {
-    display: flex; gap: 20px; font-size: 0.85rem; color: $muted; margin-bottom: 15px;
-    small { font-weight: 800; text-transform: uppercase; margin-right: 5px; opacity: 0.6; }
-  }
+ .task-dates {
+  display: flex; gap: 20px; font-size: 0.85rem; color: $muted; margin-bottom: 15px;
+  small { font-weight: 800; text-transform: uppercase; margin-right: 5px; opacity: 0.6; }
+ }
 
-  .task-assignments {
-    display: flex; gap: 30px; padding-top: 15px; border-top: 1px solid #f1f5f9;
-    .assignment {
-      display: flex; flex-direction: column; gap: 4px;
-      small { font-size: 0.65rem; color: $muted; text-transform: uppercase; font-weight: 800; }
-      .member-name { font-size: 0.9rem; color: $text; font-weight: 700; }
-    }
+ .task-assignments {
+  display: flex; gap: 30px; padding-top: 15px; border-top: 1px solid #f1f5f9;
+  .assignment {
+   display: flex; flex-direction: column; gap: 4px;
+   small { font-size: 0.65rem; color: $muted; text-transform: uppercase; font-weight: 800; }
+   .member-name { font-size: 0.9rem; color: $text; font-weight: 700; }
   }
+ }
 
-  .task-status {
-    display: flex; align-items: center; justify-content: space-between; margin-top: 15px;
-    .badge-mini { font-size: 10px; font-weight: 900; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; background: #f1f5f9; color: $muted; }
-    .doc-badge { color: $primary; font-size: 1.2rem; }
-  }
+ .task-status {
+  display: flex; align-items: center; justify-content: space-between; margin-top: 15px;
+  .badge-mini { font-size: 10px; font-weight: 900; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; background: #f1f5f9; color: $muted; }
+  .doc-badge { color: $primary; font-size: 1.2rem; }
+ }
 }
 
 // ── Modals ───────────────────────────────────────────────────────────
 .modal-backdrop {
-  position: fixed; inset: 0; background: rgba(6, 78, 59, 0.4); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000;
+ position: fixed; inset: 0; background: rgba(6, 78, 59, 0.4); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000;
 }
 .modal-content {
-  background: #fff; width: 900px; max-height: 90vh; overflow-y: auto; border-radius: 32px; border: 1px solid #fff; padding: 45px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-  &.small-modal { width: 480px; }
-  h2 { font-weight: 900; color: $primary-dark; margin-bottom: 30px; font-size: 1.8rem; }
+ background: #fff; width: 900px; max-height: 90vh; overflow-y: auto; border-radius: 32px; border: 1px solid #fff; padding: 45px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+ &.small-modal { width: 480px; }
+ h2 { font-weight: 900; color: $primary-dark; margin-bottom: 30px; font-size: 1.8rem; }
 }
 
 .form-group {
-  margin-bottom: 25px;
-  label { display: block; margin-bottom: 10px; color: $text; font-size: 0.9rem; font-weight: 700; }
-  input, select { width: 100%; background: #f8fafc; border: 2px solid #e2e8f0; color: $text; padding: 14px 20px; border-radius: 14px; font-weight: 500; transition: 0.3s; &:focus { border-color: $primary; outline: none; background: #fff; } }
+ margin-bottom: 25px;
+ label { display: block; margin-bottom: 10px; color: $text; font-size: 0.9rem; font-weight: 700; }
+ input, select { width: 100%; background: #f8fafc; border: 2px solid #e2e8f0; color: $text; padding: 14px 20px; border-radius: 14px; font-weight: 500; transition: 0.3s; &:focus { border-color: $primary; outline: none; background: #fff; } }
 }
 
 .btn-primary { background: linear-gradient(135deg, $primary, $primary-dark); color: #fff; border: none; padding: 14px 35px; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.3s; &:hover { transform: translateY(-2px); box-shadow: $glow; } }

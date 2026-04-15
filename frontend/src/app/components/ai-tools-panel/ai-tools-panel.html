@@ -1,184 +1,184 @@
 <div class="ai-tools-panel">
-  <!-- Header -->
-  <div class="atp-header">
-    <div class="atp-title">
-      <span class="atp-icon">🔬</span>
-      <div>
-        <h2>SmartPM AI Tools</h2>
-        <p>Propulsé par Ollama · Analyse locale et confidentielle</p>
-      </div>
-    </div>
-    <div class="ollama-badge">● Ollama Local</div>
+ <!-- Header -->
+ <div class="atp-header">
+  <div class="atp-title">
+   <span class="atp-icon">🔬</span>
+   <div>
+    <h2>SmartPM AI Tools</h2>
+    <p>Propulsé par Ollama · Analyse locale et confidentielle</p>
+   </div>
+  </div>
+  <div class="ollama-badge">● Ollama Local</div>
+ </div>
+
+ <!-- Tabs -->
+ <div class="atp-tabs">
+  <button class="atp-tab" [class.active]="activeTab === 'simulator'" (click)="setTab('simulator')">
+   🔬 Simulateur
+  </button>
+  <button class="atp-tab" [class.active]="activeTab === 'report'" (click)="setTab('report')">
+   📊 Rapport Exécutif
+  </button>
+  <button class="atp-tab" [class.active]="activeTab === 'alerts'" (click)="setTab('alerts')">
+   🚨 Alertes IA
+  </button>
+ </div>
+
+ <!-- ── SIMULATOR TAB ──────────────────────────────── -->
+ <div class="atp-body" *ngIf="activeTab === 'simulator'">
+  <div class="tab-intro" *ngIf="!simResult && !isSimulating">
+   <div class="tab-intro-icon">🔬</div>
+   <h3>Simulation Prédictive</h3>
+   <p>L'IA analyse toutes les données du projet (tâches, statuts, délais, équipe) et prédit le risque, la date de livraison et les chemins critiques.</p>
+   <button class="atp-btn primary" (click)="runSimulator()" [disabled]="!projectId">
+    🚀 Lancer la Simulation
+   </button>
+   <div class="error-msg" *ngIf="simError">{{ simError }}</div>
   </div>
 
-  <!-- Tabs -->
-  <div class="atp-tabs">
-    <button class="atp-tab" [class.active]="activeTab === 'simulator'" (click)="setTab('simulator')">
-      🔬 Simulateur
-    </button>
-    <button class="atp-tab" [class.active]="activeTab === 'report'" (click)="setTab('report')">
-      📊 Rapport Exécutif
-    </button>
-    <button class="atp-tab" [class.active]="activeTab === 'alerts'" (click)="setTab('alerts')">
-      🚨 Alertes IA
-    </button>
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="isSimulating">
+   <div class="ai-spinner">⚙️</div>
+   <p>Analyse en cours via Ollama...<br><small>Cela peut prendre 30-60 secondes</small></p>
   </div>
 
-  <!-- ── SIMULATOR TAB ──────────────────────────────── -->
-  <div class="atp-body" *ngIf="activeTab === 'simulator'">
-    <div class="tab-intro" *ngIf="!simResult && !isSimulating">
-      <div class="tab-intro-icon">🔬</div>
-      <h3>Simulation Prédictive</h3>
-      <p>L'IA analyse toutes les données du projet (tâches, statuts, délais, équipe) et prédit le risque, la date de livraison et les chemins critiques.</p>
-      <button class="atp-btn primary" (click)="runSimulator()" [disabled]="!projectId">
-        🚀 Lancer la Simulation
-      </button>
-      <div class="error-msg" *ngIf="simError">{{ simError }}</div>
+  <!-- Results -->
+  <div class="sim-results" *ngIf="simResult && !isSimulating">
+   <!-- Risk + Delivery Row -->
+   <div class="result-row">
+    <div class="risk-card" [style.border-color]="getRiskColor(simResult.riskLevel)">
+     <div class="rc-label">Score de Risque</div>
+     <div class="rc-value" [style.color]="getRiskColor(simResult.riskLevel)">{{ simResult.riskScore }}<small>/100</small></div>
+     <div class="rc-level" [style.background]="getRiskColor(simResult.riskLevel) + '18'" [style.color]="getRiskColor(simResult.riskLevel)">
+      {{ simResult.riskLevel }}
+     </div>
     </div>
-
-    <!-- Loading -->
-    <div class="loading-state" *ngIf="isSimulating">
-      <div class="ai-spinner">⚙️</div>
-      <p>Analyse en cours via Ollama...<br><small>Cela peut prendre 30-60 secondes</small></p>
+    <div class="delivery-card" [class.good]="simResult.onTime" [class.bad]="!simResult.onTime">
+     <div class="dc-icon">{{ simResult.onTime ? '✅' : '🔴' }}</div>
+     <div class="dc-label">Livraison Prévue</div>
+     <div class="dc-value">{{ simResult.predictedCompletion }}</div>
+     <div class="dc-status">{{ simResult.onTime ? 'Dans les délais' : 'Retard prévu' }}</div>
     </div>
+   </div>
 
-    <!-- Results -->
-    <div class="sim-results" *ngIf="simResult && !isSimulating">
-      <!-- Risk + Delivery Row -->
-      <div class="result-row">
-        <div class="risk-card" [style.border-color]="getRiskColor(simResult.riskLevel)">
-          <div class="rc-label">Score de Risque</div>
-          <div class="rc-value" [style.color]="getRiskColor(simResult.riskLevel)">{{ simResult.riskScore }}<small>/100</small></div>
-          <div class="rc-level" [style.background]="getRiskColor(simResult.riskLevel) + '18'" [style.color]="getRiskColor(simResult.riskLevel)">
-            {{ simResult.riskLevel }}
-          </div>
-        </div>
-        <div class="delivery-card" [class.good]="simResult.onTime" [class.bad]="!simResult.onTime">
-          <div class="dc-icon">{{ simResult.onTime ? '✅' : '🔴' }}</div>
-          <div class="dc-label">Livraison Prévue</div>
-          <div class="dc-value">{{ simResult.predictedCompletion }}</div>
-          <div class="dc-status">{{ simResult.onTime ? 'Dans les délais' : 'Retard prévu' }}</div>
-        </div>
-      </div>
+   <!-- Summary -->
+   <div class="summary-box">
+    <div class="sb-label">📋 Résumé IA</div>
+    <p>{{ simResult.summary }}</p>
+   </div>
 
-      <!-- Summary -->
-      <div class="summary-box">
-        <div class="sb-label">📋 Résumé IA</div>
-        <p>{{ simResult.summary }}</p>
-      </div>
-
-      <!-- Recommendations -->
-      <div class="list-section" *ngIf="simResult.recommendations?.length">
-        <div class="ls-title">💡 Recommandations</div>
-        <div class="ls-item rec" *ngFor="let r of simResult.recommendations">
-          <span class="ls-dot">→</span> {{ r }}
-        </div>
-      </div>
-
-      <!-- Critical Path -->
-      <div class="list-section" *ngIf="simResult.criticalPath?.length">
-        <div class="ls-title">⚡ Chemin Critique</div>
-        <div class="ls-item crit" *ngFor="let c of simResult.criticalPath">
-          <span class="ls-dot">·</span> {{ c }}
-        </div>
-      </div>
-
-      <button class="atp-btn outline" (click)="simResult = null; simError = ''">
-        🔄 Relancer une simulation
-      </button>
+   <!-- Recommendations -->
+   <div class="list-section" *ngIf="simResult.recommendations?.length">
+    <div class="ls-title">💡 Recommandations</div>
+    <div class="ls-item rec" *ngFor="let r of simResult.recommendations">
+     <span class="ls-dot">→</span> {{ r }}
     </div>
+   </div>
+
+   <!-- Critical Path -->
+   <div class="list-section" *ngIf="simResult.criticalPath?.length">
+    <div class="ls-title">⚡ Chemin Critique</div>
+    <div class="ls-item crit" *ngFor="let c of simResult.criticalPath">
+     <span class="ls-dot">·</span> {{ c }}
+    </div>
+   </div>
+
+   <button class="atp-btn outline" (click)="simResult = null; simError = ''">
+    🔄 Relancer une simulation
+   </button>
+  </div>
+ </div>
+
+ <!-- ── REPORT TAB ──────────────────────────────────── -->
+ <div class="atp-body" *ngIf="activeTab === 'report'">
+  <div class="tab-intro" *ngIf="!reportResult && !isReporting">
+   <div class="tab-intro-icon">📊</div>
+   <h3>Rapport Exécutif Automatique</h3>
+   <p>Génère un rapport professionnel complet avec synthèse, KPIs, analyse des risques et recommandations — basé sur les données réelles du projet.</p>
+   <button class="atp-btn primary" (click)="generateReport()" [disabled]="!projectId">
+    📄 Générer le Rapport
+   </button>
+   <div class="error-msg" *ngIf="reportError">{{ reportError }}</div>
   </div>
 
-  <!-- ── REPORT TAB ──────────────────────────────────── -->
-  <div class="atp-body" *ngIf="activeTab === 'report'">
-    <div class="tab-intro" *ngIf="!reportResult && !isReporting">
-      <div class="tab-intro-icon">📊</div>
-      <h3>Rapport Exécutif Automatique</h3>
-      <p>Génère un rapport professionnel complet avec synthèse, KPIs, analyse des risques et recommandations — basé sur les données réelles du projet.</p>
-      <button class="atp-btn primary" (click)="generateReport()" [disabled]="!projectId">
-        📄 Générer le Rapport
-      </button>
-      <div class="error-msg" *ngIf="reportError">{{ reportError }}</div>
-    </div>
-
-    <div class="loading-state" *ngIf="isReporting">
-      <div class="ai-spinner">📝</div>
-      <p>Rédaction du rapport en cours...<br><small>Ollama analyse et structure les données</small></p>
-    </div>
-
-    <div class="report-view" *ngIf="reportResult && !isReporting">
-      <!-- Title + Health -->
-      <div class="report-top">
-        <h3>{{ reportResult.title }}</h3>
-        <div class="health-badge" [style.color]="getHealthColor(reportResult.healthStatus)" [style.border-color]="getHealthColor(reportResult.healthStatus)">
-          ● {{ reportResult.healthStatus }}
-        </div>
-      </div>
-
-      <!-- Executive Summary -->
-      <div class="exec-summary">
-        <div class="es-label">📋 Synthèse Exécutive</div>
-        <p>{{ reportResult.executiveSummary }}</p>
-      </div>
-
-      <!-- KPIs -->
-      <div class="kpi-grid" *ngIf="reportResult.kpis?.length">
-        <div class="kpi-card" *ngFor="let k of reportResult.kpis" [class]="'kpi-' + k.status?.toLowerCase()">
-          <div class="kpi-val">{{ k.value }}</div>
-          <div class="kpi-lbl">{{ k.label }}</div>
-        </div>
-      </div>
-
-      <!-- Sections -->
-      <div class="report-section" *ngFor="let s of reportResult.sections">
-        <div class="rs-title">{{ s.title }}</div>
-        <div class="rs-content">{{ s.content }}</div>
-      </div>
-
-      <div class="report-gen">
-        Rapport généré le {{ reportResult.generatedAt | date:'dd/MM/yyyy à HH:mm' }}
-      </div>
-
-      <button class="atp-btn outline" (click)="reportResult = null; reportError = ''">
-        🔄 Régénérer le rapport
-      </button>
-    </div>
+  <div class="loading-state" *ngIf="isReporting">
+   <div class="ai-spinner">📝</div>
+   <p>Rédaction du rapport en cours...<br><small>Ollama analyse et structure les données</small></p>
   </div>
 
-  <!-- ── ALERTS TAB ──────────────────────────────────── -->
-  <div class="atp-body" *ngIf="activeTab === 'alerts'">
-    <div class="loading-state" *ngIf="isAlerting">
-      <div class="ai-spinner">🔍</div>
-      <p>Analyse des risques en cours...<br><small>Ollama inspecte le projet</small></p>
+  <div class="report-view" *ngIf="reportResult && !isReporting">
+   <!-- Title + Health -->
+   <div class="report-top">
+    <h3>{{ reportResult.title }}</h3>
+    <div class="health-badge" [style.color]="getHealthColor(reportResult.healthStatus)" [style.border-color]="getHealthColor(reportResult.healthStatus)">
+     ● {{ reportResult.healthStatus }}
     </div>
+   </div>
 
-    <div class="alerts-empty" *ngIf="!isAlerting && alertsResult.length === 0 && !alertsError">
-      <div class="tab-intro-icon">🚨</div>
-      <h3>Aucune alerte chargée</h3>
-      <button class="atp-btn primary" (click)="loadAlerts()" [disabled]="!projectId">
-        🔍 Analyser les risques
-      </button>
+   <!-- Executive Summary -->
+   <div class="exec-summary">
+    <div class="es-label">📋 Synthèse Exécutive</div>
+    <p>{{ reportResult.executiveSummary }}</p>
+   </div>
+
+   <!-- KPIs -->
+   <div class="kpi-grid" *ngIf="reportResult.kpis?.length">
+    <div class="kpi-card" *ngFor="let k of reportResult.kpis" [class]="'kpi-' + k.status?.toLowerCase()">
+     <div class="kpi-val">{{ k.value }}</div>
+     <div class="kpi-lbl">{{ k.label }}</div>
     </div>
+   </div>
 
-    <div class="error-msg alone" *ngIf="alertsError">{{ alertsError }}</div>
+   <!-- Sections -->
+   <div class="report-section" *ngFor="let s of reportResult.sections">
+    <div class="rs-title">{{ s.title }}</div>
+    <div class="rs-content">{{ s.content }}</div>
+   </div>
 
-    <div class="alerts-list" *ngIf="alertsResult.length > 0 && !isAlerting">
-      <div class="alerts-list-top">
-        <span><strong>{{ alertsResult.length }}</strong> alertes détectées par l'IA</span>
-        <button class="refresh-btn" (click)="loadAlerts()">🔄 Rafraîchir</button>
-      </div>
+   <div class="report-gen">
+    Rapport généré le {{ reportResult.generatedAt | date:'dd/MM/yyyy à HH:mm' }}
+   </div>
 
-      <div class="alert-card" *ngFor="let a of alertsResult"
-           [style.border-left-color]="getAlertColor(a.type)"
-           [style.background]="getAlertColor(a.type) + '0D'">
-        <div class="ac-icon">{{ getAlertIcon(a.type) }}</div>
-        <div class="ac-body">
-          <div class="ac-title">{{ a.title }}</div>
-          <div class="ac-msg">{{ a.message }}</div>
-          <div class="ac-action" *ngIf="a.action">→ {{ a.action }}</div>
-        </div>
-        <div class="ac-badge" [style.color]="getAlertColor(a.type)">{{ a.type }}</div>
-      </div>
-    </div>
+   <button class="atp-btn outline" (click)="reportResult = null; reportError = ''">
+    🔄 Régénérer le rapport
+   </button>
   </div>
+ </div>
+
+ <!-- ── ALERTS TAB ──────────────────────────────────── -->
+ <div class="atp-body" *ngIf="activeTab === 'alerts'">
+  <div class="loading-state" *ngIf="isAlerting">
+   <div class="ai-spinner">🔍</div>
+   <p>Analyse des risques en cours...<br><small>Ollama inspecte le projet</small></p>
+  </div>
+
+  <div class="alerts-empty" *ngIf="!isAlerting && alertsResult.length === 0 && !alertsError">
+   <div class="tab-intro-icon">🚨</div>
+   <h3>Aucune alerte chargée</h3>
+   <button class="atp-btn primary" (click)="loadAlerts()" [disabled]="!projectId">
+    🔍 Analyser les risques
+   </button>
+  </div>
+
+  <div class="error-msg alone" *ngIf="alertsError">{{ alertsError }}</div>
+
+  <div class="alerts-list" *ngIf="alertsResult.length > 0 && !isAlerting">
+   <div class="alerts-list-top">
+    <span><strong>{{ alertsResult.length }}</strong> alertes détectées par l'IA</span>
+    <button class="refresh-btn" (click)="loadAlerts()">🔄 Rafraîchir</button>
+   </div>
+
+   <div class="alert-card" *ngFor="let a of alertsResult"
+      [style.border-left-color]="getAlertColor(a.type)"
+      [style.background]="getAlertColor(a.type) + '0D'">
+    <div class="ac-icon">{{ getAlertIcon(a.type) }}</div>
+    <div class="ac-body">
+     <div class="ac-title">{{ a.title }}</div>
+     <div class="ac-msg">{{ a.message }}</div>
+     <div class="ac-action" *ngIf="a.action">→ {{ a.action }}</div>
+    </div>
+    <div class="ac-badge" [style.color]="getAlertColor(a.type)">{{ a.type }}</div>
+   </div>
+  </div>
+ </div>
 </div>

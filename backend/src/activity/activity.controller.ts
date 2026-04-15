@@ -3,10 +3,10 @@ import { ActivityService } from './activity.service';
 
 @Controller('activities')
 export class ActivityController {
-  constructor(private readonly activityService: ActivityService) {}
+ constructor(private readonly activityService: ActivityService) {}
 
-  @Get('templates')
-  async getTemplates() {
-    return this.activityService.getActivityTemplates();
-  }
+ @Get('templates')
+ async getTemplates() {
+  return this.activityService.getActivityTemplates();
+ }
 }

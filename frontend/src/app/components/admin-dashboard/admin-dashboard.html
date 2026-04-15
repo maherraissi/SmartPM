@@ -1,648 +1,648 @@
 <div class="admin-container">
-  <!-- ════════════════════════════════ SIDEBAR ════════════════════════════ -->
-  <aside class="admin-sidebar">
-    <div class="sidebar-header">
-      <div class="brand-logo">🛡️ SmartPM</div>
-      
-      </div>
-      
-    <nav class="sidebar-nav">
-      <button class="nav-item" [class.active]="activeTab==='overview'" (click)="switchTab('overview')">
-        <span class="nav-icon">📊</span><span>Vue d'ensemble</span>
-      </button>
-      <button class="nav-item" [class.active]="activeTab==='users'" (click)="switchTab('users')">
-        <span class="nav-icon">👥</span><span>Utilisateurs</span>
-      </button>
-      <button class="nav-item" [class.active]="activeTab==='formations'" (click)="switchTab('formations')">
-        <span class="nav-icon">🎓</span><span>Formations</span>
-      </button>
-      <button class="nav-item" [class.active]="activeTab==='alerts'" (click)="switchTab('alerts')">
-        <span class="nav-icon">⚠️</span><span>Alertes</span>
-        <span class="nav-badge" *ngIf="alertTotal > 0">{{ alertTotal }}</span>
-      </button>
-      <button class="nav-item" [class.active]="activeTab==='ai'" (click)="switchTab('ai')">
-        <span class="nav-icon">🤖</span><span>Moniteur IA</span>
-      </button>
-      <button class="nav-item" [class.active]="activeTab==='settings'" (click)="switchTab('settings')">
-        <span class="nav-icon">⚙️</span><span>Paramètres</span>
-      </button>
-    </nav>
+ <!-- ════════════════════════════════ SIDEBAR ════════════════════════════ -->
+ <aside class="admin-sidebar">
+  <div class="sidebar-header">
+   <div class="brand-logo">🛡️ SmartPM</div>
+   
+   </div>
+   
+  <nav class="sidebar-nav">
+   <button class="nav-item" [class.active]="activeTab==='overview'" (click)="switchTab('overview')">
+    <span class="nav-icon">📊</span><span>Vue d'ensemble</span>
+   </button>
+   <button class="nav-item" [class.active]="activeTab==='users'" (click)="switchTab('users')">
+    <span class="nav-icon">👥</span><span>Utilisateurs</span>
+   </button>
+   <button class="nav-item" [class.active]="activeTab==='formations'" (click)="switchTab('formations')">
+    <span class="nav-icon">🎓</span><span>Formations</span>
+   </button>
+   <button class="nav-item" [class.active]="activeTab==='alerts'" (click)="switchTab('alerts')">
+    <span class="nav-icon">⚠️</span><span>Alertes</span>
+    <span class="nav-badge" *ngIf="alertTotal > 0">{{ alertTotal }}</span>
+   </button>
+   <button class="nav-item" [class.active]="activeTab==='ai'" (click)="switchTab('ai')">
+    <span class="nav-icon">🤖</span><span>Moniteur IA</span>
+   </button>
+   <button class="nav-item" [class.active]="activeTab==='settings'" (click)="switchTab('settings')">
+    <span class="nav-icon">⚙️</span><span>Paramètres</span>
+   </button>
+  </nav>
 
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="su-avatar">A</div>
-        <div class="su-info">
-          <div class="su-name">System Admin</div>
-          <div class="su-role">ADMIN — SmartPM</div>
-        </div>
-      </div>
-      <div class="logout-link" (click)="logout()">
-        <span class="nav-icon">🚪</span><span>Deconnexion</span>
-      </div>
+  <div class="sidebar-footer">
+   <div class="sidebar-user">
+    <div class="su-avatar">A</div>
+    <div class="su-info">
+     <div class="su-name">System Admin</div>
+     <div class="su-role">ADMIN — SmartPM</div>
     </div>
-  </aside>
+   </div>
+   <div class="logout-link" (click)="logout()">
+    <span class="nav-icon">🚪</span><span>Deconnexion</span>
+   </div>
+  </div>
+ </aside>
 
-  <!-- ════════════════════════════════ MAIN CONTENT ══════════════════════ -->
-  <main class="admin-main">
-    <div class="top-loader" *ngIf="loading[activeTab]"></div>
+ <!-- ════════════════════════════════ MAIN CONTENT ══════════════════════ -->
+ <main class="admin-main">
+  <div class="top-loader" *ngIf="loading[activeTab]"></div>
 
-    <!-- 🌟 Global Notification Toast -->
-    <div class="toast-success" *ngIf="successMessage">
-      <span class="toast-icon">✨</span> {{ successMessage }}
+  <!-- 🌟 Global Notification Toast -->
+  <div class="toast-success" *ngIf="successMessage">
+   <span class="toast-icon">✨</span> {{ successMessage }}
+  </div>
+
+  <!-- ══════════════════════════════════ TAB: OVERVIEW ════════════ -->
+  <section *ngIf="activeTab==='overview'" class="tab-content">
+   <header class="page-header">
+    <div>
+     <h1>Vue d'ensemble du Système</h1>
+     <p class="page-sub">Santé du système, utilisation de l'équipe et conformité SmartPM</p>
     </div>
+    <div class="header-actions">
+     <button class="btn-ghost" (click)="loadAuditLogs()">📋 View Audit Logs</button>
+     <button class="btn-primary" (click)="loadOverview()">↻ Refresh</button>
+    </div>
+   </header>
 
-    <!-- ══════════════════════════════════ TAB: OVERVIEW ════════════ -->
-    <section *ngIf="activeTab==='overview'" class="tab-content">
-      <header class="page-header">
-        <div>
-          <h1>Vue d'ensemble du Système</h1>
-          <p class="page-sub">Santé du système, utilisation de l'équipe et conformité SmartPM</p>
-        </div>
-        <div class="header-actions">
-          <button class="btn-ghost" (click)="loadAuditLogs()">📋 View Audit Logs</button>
-          <button class="btn-primary" (click)="loadOverview()">↻ Refresh</button>
-        </div>
-      </header>
+   <div class="kpi-grid">
+    <div class="kpi-card kpi-blue">
+     <div class="kpi-icon">👥</div>
+     <div class="kpi-body">
+      <div class="kpi-num">{{ kpis.totalUsers || 0 }}</div>
+      <div class="kpi-label">Active Users</div>
+     </div>
+    </div>
+    <div class="kpi-card kpi-teal">
+     <div class="kpi-icon">🚀</div>
+     <div class="kpi-body">
+      <div class="kpi-num">{{ kpis.activeProjects || 0 }}</div>
+      <div class="kpi-label">Live Projects</div>
+     </div>
+    </div>
+    <div class="kpi-card kpi-green">
+     <div class="kpi-icon">🛡️</div>
+     <div class="kpi-body">
+      <div class="kpi-num">{{ kpis.certifiedMembers || 0 }}</div>
+      <div class="kpi-label">Certified</div>
+     </div>
+    </div>
+    <div class="kpi-card kpi-orange">
+     <div class="kpi-icon">⚠️</div>
+     <div class="kpi-body">
+      <div class="kpi-num">{{ kpis.openCriticalAlerts || 0 }}</div>
+      <div class="kpi-label">Critical Alerts</div>
+     </div>
+    </div>
+   </div>
 
-      <div class="kpi-grid">
-        <div class="kpi-card kpi-blue">
-          <div class="kpi-icon">👥</div>
-          <div class="kpi-body">
-            <div class="kpi-num">{{ kpis.totalUsers || 0 }}</div>
-            <div class="kpi-label">Active Users</div>
-          </div>
-        </div>
-        <div class="kpi-card kpi-teal">
-          <div class="kpi-icon">🚀</div>
-          <div class="kpi-body">
-            <div class="kpi-num">{{ kpis.activeProjects || 0 }}</div>
-            <div class="kpi-label">Live Projects</div>
-          </div>
-        </div>
-        <div class="kpi-card kpi-green">
-          <div class="kpi-icon">🛡️</div>
-          <div class="kpi-body">
-            <div class="kpi-num">{{ kpis.certifiedMembers || 0 }}</div>
-            <div class="kpi-label">Certified</div>
-          </div>
-        </div>
-        <div class="kpi-card kpi-orange">
-          <div class="kpi-icon">⚠️</div>
-          <div class="kpi-body">
-            <div class="kpi-num">{{ kpis.openCriticalAlerts || 0 }}</div>
-            <div class="kpi-label">Critical Alerts</div>
-          </div>
-        </div>
+   <div class="charts-row">
+    <div class="chart-card">
+     <h3 class="chart-title">Role Distribution</h3>
+     <div class="bar-chart">
+      <div class="bar-group" *ngFor="let r of getRoleData()">
+       <div class="bar-label">{{ r._id }}</div>
+       <div class="bar-track"><div class="bar-fill bar-admin" [style.width.%]="r.count * 10"></div></div>
+       <div class="bar-value">{{ r.count }}</div>
       </div>
-
-      <div class="charts-row">
-        <div class="chart-card">
-          <h3 class="chart-title">Role Distribution</h3>
-          <div class="bar-chart">
-            <div class="bar-group" *ngFor="let r of getRoleData()">
-              <div class="bar-label">{{ r._id }}</div>
-              <div class="bar-track"><div class="bar-fill bar-admin" [style.width.%]="r.count * 10"></div></div>
-              <div class="bar-value">{{ r.count }}</div>
-            </div>
-          </div>
-        </div>
-        <div class="chart-card">
-          <h3 class="chart-title">Progression des Formations</h3>
-          <div class="cert-bubbles">
-            <div class="cert-bubble" *ngFor="let c of getCertData()">
-              <div class="bubble-phase">{{ c._id }}</div>
-              <div class="bubble-count">{{ c.count }}</div>
-            </div>
-            <div class="empty-mini" *ngIf="!getCertData().length">Aucune donnée de formation.</div>
-          </div>
-        </div>
-        <div class="chart-card chart-wide">
-          <h3 class="chart-title">Alertes de Conformité Récentes</h3>
-          <div class="mini-alert-list">
-            <div class="mini-alert" *ngFor="let a of getSnapshotAlerts()" [class]="'sev-'+a.severity.toLowerCase()">
-              <span class="ma-sev">{{ a.severity }}</span>
-              <span class="ma-msg">{{ a.message }}</span>
-              <span class="ma-time">{{ formatTime(a.createdAt).split(',')[1] }}</span>
-            </div>
-            <div class="empty-mini" *ngIf="!getSnapshotAlerts().length">Système conforme. Aucune alerte.</div>
-          </div>
-        </div>
+     </div>
+    </div>
+    <div class="chart-card">
+     <h3 class="chart-title">Progression des Formations</h3>
+     <div class="cert-bubbles">
+      <div class="cert-bubble" *ngFor="let c of getCertData()">
+       <div class="bubble-phase">{{ c._id }}</div>
+       <div class="bubble-count">{{ c.count }}</div>
       </div>
-    </section>
+      <div class="empty-mini" *ngIf="!getCertData().length">Aucune donnée de formation.</div>
+     </div>
+    </div>
+    <div class="chart-card chart-wide">
+     <h3 class="chart-title">Alertes de Conformité Récentes</h3>
+     <div class="mini-alert-list">
+      <div class="mini-alert" *ngFor="let a of getSnapshotAlerts()" [class]="'sev-'+a.severity.toLowerCase()">
+       <span class="ma-sev">{{ a.severity }}</span>
+       <span class="ma-msg">{{ a.message }}</span>
+       <span class="ma-time">{{ formatTime(a.createdAt).split(',')[1] }}</span>
+      </div>
+      <div class="empty-mini" *ngIf="!getSnapshotAlerts().length">Système conforme. Aucune alerte.</div>
+     </div>
+    </div>
+   </div>
+  </section>
 
-    <!-- ══════════════════════════════════ TAB: USERS ═══════════════ -->
-    <section *ngIf="activeTab==='users'" class="tab-content">
-      <header class="page-header">
-        <div>
-          <h1>Gestion des Utilisateurs</h1>
-          <p class="page-sub">{{ userTotal }} membres inscrits</p>
-        </div>
-        <button class="btn-primary" (click)="openCreateUser()">+ Créer un Utilisateur</button>
-      </header>
+  <!-- ══════════════════════════════════ TAB: USERS ═══════════════ -->
+  <section *ngIf="activeTab==='users'" class="tab-content">
+   <header class="page-header">
+    <div>
+     <h1>Gestion des Utilisateurs</h1>
+     <p class="page-sub">{{ userTotal }} membres inscrits</p>
+    </div>
+    <button class="btn-primary" (click)="openCreateUser()">+ Créer un Utilisateur</button>
+   </header>
 
-      <div class="filter-bar">
-        <div class="search-wrap">
-          <span class="search-ic">🔍</span>
-          <input type="text" class="search-input" placeholder="Rechercher par nom ou email…" [(ngModel)]="userSearch" (keyup.enter)="searchUsers()">
+   <div class="filter-bar">
+    <div class="search-wrap">
+     <span class="search-ic">🔍</span>
+     <input type="text" class="search-input" placeholder="Rechercher par nom ou email…" [(ngModel)]="userSearch" (keyup.enter)="searchUsers()">
+    </div>
+    <select class="filter-select" [(ngModel)]="userRoleFilter" (change)="searchUsers()">
+     <option value="">Tous les Rôles</option>
+     <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+    </select>
+    <select class="filter-select" [(ngModel)]="userStatusFilter" (change)="searchUsers()">
+     <option value="">Tous les Statuts</option>
+     <option value="true">Actifs Uniquement</option>
+     <option value="false">Inactifs Uniquement</option>
+    </select>
+   </div>
+
+   <div class="table-card" *ngIf="!loading['users']">
+    <table class="data-table">
+     <thead>
+      <tr><th>Membre</th><th>Rôle</th><th>Statut</th><th>Connexion</th><th>Actions</th></tr>
+     </thead>
+     <tbody>
+      <tr *ngFor="let u of users; trackBy: trackById" class="table-row">
+       <td class="user-cell">
+        <div class="avatar-sm">{{ getInitials(u) }}</div>
+        <div class="user-info">
+         <div>{{ u.firstName }} {{ u.lastName }}</div>
+         <div class="text-muted">{{ u.email }}</div>
         </div>
-        <select class="filter-select" [(ngModel)]="userRoleFilter" (change)="searchUsers()">
-          <option value="">Tous les Rôles</option>
-          <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+       </td>
+       <td>
+        <select class="role-select" [(ngModel)]="u.role" (change)="updateRole(u)" [class.saving]="savingUserId===u._id">
+         <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
         </select>
-        <select class="filter-select" [(ngModel)]="userStatusFilter" (change)="searchUsers()">
-          <option value="">Tous les Statuts</option>
-          <option value="true">Actifs Uniquement</option>
-          <option value="false">Inactifs Uniquement</option>
-        </select>
-      </div>
-
-      <div class="table-card" *ngIf="!loading['users']">
-        <table class="data-table">
-          <thead>
-            <tr><th>Membre</th><th>Rôle</th><th>Statut</th><th>Connexion</th><th>Actions</th></tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let u of users; trackBy: trackById" class="table-row">
-              <td class="user-cell">
-                <div class="avatar-sm">{{ getInitials(u) }}</div>
-                <div class="user-info">
-                  <div>{{ u.firstName }} {{ u.lastName }}</div>
-                  <div class="text-muted">{{ u.email }}</div>
-                </div>
-              </td>
-              <td>
-                <select class="role-select" [(ngModel)]="u.role" (change)="updateRole(u)" [class.saving]="savingUserId===u._id">
-                  <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
-                </select>
-              </td>
-              <td><span class="status-pill" [class]="u.isActive ? 'active' : 'inactive'">{{ u.isActive ? 'Actif' : 'Inactif' }}</span></td>
-              <td class="text-muted">{{ formatDate(u.lastLogin) }}</td>
-              <td class="actions-cell">
-                <button class="btn-icon" (click)="openEditUser(u)" title="Modifier Profil">✏️</button>
-                <button class="btn-icon" (click)="openResetPass(u)" title="Reset Password">🔑</button>
-                <button class="btn-icon" (click)="toggleActive(u)" [title]="u.isActive ? 'Désactiver' : 'Activer'">
-                  {{ u.isActive ? '🚫' : '✅' }}
-                </button>
-                <button class="btn-icon btn-danger" (click)="deleteUser(u._id)" title="Supprimer Compte">🗑️</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="pagination">
-          <button class="btn-ghost" [disabled]="userPage===1" (click)="userPage=userPage-1; loadUsers()">← Préc.</button>
-          <span class="page-info">Page {{ userPage }}</span>
-          <button class="btn-ghost" [disabled]="users.length < 15" (click)="userPage=userPage+1; loadUsers()">Suiv. →</button>
-        </div>
-      </div>
-      <!-- Skeleton Loader for Users -->
-      <div class="table-card skeleton-card" *ngIf="loading['users'] && users.length === 0">
-        <div class="skeleton-header"></div>
-        <div class="skeleton-row" *ngFor="let i of [1,2,3,4,5]">
-          <div class="sk-circle"></div>
-          <div class="sk-line long"></div>
-          <div class="sk-line short"></div>
-          <div class="sk-line med"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ══════════════════════════════ TAB: FORMATIONS ════════════ -->
-    <section *ngIf="activeTab==='formations'" class="tab-content">
-      <header class="page-header">
-        <div>
-          <h1>Modules de Formation</h1>
-          <p class="page-sub">Gérez les parcours d'apprentissage et les ressources SmartPM</p>
-        </div>
-        <div class="header-actions">
-          <button class="btn-primary" (click)="showCreateFormation = true">+ Nouveau Module</button>
-        </div>
-      </header>
-
-      <!-- 🎓 Premium Formation Cards -->
-      <div class="grid-3 mt-4">
-        <div class="formation-card-item premium" *ngFor="let f of activeFormations">
-          <div class="f-type-tag">{{ f.targetPhase }}</div>
-          <div class="f-content">
-            <h3>{{ f.title }}</h3>
-            <p class="f-desc">{{ f.description }}</p>
-            
-            <div class="f-stats-row">
-              <div class="f-stat">
-                <span class="fs-icon">⏳</span>
-                <span class="fs-text">{{ f.durationWeeks }}w</span>
-              </div>
-              <div class="f-stat">
-                <span class="fs-icon">📝</span>
-                <span class="fs-text">{{ f.quizDurationMinutes }}m</span>
-              </div>
-              <div class="f-stat">
-                <span class="fs-icon">📁</span>
-                <span class="fs-text">{{ f.materials?.length || 0 }}</span>
-              </div>
-            </div>
-          </div>
-          <div class="f-footer">
-            <button class="btn-primary btn-sm btn-f-wide" (click)="openAssignModal(f)">Assign Team</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 👥 Real-Time Assignments Status -->
-      <div class="section-block mt-5">
-        <div class="section-header-row">
-           <h2 class="section-title">👥 Team Training Status</h2>
-           <span class="badge-grey">{{ assignmentStats.length }} Members/Managers</span>
-        </div>
-        
-        <div class="table-card">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Member / Manager</th>
-                <th>Path</th>
-                <th>Progress</th>
-                <th>Score</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let a of assignmentStats" class="table-row">
-                <td class="user-cell">
-                  <div class="avatar-sm">{{ a.userName.charAt(0) }}</div>
-                  <div class="user-info">
-                    <strong>{{ a.userName }}</strong>
-                    <span class="badge-role">{{ a.role }}</span>
-                  </div>
-                </td>
-                <td><span class="f-path-tag">{{ a.formation }}</span></td>
-                <td>
-                   <div class="progress-wrap">
-                     <div class="progress-bar" [style.width.%]="a.progress"></div>
-                     <span class="progress-text">{{ a.progress }}%</span>
-                   </div>
-                </td>
-                <td class="text-center"><strong>{{ a.score !== null ? a.score + '%' : '--' }}</strong></td>
-                <td>
-                  <span class="status-pill-minimal" [class]="a.status?.replace(' ', '-')">
-                    {{ a.status }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="empty-state" *ngIf="assignmentStats.length === 0">No members found to show training status.</div>
-        </div>
-      </div>
-
-      <!-- 📥 Premium Course Builder Modal -->
-      <div class="modal-overlay" *ngIf="showCreateFormation">
-        <div class="modal-card course-builder">
-          <!-- Absolute Close Button -->
-          <button class="btn-abs-close" (click)="showCreateFormation = false">&times;</button>
-          
-          <div class="modal-header">
-            <div class="mh-left">
-              <span class="mh-badge">NEW</span>
-              <h3>🎓 Formation Architect</h3>
-            </div>
-          </div>
-          
-          <div class="modal-body builder-layout">
-            <!-- Left: Basic Config -->
-            <div class="builder-side config-side">
-              <label class="field-label">General Configuration</label>
-              <div class="form-group mb-3">
-                <span class="label">Formation Path</span>
-                <select [(ngModel)]="newFormation.title" class="builder-input">
-                  <option value="LLR">Low Level Requirements (LLR)</option>
-                  <option value="LLT">Low Level Testing (LLT)</option>
-                  <option value="HLT">High Level Testing (HLT)</option>
-                </select>
-              </div>
-              
-              <div class="row-flex gap-2">
-                <div class="form-group flex-1">
-                  <span class="label">Duration (Weeks)</span>
-                  <input type="number" [(ngModel)]="newFormation.durationWeeks" class="builder-input" min="1" max="4">
-                </div>
-                <div class="form-group flex-1">
-                  <span class="label">Quiz (Min)</span>
-                  <input type="number" [(ngModel)]="newFormation.quizDurationMinutes" class="builder-input" min="15" max="60">
-                </div>
-              </div>
-
-              <div class="form-group mt-3">
-                <span class="label">Objective / Description</span>
-                <textarea [(ngModel)]="newFormation.description" class="builder-area" placeholder="Briefly explain what this training covers..."></textarea>
-              </div>
-            </div>
-
-            <!-- Right: Content Builder -->
-            <div class="builder-side syllabus-side">
-              <label class="field-label">📚 Curriculum Builder ({{ newFormation.materials.length }} Items)</label>
-              
-              <div class="curriculum-preview custom-scroll">
-                <div class="syllabus-card-compact" *ngFor="let m of newFormation.materials; let i = index">
-                  <div class="sc-drag">⋮⋮</div>
-                  <div class="sc-icon">{{ m.type === 'VIDEO' ? '🎥' : '📄' }}</div>
-                  <div class="sc-main">
-                    <strong>{{ m.title }}</strong>
-                    <span>{{ m.url }}</span>
-                  </div>
-                  <button class="sc-del" (click)="newFormation.materials.splice(i,1)">&times;</button>
-                </div>
-                <div class="empty-curriculum" *ngIf="newFormation.materials.length === 0">
-                  <div class="ec-icon">📁</div>
-                  <p>Your syllabus is empty. Start adding lessons below.</p>
-                </div>
-              </div>
-
-              <div class="add-lesson-bar mt-3">
-                <div class="lesson-inputs">
-                  <input type="text" [(ngModel)]="tempMaterial.title" placeholder="Lesson name...">
-                  <input type="text" [(ngModel)]="tempMaterial.url" placeholder="Resource link (URL)...">
-                </div>
-                <div class="lesson-footer mt-2">
-                  <select [(ngModel)]="tempMaterial.type" class="flex-1">
-                    <option value="VIDEO">Video Lecture</option>
-                    <option value="PDF">PDF Guide</option>
-                    <option value="DOCUMENT">Document</option>
-                  </select>
-                  <button class="btn-primary btn-sm" (click)="addMaterialToFormation()">+ Add Lesson</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <button class="btn-ghost" (click)="showCreateFormation = false">Annuler</button>
-            <button class="btn-primary" (click)="saveFormation()">Publier le Module</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ══════════════════════════════════ TAB: ALERTS ══════════════ -->
-    <section *ngIf="activeTab==='alerts'" class="tab-content">
-      <header class="page-header">
-        <div>
-          <h1>Alertes & Conformité</h1>
-          <p class="page-sub">{{ alertTotal }} alertes totales · Conformité SmartPM</p>
-        </div>
-        <button class="btn-primary" (click)="loadAlerts()">↻ Rafraîchir</button>
-      </header>
-
-      <!-- Alert Stats -->
-      <div class="stat-pills">
-        <div class="stat-pill pill-red">
-          <span class="sp-num">{{ alertStats.openCritical || 0 }}</span>
-          <span class="sp-label">Ouvertes (Critiques)</span>
-        </div>
-      </div>
-
-      <!-- Alerts Table -->
-      <div class="table-card" *ngIf="!loading['alerts']">
-        <table class="data-table">
-          <thead>
-            <tr><th>Gravité</th><th>Type</th><th>Message</th><th>Utilisateur Impacté</th><th>Statut</th><th>Actions</th></tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let a of alerts; trackBy: trackById" class="table-row" [class.row-critical]="a.severity==='CRITICAL'">
-              <td><span class="sev-badge" [class]="getSeverityClass(a.severity)">{{ a.severity }}</span></td>
-              <td class="type-cell">{{ a.type?.replace(/_/g,' ') }}</td>
-              <td class="msg-cell">{{ a.message }}</td>
-              <td class="text-muted">
-                {{ a.affectedUserId?.firstName }} {{ a.affectedUserId?.lastName || '—' }}
-              </td>
-              <td><span class="status-pill" [class]="getStatusClass(a.status)">{{ a.status }}</span></td>
-              <td class="actions-cell" *ngIf="a.status==='OPEN'">
-                <button class="btn-sm btn-success" (click)="resolveAlert(a._id)">✅ Resolve</button>
-                <button class="btn-sm btn-ghost"   (click)="ignoreAlert(a._id)">🙈 Ignore</button>
-              </td>
-              <td *ngIf="a.status!=='OPEN'" class="text-muted">—</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ══════════════════════════════════ TAB: AI MONITOR ══════════ -->
-    <section *ngIf="activeTab==='ai'" class="tab-content">
-      <header class="page-header">
-        <div>
-          <h1>Panel de Surveillance IA</h1>
-          <p class="page-sub">Ollama · Gemini API Télémétrie</p>
-        </div>
-        <button class="btn-primary" [class.spinning]="aiRefreshing" (click)="refreshAI()">↻ Rafraîchir</button>
-      </header>
-      <div class="loading-card" *ngIf="aiRefreshing">Analyse des métriques système...</div>
-
-      <div class="ai-grid" *ngIf="!aiRefreshing">
-        <div class="ai-status-card">
-          <div class="card-title">🔌 Connexions Modèles Actives</div>
-          <div class="status-items">
-            <div class="status-item">
-              <span>Agent Principal (Gemini-1.5-Pro)</span>
-              <span class="sc-ok">● En Ligne</span>
-            </div>
-            <div class="status-item">
-              <span>Ollama (Llama3-Local)</span>
-              <span class="sc-warn">● Démarrage</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="ai-stats-grid">
-          <div class="stat-mini">
-            <div class="sm-label">Prédictions Totales</div>
-            <div class="sm-value">1,248</div>
-          </div>
-          <div class="stat-mini">
-            <div class="sm-label">Latence Moyenne</div>
-            <div class="sm-value">2.4s</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ══════════════════════════════════ TAB: SETTINGS ════════════ -->
-    <section *ngIf="activeTab==='settings'" class="tab-content">
-      <header class="page-header">
-        <div>
-          <h1>Paramètres de la Plateforme</h1>
-          <p class="page-sub">Configurez les politiques système et les horaires de travail</p>
-        </div>
-        <button class="btn-primary" [disabled]="settingsSaving" (click)="saveSettings()">
-          {{ settingsSaving ? 'Enregistrement…' : '💾 Tout Enregistrer' }}
+       </td>
+       <td><span class="status-pill" [class]="u.isActive ? 'active' : 'inactive'">{{ u.isActive ? 'Actif' : 'Inactif' }}</span></td>
+       <td class="text-muted">{{ formatDate(u.lastLogin) }}</td>
+       <td class="actions-cell">
+        <button class="btn-icon" (click)="openEditUser(u)" title="Modifier Profil">✏️</button>
+        <button class="btn-icon" (click)="openResetPass(u)" title="Reset Password">🔑</button>
+        <button class="btn-icon" (click)="toggleActive(u)" [title]="u.isActive ? 'Désactiver' : 'Activer'">
+         {{ u.isActive ? '🚫' : '✅' }}
         </button>
-      </header>
+        <button class="btn-icon btn-danger" (click)="deleteUser(u._id)" title="Supprimer Compte">🗑️</button>
+       </td>
+      </tr>
+     </tbody>
+    </table>
+    <div class="pagination">
+     <button class="btn-ghost" [disabled]="userPage===1" (click)="userPage=userPage-1; loadUsers()">← Préc.</button>
+     <span class="page-info">Page {{ userPage }}</span>
+     <button class="btn-ghost" [disabled]="users.length < 15" (click)="userPage=userPage+1; loadUsers()">Suiv. →</button>
+    </div>
+   </div>
+   <!-- Skeleton Loader for Users -->
+   <div class="table-card skeleton-card" *ngIf="loading['users'] && users.length === 0">
+    <div class="skeleton-header"></div>
+    <div class="skeleton-row" *ngFor="let i of [1,2,3,4,5]">
+     <div class="sk-circle"></div>
+     <div class="sk-line long"></div>
+     <div class="sk-line short"></div>
+     <div class="sk-line med"></div>
+    </div>
+   </div>
+  </section>
 
-      <div class="settings-grid" *ngIf="!loading['settings']">
-        <div class="settings-card">
-          <h3>🌍 Platform Identity</h3>
-          <div class="form-group mt-3">
-            <span class="label">Organization Name</span>
-            <input type="text" [(ngModel)]="settings.orgName" class="builder-input">
-          </div>
-          <div class="form-group mt-3">
-            <span class="label">Contact Email</span>
-            <input type="text" [(ngModel)]="settings.contactEmail" class="builder-input">
-          </div>
-        </div>
+  <!-- ══════════════════════════════ TAB: FORMATIONS ════════════ -->
+  <section *ngIf="activeTab==='formations'" class="tab-content">
+   <header class="page-header">
+    <div>
+     <h1>Modules de Formation</h1>
+     <p class="page-sub">Gérez les parcours d'apprentissage et les ressources SmartPM</p>
+    </div>
+    <div class="header-actions">
+     <button class="btn-primary" (click)="showCreateFormation = true">+ Nouveau Module</button>
+    </div>
+   </header>
 
-        <div class="settings-card">
-          <h3>🌴 Public Holidays</h3>
-          <p class="text-muted mb-3">Dates when automated compliance checks are ignored.</p>
-          <div class="holiday-list">
-            <div class="holiday-item" *ngFor="let h of settings.holidays">
-              <span>{{ h.date | date }} - {{ h.label }}</span>
-              <button class="sc-del" (click)="removeHoliday(h.date)">&times;</button>
-            </div>
-          </div>
-          <div class="add-holiday mt-3">
-            <input type="date" [(ngModel)]="newHoliday" class="builder-input">
-            <button class="btn-primary" (click)="addHoliday()">Add</button>
-          </div>
-        </div>
+   <!-- 🎓 Premium Formation Cards -->
+   <div class="grid-3 mt-4">
+    <div class="formation-card-item premium" *ngFor="let f of activeFormations">
+     <div class="f-type-tag">{{ f.targetPhase }}</div>
+     <div class="f-content">
+      <h3>{{ f.title }}</h3>
+      <p class="f-desc">{{ f.description }}</p>
+      
+      <div class="f-stats-row">
+       <div class="f-stat">
+        <span class="fs-icon">⏳</span>
+        <span class="fs-text">{{ f.durationWeeks }}w</span>
+       </div>
+       <div class="f-stat">
+        <span class="fs-icon">📝</span>
+        <span class="fs-text">{{ f.quizDurationMinutes }}m</span>
+       </div>
+       <div class="f-stat">
+        <span class="fs-icon">📁</span>
+        <span class="fs-text">{{ f.materials?.length || 0 }}</span>
+       </div>
       </div>
-    </section>
-  </main>
+     </div>
+     <div class="f-footer">
+      <button class="btn-primary btn-sm btn-f-wide" (click)="openAssignModal(f)">Assign Team</button>
+     </div>
+    </div>
+   </div>
+
+   <!-- 👥 Real-Time Assignments Status -->
+   <div class="section-block mt-5">
+    <div class="section-header-row">
+      <h2 class="section-title">👥 Team Training Status</h2>
+      <span class="badge-grey">{{ assignmentStats.length }} Members/Managers</span>
+    </div>
+    
+    <div class="table-card">
+     <table class="data-table">
+      <thead>
+       <tr>
+        <th>Member / Manager</th>
+        <th>Path</th>
+        <th>Progress</th>
+        <th>Score</th>
+        <th>Status</th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr *ngFor="let a of assignmentStats" class="table-row">
+        <td class="user-cell">
+         <div class="avatar-sm">{{ a.userName.charAt(0) }}</div>
+         <div class="user-info">
+          <strong>{{ a.userName }}</strong>
+          <span class="badge-role">{{ a.role }}</span>
+         </div>
+        </td>
+        <td><span class="f-path-tag">{{ a.formation }}</span></td>
+        <td>
+          <div class="progress-wrap">
+           <div class="progress-bar" [style.width.%]="a.progress"></div>
+           <span class="progress-text">{{ a.progress }}%</span>
+          </div>
+        </td>
+        <td class="text-center"><strong>{{ a.score !== null ? a.score + '%' : '--' }}</strong></td>
+        <td>
+         <span class="status-pill-minimal" [class]="a.status?.replace(' ', '-')">
+          {{ a.status }}
+         </span>
+        </td>
+       </tr>
+      </tbody>
+     </table>
+     <div class="empty-state" *ngIf="assignmentStats.length === 0">No members found to show training status.</div>
+    </div>
+   </div>
+
+   <!-- 📥 Premium Course Builder Modal -->
+   <div class="modal-overlay" *ngIf="showCreateFormation">
+    <div class="modal-card course-builder">
+     <!-- Absolute Close Button -->
+     <button class="btn-abs-close" (click)="showCreateFormation = false">&times;</button>
+     
+     <div class="modal-header">
+      <div class="mh-left">
+       <span class="mh-badge">NEW</span>
+       <h3>🎓 Formation Architect</h3>
+      </div>
+     </div>
+     
+     <div class="modal-body builder-layout">
+      <!-- Left: Basic Config -->
+      <div class="builder-side config-side">
+       <label class="field-label">General Configuration</label>
+       <div class="form-group mb-3">
+        <span class="label">Formation Path</span>
+        <select [(ngModel)]="newFormation.title" class="builder-input">
+         <option value="LLR">Low Level Requirements (LLR)</option>
+         <option value="LLT">Low Level Testing (LLT)</option>
+         <option value="HLT">High Level Testing (HLT)</option>
+        </select>
+       </div>
+       
+       <div class="row-flex gap-2">
+        <div class="form-group flex-1">
+         <span class="label">Duration (Weeks)</span>
+         <input type="number" [(ngModel)]="newFormation.durationWeeks" class="builder-input" min="1" max="4">
+        </div>
+        <div class="form-group flex-1">
+         <span class="label">Quiz (Min)</span>
+         <input type="number" [(ngModel)]="newFormation.quizDurationMinutes" class="builder-input" min="15" max="60">
+        </div>
+       </div>
+
+       <div class="form-group mt-3">
+        <span class="label">Objective / Description</span>
+        <textarea [(ngModel)]="newFormation.description" class="builder-area" placeholder="Briefly explain what this training covers..."></textarea>
+       </div>
+      </div>
+
+      <!-- Right: Content Builder -->
+      <div class="builder-side syllabus-side">
+       <label class="field-label">📚 Curriculum Builder ({{ newFormation.materials.length }} Items)</label>
+       
+       <div class="curriculum-preview custom-scroll">
+        <div class="syllabus-card-compact" *ngFor="let m of newFormation.materials; let i = index">
+         <div class="sc-drag">⋮⋮</div>
+         <div class="sc-icon">{{ m.type === 'VIDEO' ? '🎥' : '📄' }}</div>
+         <div class="sc-main">
+          <strong>{{ m.title }}</strong>
+          <span>{{ m.url }}</span>
+         </div>
+         <button class="sc-del" (click)="newFormation.materials.splice(i,1)">&times;</button>
+        </div>
+        <div class="empty-curriculum" *ngIf="newFormation.materials.length === 0">
+         <div class="ec-icon">📁</div>
+         <p>Your syllabus is empty. Start adding lessons below.</p>
+        </div>
+       </div>
+
+       <div class="add-lesson-bar mt-3">
+        <div class="lesson-inputs">
+         <input type="text" [(ngModel)]="tempMaterial.title" placeholder="Lesson name...">
+         <input type="text" [(ngModel)]="tempMaterial.url" placeholder="Resource link (URL)...">
+        </div>
+        <div class="lesson-footer mt-2">
+         <select [(ngModel)]="tempMaterial.type" class="flex-1">
+          <option value="VIDEO">Video Lecture</option>
+          <option value="PDF">PDF Guide</option>
+          <option value="DOCUMENT">Document</option>
+         </select>
+         <button class="btn-primary btn-sm" (click)="addMaterialToFormation()">+ Add Lesson</button>
+        </div>
+       </div>
+      </div>
+     </div>
+
+     <div class="modal-footer">
+      <button class="btn-ghost" (click)="showCreateFormation = false">Annuler</button>
+      <button class="btn-primary" (click)="saveFormation()">Publier le Module</button>
+     </div>
+    </div>
+   </div>
+  </section>
+
+  <!-- ══════════════════════════════════ TAB: ALERTS ══════════════ -->
+  <section *ngIf="activeTab==='alerts'" class="tab-content">
+   <header class="page-header">
+    <div>
+     <h1>Alertes & Conformité</h1>
+     <p class="page-sub">{{ alertTotal }} alertes totales · Conformité SmartPM</p>
+    </div>
+    <button class="btn-primary" (click)="loadAlerts()">↻ Rafraîchir</button>
+   </header>
+
+   <!-- Alert Stats -->
+   <div class="stat-pills">
+    <div class="stat-pill pill-red">
+     <span class="sp-num">{{ alertStats.openCritical || 0 }}</span>
+     <span class="sp-label">Ouvertes (Critiques)</span>
+    </div>
+   </div>
+
+   <!-- Alerts Table -->
+   <div class="table-card" *ngIf="!loading['alerts']">
+    <table class="data-table">
+     <thead>
+      <tr><th>Gravité</th><th>Type</th><th>Message</th><th>Utilisateur Impacté</th><th>Statut</th><th>Actions</th></tr>
+     </thead>
+     <tbody>
+      <tr *ngFor="let a of alerts; trackBy: trackById" class="table-row" [class.row-critical]="a.severity==='CRITICAL'">
+       <td><span class="sev-badge" [class]="getSeverityClass(a.severity)">{{ a.severity }}</span></td>
+       <td class="type-cell">{{ a.type?.replace(/_/g,' ') }}</td>
+       <td class="msg-cell">{{ a.message }}</td>
+       <td class="text-muted">
+        {{ a.affectedUserId?.firstName }} {{ a.affectedUserId?.lastName || '—' }}
+       </td>
+       <td><span class="status-pill" [class]="getStatusClass(a.status)">{{ a.status }}</span></td>
+       <td class="actions-cell" *ngIf="a.status==='OPEN'">
+        <button class="btn-sm btn-success" (click)="resolveAlert(a._id)">✅ Resolve</button>
+        <button class="btn-sm btn-ghost"  (click)="ignoreAlert(a._id)">🙈 Ignore</button>
+       </td>
+       <td *ngIf="a.status!=='OPEN'" class="text-muted">—</td>
+      </tr>
+     </tbody>
+    </table>
+   </div>
+  </section>
+
+  <!-- ══════════════════════════════════ TAB: AI MONITOR ══════════ -->
+  <section *ngIf="activeTab==='ai'" class="tab-content">
+   <header class="page-header">
+    <div>
+     <h1>Panel de Surveillance IA</h1>
+     <p class="page-sub">Ollama · Gemini API Télémétrie</p>
+    </div>
+    <button class="btn-primary" [class.spinning]="aiRefreshing" (click)="refreshAI()">↻ Rafraîchir</button>
+   </header>
+   <div class="loading-card" *ngIf="aiRefreshing">Analyse des métriques système...</div>
+
+   <div class="ai-grid" *ngIf="!aiRefreshing">
+    <div class="ai-status-card">
+     <div class="card-title">🔌 Connexions Modèles Actives</div>
+     <div class="status-items">
+      <div class="status-item">
+       <span>Agent Principal (Gemini-1.5-Pro)</span>
+       <span class="sc-ok">● En Ligne</span>
+      </div>
+      <div class="status-item">
+       <span>Ollama (Llama3-Local)</span>
+       <span class="sc-warn">● Démarrage</span>
+      </div>
+     </div>
+    </div>
+
+    <div class="ai-stats-grid">
+     <div class="stat-mini">
+      <div class="sm-label">Prédictions Totales</div>
+      <div class="sm-value">1,248</div>
+     </div>
+     <div class="stat-mini">
+      <div class="sm-label">Latence Moyenne</div>
+      <div class="sm-value">2.4s</div>
+     </div>
+    </div>
+   </div>
+  </section>
+
+  <!-- ══════════════════════════════════ TAB: SETTINGS ════════════ -->
+  <section *ngIf="activeTab==='settings'" class="tab-content">
+   <header class="page-header">
+    <div>
+     <h1>Paramètres de la Plateforme</h1>
+     <p class="page-sub">Configurez les politiques système et les horaires de travail</p>
+    </div>
+    <button class="btn-primary" [disabled]="settingsSaving" (click)="saveSettings()">
+     {{ settingsSaving ? 'Enregistrement…' : '💾 Tout Enregistrer' }}
+    </button>
+   </header>
+
+   <div class="settings-grid" *ngIf="!loading['settings']">
+    <div class="settings-card">
+     <h3>🌍 Platform Identity</h3>
+     <div class="form-group mt-3">
+      <span class="label">Organization Name</span>
+      <input type="text" [(ngModel)]="settings.orgName" class="builder-input">
+     </div>
+     <div class="form-group mt-3">
+      <span class="label">Contact Email</span>
+      <input type="text" [(ngModel)]="settings.contactEmail" class="builder-input">
+     </div>
+    </div>
+
+    <div class="settings-card">
+     <h3>🌴 Public Holidays</h3>
+     <p class="text-muted mb-3">Dates when automated compliance checks are ignored.</p>
+     <div class="holiday-list">
+      <div class="holiday-item" *ngFor="let h of settings.holidays">
+       <span>{{ h.date | date }} - {{ h.label }}</span>
+       <button class="sc-del" (click)="removeHoliday(h.date)">&times;</button>
+      </div>
+     </div>
+     <div class="add-holiday mt-3">
+      <input type="date" [(ngModel)]="newHoliday" class="builder-input">
+      <button class="btn-primary" (click)="addHoliday()">Add</button>
+     </div>
+    </div>
+   </div>
+  </section>
+ </main>
 </div>
 
 
-    <!-- ══════════════════════════════════ MODALS ══════════════════════ -->
+  <!-- ══════════════════════════════════ MODALS ══════════════════════ -->
 
-    <!-- Modal: Create User -->
-    <div class="modal-overlay" *ngIf="showCreateUser" (click)="showCreateUser=false">
-      <div class="modal" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h3>👤 Create New User</h3>
-          <button class="btn-abs-close" (click)="showCreateUser=false">&times;</button>
-        </div>
-        <div class="modal-body">
-          <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
-          
-          <div class="form-grid-2">
-            <div class="form-group">
-              <span class="label">First Name</span>
-              <input type="text" [(ngModel)]="newUser.firstName" class="builder-input" placeholder="e.g. Jean">
-            </div>
-            <div class="form-group">
-              <span class="label">Last Name</span>
-              <input type="text" [(ngModel)]="newUser.lastName" class="builder-input" placeholder="e.g. Dupont">
-            </div>
-          </div>
-          <div class="form-group mt-3">
-            <span class="label">Email Address</span>
-            <input type="email" [(ngModel)]="newUser.email" class="builder-input" placeholder="email@company.com">
-          </div>
-          <div class="form-group mt-3">
-            <span class="label">Temporary Password</span>
-            <input type="password" [(ngModel)]="newUser.password" class="builder-input" placeholder="••••••••">
-          </div>
-          <div class="form-group mt-3">
-            <span class="label">Assigned Role</span>
-            <select [(ngModel)]="newUser.role" class="builder-input">
-              <option value="ADMIN">ADMIN (System Owner)</option>
-              <option value="MANAGER">MANAGER (Project Lead)</option>
-              <option value="MEMBER">MEMBER (Aerospace Engineer)</option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer mt-4">
-          <button class="btn-ghost" (click)="showCreateUser=false">Cancel</button>
-          <button class="btn-primary btn-glow" (click)="createUser()">🚀 Create User</button>
-        </div>
-      </div>
+  <!-- Modal: Create User -->
+  <div class="modal-overlay" *ngIf="showCreateUser" (click)="showCreateUser=false">
+   <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+     <h3>👤 Create New User</h3>
+     <button class="btn-abs-close" (click)="showCreateUser=false">&times;</button>
     </div>
+    <div class="modal-body">
+     <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+     
+     <div class="form-grid-2">
+      <div class="form-group">
+       <span class="label">First Name</span>
+       <input type="text" [(ngModel)]="newUser.firstName" class="builder-input" placeholder="e.g. Jean">
+      </div>
+      <div class="form-group">
+       <span class="label">Last Name</span>
+       <input type="text" [(ngModel)]="newUser.lastName" class="builder-input" placeholder="e.g. Dupont">
+      </div>
+     </div>
+     <div class="form-group mt-3">
+      <span class="label">Email Address</span>
+      <input type="email" [(ngModel)]="newUser.email" class="builder-input" placeholder="email@company.com">
+     </div>
+     <div class="form-group mt-3">
+      <span class="label">Temporary Password</span>
+      <input type="password" [(ngModel)]="newUser.password" class="builder-input" placeholder="••••••••">
+     </div>
+     <div class="form-group mt-3">
+      <span class="label">Assigned Role</span>
+      <select [(ngModel)]="newUser.role" class="builder-input">
+       <option value="ADMIN">ADMIN (System Owner)</option>
+       <option value="MANAGER">MANAGER (Project Lead)</option>
+       <option value="MEMBER">MEMBER (Aerospace Engineer)</option>
+      </select>
+     </div>
+    </div>
+    <div class="modal-footer mt-4">
+     <button class="btn-ghost" (click)="showCreateUser=false">Cancel</button>
+     <button class="btn-primary btn-glow" (click)="createUser()">🚀 Create User</button>
+    </div>
+   </div>
+  </div>
 
-    <!-- Modal: Edit User -->
-    <div class="modal-overlay" *ngIf="showEditUser" (click)="showEditUser=false">
-      <div class="modal" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h3>✏️ Edit User Profile</h3>
-          <button class="btn-abs-close" (click)="showEditUser=false">&times;</button>
-        </div>
-        <div class="modal-body" *ngIf="editingUser">
-          <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
-          
-          <div class="form-grid-2">
-            <div class="form-group">
-              <span class="label">First Name</span>
-              <input type="text" [(ngModel)]="editingUser.firstName" class="builder-input">
-            </div>
-            <div class="form-group">
-              <span class="label">Last Name</span>
-              <input type="text" [(ngModel)]="editingUser.lastName" class="builder-input">
-            </div>
-          </div>
-          <div class="form-group mt-3">
-            <span class="label">Email</span>
-            <input type="email" [(ngModel)]="editingUser.email" class="builder-input">
-          </div>
-          <div class="form-group mt-3">
-            <span class="label">Role Management</span>
-            <select [(ngModel)]="editingUser.role" class="builder-input">
-              <option value="ADMIN">ADMIN</option>
-              <option value="MANAGER">MANAGER</option>
-              <option value="MEMBER">MEMBER</option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-ghost" (click)="showEditUser=false">Discard</button>
-          <button class="btn-primary" (click)="saveEditUser()">💾 Save Changes</button>
-        </div>
-      </div>
+  <!-- Modal: Edit User -->
+  <div class="modal-overlay" *ngIf="showEditUser" (click)="showEditUser=false">
+   <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+     <h3>✏️ Edit User Profile</h3>
+     <button class="btn-abs-close" (click)="showEditUser=false">&times;</button>
     </div>
+    <div class="modal-body" *ngIf="editingUser">
+     <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+     
+     <div class="form-grid-2">
+      <div class="form-group">
+       <span class="label">First Name</span>
+       <input type="text" [(ngModel)]="editingUser.firstName" class="builder-input">
+      </div>
+      <div class="form-group">
+       <span class="label">Last Name</span>
+       <input type="text" [(ngModel)]="editingUser.lastName" class="builder-input">
+      </div>
+     </div>
+     <div class="form-group mt-3">
+      <span class="label">Email</span>
+      <input type="email" [(ngModel)]="editingUser.email" class="builder-input">
+     </div>
+     <div class="form-group mt-3">
+      <span class="label">Role Management</span>
+      <select [(ngModel)]="editingUser.role" class="builder-input">
+       <option value="ADMIN">ADMIN</option>
+       <option value="MANAGER">MANAGER</option>
+       <option value="MEMBER">MEMBER</option>
+      </select>
+     </div>
+    </div>
+    <div class="modal-footer">
+     <button class="btn-ghost" (click)="showEditUser=false">Discard</button>
+     <button class="btn-primary" (click)="saveEditUser()">💾 Save Changes</button>
+    </div>
+   </div>
+  </div>
 
-    <!-- Modal: Reset Password -->
-    <div class="modal-overlay" *ngIf="showResetPass" (click)="showResetPass=false">
-      <div class="modal" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h3>🔑 Reset Password</h3>
-          <button class="btn-abs-close" (click)="showResetPass=false">&times;</button>
-        </div>
-        <div class="modal-body" *ngIf="editingUser">
-          <p class="text-muted mb-3">Setting a new password for <strong>{{ editingUser.firstName }} {{ editingUser.lastName }}</strong></p>
-          <div class="form-group">
-            <span class="label">New Password</span>
-            <input type="password" [(ngModel)]="newPassword" class="builder-input" placeholder="Enter new password...">
-            <span class="field-error" *ngIf="errorMessage">{{ errorMessage }}</span>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-ghost" (click)="showResetPass=false">Cancel</button>
-          <button class="btn-danger" (click)="doResetPass()">🔑 Update Password</button>
-        </div>
-      </div>
+  <!-- Modal: Reset Password -->
+  <div class="modal-overlay" *ngIf="showResetPass" (click)="showResetPass=false">
+   <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+     <h3>🔑 Reset Password</h3>
+     <button class="btn-abs-close" (click)="showResetPass=false">&times;</button>
     </div>
+    <div class="modal-body" *ngIf="editingUser">
+     <p class="text-muted mb-3">Setting a new password for <strong>{{ editingUser.firstName }} {{ editingUser.lastName }}</strong></p>
+     <div class="form-group">
+      <span class="label">New Password</span>
+      <input type="password" [(ngModel)]="newPassword" class="builder-input" placeholder="Enter new password...">
+      <span class="field-error" *ngIf="errorMessage">{{ errorMessage }}</span>
+     </div>
+    </div>
+    <div class="modal-footer">
+     <button class="btn-ghost" (click)="showResetPass=false">Cancel</button>
+     <button class="btn-danger" (click)="doResetPass()">🔑 Update Password</button>
+    </div>
+   </div>
+  </div>
 
 <!-- Audits Modal -->
 
 <div class="modal-overlay" *ngIf="showAuditLogs" (click)="showAuditLogs=false">
-  <div class="modal" (click)="$event.stopPropagation()">
-    <div class="modal-header"><h2>📋 Audit Logs</h2></div>
-    <div class="modal-body">
-      <table class="data-table">
-        <tr *ngFor="let l of auditLogs"><td>{{ l.adminEmail }}</td><td>{{ l.action }}</td></tr>
-      </table>
-    </div>
+ <div class="modal" (click)="$event.stopPropagation()">
+  <div class="modal-header"><h2>📋 Audit Logs</h2></div>
+  <div class="modal-body">
+   <table class="data-table">
+    <tr *ngFor="let l of auditLogs"><td>{{ l.adminEmail }}</td><td>{{ l.action }}</td></tr>
+   </table>
   </div>
+ </div>
 </div>
 
 <!-- ❓ Universal Confirm Modal -->
 <div class="modal-overlay" *ngIf="confirmData.show" (click)="closeConfirm()">
-  <div class="modal modal-sm" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>{{ confirmData.title }}</h3>
-    </div>
-    <div class="modal-body">
-      <p>{{ confirmData.message }}</p>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-ghost" (click)="closeConfirm()">Annuler</button>
-      <button class="btn-danger" (click)="executeConfirm()">Oui, Confirmer</button>
-    </div>
+ <div class="modal modal-sm" (click)="$event.stopPropagation()">
+  <div class="modal-header">
+   <h3>{{ confirmData.title }}</h3>
   </div>
+  <div class="modal-body">
+   <p>{{ confirmData.message }}</p>
+  </div>
+  <div class="modal-footer">
+   <button class="btn-ghost" (click)="closeConfirm()">Annuler</button>
+   <button class="btn-danger" (click)="executeConfirm()">Oui, Confirmer</button>
+  </div>
+ </div>
 </div>

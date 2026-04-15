@@ -13,18 +13,18 @@ import { JwtStrategy } from '../auth/strategies/jwt.strategy';
 import { NotificationModule } from '../notification/notification.module';
 
 @Module({
-  imports: [
-    PassportModule,
-    NotificationModule,
-    MongooseModule.forFeature([
-      { name: Project.name, schema: ProjectSchema },
-      { name: Activity.name, schema: ActivitySchema },
-      { name: SubActivity.name, schema: SubActivitySchema },
-      { name: User.name, schema: UserSchema },
-      { name: Task.name, schema: TaskSchema }
-    ])
-  ],
-  providers: [ProjectService, JwtStrategy],
-  controllers: [ProjectController]
+ imports: [
+  PassportModule,
+  NotificationModule,
+  MongooseModule.forFeature([
+   { name: Project.name, schema: ProjectSchema },
+   { name: Activity.name, schema: ActivitySchema },
+   { name: SubActivity.name, schema: SubActivitySchema },
+   { name: User.name, schema: UserSchema },
+   { name: Task.name, schema: TaskSchema }
+  ])
+ ],
+ providers: [ProjectService, JwtStrategy],
+ controllers: [ProjectController]
 })
 export class ProjectModule {}

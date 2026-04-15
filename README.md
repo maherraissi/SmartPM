@@ -1,6 +1,6 @@
 # 🚀 SmartPM - Smart Aerospace Engineering Execution & Competency Platform
 
-Plateforme d'exécution d'ingénierie conforme aux normes DO-178C. 
+Plateforme d'exécution d'ingénierie conforme aux normes . 
 Conçue par [Maher Raissi](https://github.com/maherraissi/SmartPM).
 
 ## 🧰 Environnement Technique & Versions

@@ -1,96 +1,96 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
 .side-nav {
-  width: 250px;
-  min-width: 250px;
-  height: calc(100vh - 64px);
-  background: #ffffff;
-  border-right: 1px solid rgba(45, 106, 79, 0.08);
+ width: 250px;
+ min-width: 250px;
+ height: calc(100vh - 64px);
+ background: #ffffff;
+ border-right: 1px solid rgba(45, 106, 79, 0.08);
+ display: flex;
+ flex-direction: column;
+ font-family: 'Inter', sans-serif;
+ transition: all 0.3s ease;
+ box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+
+ .sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(45,106,79,0.05);
+  margin-bottom: 1rem;
+
+  .app-status {
+   display: flex; align-items: center; gap: 0.6rem;
+   font-size: 0.75rem; color: #52796f; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+   
+   .pulse-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #2d6a4f;
+    box-shadow: 0 0 10px rgba(45,106,79,0.2);
+    animation: pulse-dot 2s infinite;
+   }
+  }
+ }
+
+ .nav-menu {
+  list-style: none;
+  padding: 0 0.75rem;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  font-family: 'Inter', sans-serif;
-  transition: all 0.3s ease;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+  height: 100%;
+  gap: 0.35rem;
 
-  .sidebar-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid rgba(45,106,79,0.05);
-    margin-bottom: 1rem;
+  .nav-item {
+   display: flex;
+   align-items: center;
+   gap: 1rem;
+   padding: 0.85rem 1.1rem;
+   cursor: pointer;
+   color: #52796f;
+   font-size: 0.9rem;
+   font-weight: 500;
+   border-radius: 12px;
+   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+   position: relative;
+   border: 1px solid transparent;
 
-    .app-status {
-      display: flex; align-items: center; gap: 0.6rem;
-      font-size: 0.75rem; color: #52796f; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
-      
-      .pulse-dot {
-        width: 8px; height: 8px; border-radius: 50%; background: #2d6a4f;
-        box-shadow: 0 0 10px rgba(45,106,79,0.2);
-        animation: pulse-dot 2s infinite;
-      }
+   .nav-icon { 
+    font-size: 1.25rem; 
+    transition: transform 0.2s;
+   }
+
+   &:hover {
+    background: #e6f2eb;
+    color: #1b4332;
+    transform: translateX(4px);
+    .nav-icon { transform: scale(1.15); }
+   }
+
+   &.active {
+    background: rgba(45, 106, 79, 0.08);
+    color: #2d6a4f;
+    border-color: rgba(45, 106, 79, 0.15);
+    font-weight: 600;
+    
+    &::after {
+     content: '';
+     position: absolute; left: -0.75rem; top: 20%; height: 60%; width: 3px;
+     background: #2d6a4f; border-radius: 0 4px 4px 0;
     }
+   }
+
+   &.settings {
+    margin-top: auto;
+    border-top: 1px solid rgba(45, 106, 79, 0.05);
+    border-radius: 0;
+    padding-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    &:hover { transform: none; background: transparent; }
+   }
   }
-
-  .nav-menu {
-    list-style: none;
-    padding: 0 0.75rem;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    gap: 0.35rem;
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.85rem 1.1rem;
-      cursor: pointer;
-      color: #52796f;
-      font-size: 0.9rem;
-      font-weight: 500;
-      border-radius: 12px;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      border: 1px solid transparent;
-
-      .nav-icon { 
-        font-size: 1.25rem; 
-        transition: transform 0.2s;
-      }
-
-      &:hover {
-        background: #e6f2eb;
-        color: #1b4332;
-        transform: translateX(4px);
-        .nav-icon { transform: scale(1.15); }
-      }
-
-      &.active {
-        background: rgba(45, 106, 79, 0.08);
-        color: #2d6a4f;
-        border-color: rgba(45, 106, 79, 0.15);
-        font-weight: 600;
-        
-        &::after {
-          content: '';
-          position: absolute; left: -0.75rem; top: 20%; height: 60%; width: 3px;
-          background: #2d6a4f; border-radius: 0 4px 4px 0;
-        }
-      }
-
-      &.settings {
-        margin-top: auto;
-        border-top: 1px solid rgba(45, 106, 79, 0.05);
-        border-radius: 0;
-        padding-top: 1.5rem;
-        margin-bottom: 1.5rem;
-        &:hover { transform: none; background: transparent; }
-      }
-    }
-  }
+ }
 }
 
 @keyframes pulse-dot {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.8; }
+ 0% { transform: scale(0.95); opacity: 0.8; }
+ 50% { transform: scale(1.1); opacity: 1; }
+ 100% { transform: scale(0.95); opacity: 0.8; }
 }
