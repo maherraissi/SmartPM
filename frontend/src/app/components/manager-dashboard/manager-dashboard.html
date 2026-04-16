@@ -1,392 +1,413 @@
-<!-- Dashboard Dashboard Shell -->
+<!-- Manager Dashboard Shell -->
 <div class="manager-shell">
- <!-- 🛰️ Sidebar Mission Control -->
- <aside class="manager-sidebar">
-  <div class="sidebar-brand">
-   <div class="brand-icon">💎</div>
-   <div class="brand-info">
-    <div class="brand-title">SmartPM</div>
-    <div class="brand-sub">Gestion Intelligente</div>
-   </div>
-  </div>
 
-  <nav class="sidebar-nav">
-   <button class="nav-item" [class.active]="activeTab === 'overview'" (click)="setTab('overview')">
-    <span class="nav-icon">📊</span> Dashboard
-   </button>
-   <button class="nav-item" [class.active]="activeTab === 'projects'" (click)="setTab('projects')">
-    <span class="nav-icon">📁</span> Projets
-   </button>
-   <button class="nav-item" [class.active]="activeTab === 'archives'" (click)="setTab('archives')">
-    <span class="nav-icon">📦</span> Archives
-   </button>
-   <button class="nav-item" [class.active]="activeTab === 'team'" (click)="setTab('team')">
-    <span class="nav-icon">👥</span> Équipe
-   </button>
-   <button class="nav-item" [class.active]="activeTab === 'quality'" (click)="setTab('quality')">
-    <span class="nav-icon">🛡️</span> Qualité
-   </button>
-   <button class="nav-item" [class.active]="activeTab === 'planning'" (click)="setTab('planning')">
-    <span class="nav-icon">🗓️</span> Planning
-   </button>
-  </nav>
-
-  <div class="sidebar-footer">
-   <div class="sidebar-user">
-    <div class="su-avatar">M</div>
-    <div class="su-info">
-     <div class="su-name">Project Manager</div>
-     <div class="su-role">LEAD</div>
-    </div>
-   </div>
-  </div>
- </aside>
-
- <!-- 🚀 Main Operational Content -->
- <main class="manager-main">
-  <header class="page-header">
-   <div class="header-left">
-    <h1>Tour de Contrôle SmartPM</h1>
-    <p class="page-sub">Vue Opérationnelle & Performance des Ressources</p>
-   </div>
-   <div class="header-actions">
-    <button class="btn-primary" (click)="goToWizard()">+ Nouveau Projet</button>
-    <button class="btn-outline">Télécharger Rapport</button>
-    
-    <button class="btn-logout-header" (click)="logout()" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px;">
-     <span class="nav-icon">🚪</span> Déconnexion
-    </button>
-
-   </div>
-  </header>
-  <!-- 📊 Dashboard Content -->
-  <div class="tab-content-fade" [ngSwitch]="activeTab">
-   
-   <!-- OVERVIEW TAB -->
-   <div *ngSwitchCase="'overview'">
-    <div class="kpi-grid">
-     <div class="kpi-card">
-      <div class="kpi-top">
-       <span class="kpi-icon">📁</span>
-       <span class="badge">Live</span>
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="manager-sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">💎</div>
+      <div class="brand-info">
+        <div class="brand-title">SmartPM</div>
+        <div class="brand-sub">Gestion Intelligente</div>
       </div>
-      <span class="kpi-val">{{ activeProjects || 0 }}</span>
-      <span class="kpi-label">Projets Actifs</span>
-     </div>
-     <div class="kpi-card">
-      <div class="kpi-top"><span class="kpi-icon">👥</span></div>
-      <span class="kpi-val">{{ teamMembers || 0 }}</span>
-      <span class="kpi-label">Membres Équipe</span>
-     </div>
-     <div class="kpi-card danger">
-      <div class="kpi-top"><span class="kpi-icon">🚨</span></div>
-      <span class="kpi-val">{{ delayedTasks || 0 }}</span>
-      <span class="kpi-label">Tâches en Retard</span>
-     </div>
-     <div class="kpi-card success">
-      <div class="kpi-top"><span class="kpi-icon">✅</span></div>
-      <span class="kpi-val">{{ milestonesCompleted || 0 }}</span>
-      <span class="kpi-label">Jalons Validés</span>
-     </div>
     </div>
 
-    <div class="projects-list-card">
-     <div class="card-header">
-      <h3>📁 Vos Projets SmartPM Actifs</h3>
-      <span class="badge">{{ projects.length }} en cours</span>
-     </div>
-     <div class="table-container">
-      <table class="simple-table" *ngIf="projects.length > 0">
-       <thead>
-        <tr>
-         <th>Nom du Projet</th>
-         <th>Responsable</th>
-         <th>Avancement</th>
-         <th>Statut</th>
-         <th>Actions</th>
-        </tr>
-       </thead>
-       <tbody>
-        <tr *ngFor="let p of projects">
-         <td class="bold">
-          <span class="project-name-link" (click)="viewProject(p.id)">{{ p.name }}</span>
-         </td>
-         <td>Project Manager</td>
-         <td>
-          <div class="mini-progress-box">
-           <span class="p-text">{{ p.progress }}%</span>
-           <div class="mini-bar"><div class="fill" [style.width.%]="p.progress"></div></div>
+    <nav class="sidebar-nav">
+      <button class="nav-item" [class.active]="activeTab==='overview'" (click)="setTab('overview')">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='projects'" (click)="setTab('projects')">
+        <span class="nav-icon">📁</span> Projets
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='archives'" (click)="setTab('archives')">
+        <span class="nav-icon">📦</span> Archives
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='team'" (click)="setTab('team')">
+        <span class="nav-icon">👥</span> Équipe
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='quality'" (click)="setTab('quality')">
+        <span class="nav-icon">🛡️</span> Qualité
+      </button>
+      <button class="nav-item" [class.active]="activeTab==='planning'" (click)="setTab('planning')">
+        <span class="nav-icon">🗓️</span> Planning
+      </button>
+      <div class="sim-nav-divider">IA & Simulation</div>
+      <button class="nav-item nav-sim" [class.active]="activeTab==='simulate'" (click)="setTab('simulate')">
+        <span class="nav-icon">🧪</span> Simulateur AI
+        <span class="nav-badge">Ollama</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="su-avatar">M</div>
+        <div class="su-info">
+          <div class="su-name">Project Manager</div>
+          <div class="su-role">LEAD</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <main class="manager-main">
+    <header class="page-header">
+      <div class="header-left">
+        <h1>Tour de Contrôle SmartPM</h1>
+        <p class="page-sub">Vue Opérationnelle &amp; Performance des Ressources</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-primary" (click)="goToWizard()">+ Nouveau Projet</button>
+        <button class="btn-outline">Rapport PDF</button>
+        <button class="btn-danger" (click)="logout()">🚪 Déconnexion</button>
+      </div>
+    </header>
+
+    <div class="tab-content-fade" [ngSwitch]="activeTab">
+
+      <!-- ── OVERVIEW ── -->
+      <div *ngSwitchCase="'overview'">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-top"><span class="kpi-icon">📁</span><span class="badge">Live</span></div>
+            <span class="kpi-val">{{ activeProjects }}</span>
+            <span class="kpi-label">Projets Actifs</span>
           </div>
-         </td>
-         <td><span class="p-status" [ngClass]="p.status">{{ p.status }}</span></td>
-         <td><button class="btn-action" (click)="viewProject(p.id)">Ouvrir</button></td>
-        </tr>
-       </tbody>
-      </table>
-      <div class="empty-state" *ngIf="projects.length === 0 && !isLoading">
-       <p>Aucun projet actif. Cliquez sur "+ Nouveau Projet" pour commencer la mission.</p>
-      </div>
-      <div class="empty-state" *ngIf="isLoading" style="opacity: 0.6;">
-       <p>🔄 Chargement des données opérationnelles...</p>
-      </div>
-     </div>
-    </div>
-   </div>
-
-   <!-- QUALITY TAB (Aerospace Standard) -->
-   <div *ngSwitchCase="'quality'" class="quality-grid-pro">
-    <div class="hero-card">
-     <div class="q-header">
-      <div class="q-title-box">
-       <div class="q-icon-main">🛡️</div>
-       <div>
-        <h3>Contrôle de Conformité </h3>
-        <p>Analyse temps-réel de l'intégrité du cycle de vie logiciel.</p>
-       </div>
-      </div>
-      <button class="btn-primary-sm" (click)="launchAudit()">Lancer Audit Complet</button>
-     </div>
-     
-     <div class="q-metrics-row mt-4">
-      <div class="q-metric-item">
-       <div class="q-metric-label">Couverture Traceabilité</div>
-       <div class="q-metric-value pro-emerald">{{ cockpitData?.traceabilityCoverage || 88 }}%</div>
-       <div class="q-metric-bar"><div class="fill" [style.width.%]="cockpitData?.traceabilityCoverage || 88"></div></div>
-      </div>
-      <div class="q-metric-item">
-       <div class="q-metric-label">Conformité Processus</div>
-       <div class="q-metric-value pro-emerald">{{ cockpitData?.processCompliance || 94 }}%</div>
-       <div class="q-metric-bar"><div class="fill" [style.width.%]="cockpitData?.processCompliance || 94"></div></div>
-      </div>
-      <div class="q-metric-item">
-       <div class="q-metric-label">Risques de Sécurité</div>
-       <div class="q-metric-value pro-red">{{ alerts.length }}</div>
-       <div class="q-metric-sub">Alertes critiques</div>
-      </div>
-     </div>
-    </div>
-
-    <div class="quality-flex-row">
-     <div class="alerts-list-card flex-2">
-      <h3>🚨 Alertes de Qualité & Sécurité</h3>
-      <div class="alert-item-pro" *ngFor="let a of alerts" [class]="a.type">
-       <div class="a-icon">{{ a.type === 'danger' ? '⚠️' : 'ℹ️' }}</div>
-       <div class="a-body">
-        <div class="a-msg">{{ a.msg }}</div>
-        <div class="a-meta">Détecté le {{ today | date:'dd/MM/yyyy' }} • Système AI</div>
-       </div>
-       <button class="btn-resolve">Détails</button>
-      </div>
-     </div>
-
-     <div class="audit-log-card flex-1">
-      <h3>📋 Journal d'Audit</h3>
-      <div class="audit-history">
-       <div class="audit-entry" *ngFor="let r of reviews">
-        <div class="ae-dot"></div>
-        <div class="ae-content">
-         <strong>Revue: {{ r.task }}</strong>
-         <p>Auteur: {{ r.author }} • Statut: {{ r.status }}</p>
-         <small style="color: #64748b; font-size: 0.75rem;">{{ today | date:'shortTime' }} • Validé par SmartPM AI</small>
+          <div class="kpi-card">
+            <div class="kpi-top"><span class="kpi-icon">👥</span></div>
+            <span class="kpi-val">{{ teamMembers }}</span>
+            <span class="kpi-label">Membres Équipe</span>
+          </div>
+          <div class="kpi-card danger">
+            <div class="kpi-top"><span class="kpi-icon">🚨</span></div>
+            <span class="kpi-val">{{ delayedTasks }}</span>
+            <span class="kpi-label">Tâches en Retard</span>
+          </div>
+          <div class="kpi-card success">
+            <div class="kpi-top"><span class="kpi-icon">✅</span></div>
+            <span class="kpi-val">{{ milestonesCompleted }}</span>
+            <span class="kpi-label">Jalons Validés</span>
+          </div>
         </div>
-       </div>
-       <div class="audit-entry" *ngIf="reviews.length === 0">
-        <div class="ae-dot" style="background: #10b981;"></div>
-        <div class="ae-content">
-         <strong>Système Nominal</strong>
-         <p>Aucune revue en attente. Conformité 100%.</p>
+
+        <div class="projects-list-card">
+          <div class="card-header">
+            <h3>📁 Projets Actifs</h3>
+            <span class="badge">{{ projects.length }} en cours</span>
+          </div>
+          <table class="simple-table" *ngIf="projects.length > 0">
+            <thead><tr><th>Projet</th><th>Responsable</th><th>Avancement</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let p of projects">
+                <td><span class="project-name-link" (click)="viewProject(p.id)">{{ p.name }}</span></td>
+                <td>Manager</td>
+                <td>
+                  <div class="mini-progress-box">
+                    <span class="p-text">{{ p.progress || 0 }}%</span>
+                    <div class="mini-bar"><div class="fill" [style.width.%]="p.progress"></div></div>
+                  </div>
+                </td>
+                <td><span class="p-status {{ p.status }}">{{ p.status }}</span></td>
+                <td>
+                  <button class="btn-action" (click)="viewProject(p.id)">Ouvrir</button>
+                  <button class="btn-outline-sm" (click)="doArchive(p.id)">Archiver</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="empty-state" *ngIf="projects.length === 0 && !isLoading">
+            <p>Aucun projet actif. Cliquez sur "Nouveau Projet" pour démarrer.</p>
+          </div>
         </div>
-       </div>
       </div>
-     </div>
-    </div>
-   </div>
 
-   <!-- PROJECTS TAB -->
-   <div *ngSwitchCase="'projects'">
-    <div class="projects-list-card">
-     <div class="card-header" style="display:flex; justify-content:space-between; margin-bottom:20px;">
-      <h3>📁 Liste des Projets SmartPM</h3>
-      <span class="badge">{{ projects.length }} total</span>
-     </div>
-     <table class="simple-table" *ngIf="projects.length > 0">
-      <thead>
-       <tr><th>Nom du Projet</th><th>Responsable</th><th>Avancement</th><th>Statut</th><th>Actions</th></tr>
-      </thead>
-      <tbody>
-       <tr *ngFor="let p of projects">
-        <td class="bold">
-         <span class="project-name-link" (click)="viewProject(p.id)">{{ p.name }}</span>
-        </td>
-        <td>Manager</td>
-        <td>
-         <div class="mini-progress-box">
-          <span class="p-text">{{ p.progress || 0 }}%</span>
-          <div class="mini-bar"><div class="fill" [style.width.%]="p.progress"></div></div>
-         </div>
-        </td>
-        <td><span class="badge" [class]="p.status">{{ p.status || 'Active' }}</span></td>
-        <td>
-         <button class="btn-outline" style="padding: 6px 12px; font-size: 0.8rem;" (click)="viewProject(p.id)">Détails</button>
-         <button class="btn-outline" style="padding: 6px 12px; font-size: 0.8rem; margin-left:8px;" (click)="doArchive(p.id)">Archiver</button>
-        </td>
-       </tr>
-      </tbody>
-     </table>
-     <div *ngIf="projects.length === 0 && !isLoading" style="text-align: center; padding: 3rem; color: #64748b; font-style: italic;">
-      Aucun projet trouvé. Lancez le Wizard pour commencer la mission.
-     </div>
-     <div *ngIf="isLoading" style="text-align: center; padding: 3rem; color: #64748b; opacity: 0.6;">
-      🔄 Synchronisation avec la base de données...
-     </div>
-    </div>
-   </div>
-
-   <!-- ARCHIVES TAB -->
-   <div *ngSwitchCase="'archives'">
-    <div class="projects-list-card">
-     <div class="card-header" style="display:flex; justify-content:space-between; margin-bottom:20px;">
-      <h3>📦 Projets Archivés</h3>
-      <span class="badge">{{ archivedProjects.length }} total</span>
-     </div>
-     <table class="simple-table" *ngIf="archivedProjects.length > 0">
-      <thead>
-       <tr><th>Nom du Projet</th><th>Responsable</th><th>Avancement</th><th>Statut</th><th>Actions</th></tr>
-      </thead>
-      <tbody>
-       <tr *ngFor="let p of archivedProjects">
-        <td class="bold">
-         <span class="project-name-link" (click)="viewProject(p.id)">{{ p.name }}</span>
-        </td>
-        <td>Manager</td>
-        <td>{{ p.progress || 0 }}%</td>
-        <td><span class="badge">{{ p.status }}</span></td>
-        <td>
-         <div style="display: flex; gap: 8px;">
-          <button class="btn-outline" style="padding: 6px 10px; font-size: 0.75rem; border-color: #3b82f6; color: #3b82f6;" (click)="doEdit(p.id)">Modifier</button>
-          <button class="btn-outline" style="padding: 6px 10px; font-size: 0.75rem; border-color: #10b981; color: #10b981;" (click)="doRestore(p.id)">Restaurer</button>
-          <button class="btn-outline" style="padding: 6px 10px; font-size: 0.75rem; border-color: #ef4444; color: #ef4444;" (click)="doDelete(p.id)">Supprimer</button>
-         </div>
-        </td>
-       </tr>
-      </tbody>
-     </table>
-     <div *ngIf="archivedProjects.length === 0 && !isLoading" style="text-align: center; padding: 3rem; color: #64748b; font-style: italic;">
-      Aucun projet archivé dans la base de données.
-     </div>
-     <div *ngIf="isLoading" style="text-align: center; padding: 3rem; color: #64748b; opacity: 0.6;">
-      🔄 Chargement des archives...
-     </div>
-    </div>
-   </div>
-
-   <!-- TEAM TAB -->
-   <div *ngSwitchCase="'team'">
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-     <div *ngFor="let w of workload" style="background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 25px;">
-      <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
-       <div style="width: 50px; height: 50px; border-radius: 12px; background: #10b981; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800;">
-        {{ w.name[0] }}
-       </div>
-       <div>
-        <h4 style="margin: 0; color: #064e3b; font-weight: 800; font-size: 1.1rem;">{{ w.name }}</h4>
-        <div style="color: #64748b; font-size: 0.85rem; text-transform: uppercase;">{{ w.role }}</div>
-       </div>
+      <!-- ── QUALITY ── -->
+      <div *ngSwitchCase="'quality'" class="quality-grid-pro">
+        <div class="hero-card">
+          <div class="q-header">
+            <div class="q-title-box">
+              <div class="q-icon-main">🛡️</div>
+              <div>
+                <h3>Contrôle de Qualité</h3>
+                <p>Analyse temps-réel de l'intégrité du projet.</p>
+              </div>
+            </div>
+            <button class="btn-primary-sm" (click)="launchAudit()">Lancer Audit</button>
+          </div>
+          <div class="q-metrics-row mt-4">
+            <div class="q-metric-item">
+              <div class="q-metric-label">Traceur d'Exigences</div>
+              <div class="q-metric-value">{{ cockpitData?.traceabilityCoverage || 88 }}%</div>
+              <div class="q-metric-bar"><div class="fill" [style.width.%]="cockpitData?.traceabilityCoverage || 88"></div></div>
+            </div>
+            <div class="q-metric-item">
+              <div class="q-metric-label">Qualité du Code</div>
+              <div class="q-metric-value">{{ cockpitData?.processCompliance || 94 }}%</div>
+              <div class="q-metric-bar"><div class="fill" [style.width.%]="cockpitData?.processCompliance || 94"></div></div>
+            </div>
+            <div class="q-metric-item">
+              <div class="q-metric-label">Alertes Sécurité</div>
+              <div class="q-metric-value" style="color:#f87171">{{ alerts.length }}</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-       <div style="text-align: center; flex: 1;">
-        <div style="font-size: 1.5rem; font-weight: 900; color: #10b981;">{{ w.utilization }}%</div>
-        <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase;">Utilisation</div>
-       </div>
-       <div style="text-align: center; flex: 1; border-left: 1px solid #e2e8f0;">
-        <div style="font-size: 1.5rem; font-weight: 900; color: #1e293b;">{{ w.assignedTasks }}</div>
-        <div style="font-size: 0.75rem; color: #64748b; text-transform: uppercase;">Tâches Assignées</div>
-       </div>
-      </div>
-     </div>
-    </div>
-    <div *ngIf="!workload || workload.length === 0" style="text-align: center; padding: 3rem; color: #64748b; font-style: italic;">
-     Oups ! Aucune donnée d'équipe disponible pour le moment.
-    </div>
-   </div>
 
-   <!-- PLANNING TAB -->
-   <div *ngSwitchCase="'planning'" class="planning-container">
-    <div class="planning-header-pro" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-     <div>
-      <h2 style="font-weight: 900; color: #064e3b; margin: 0;">🗓️ Planning Stratégique</h2>
-      <p style="color: #64748b; margin: 5px 0 0 0;">Vue temporelle des ressources et jalons </p>
-     </div>
-     <button class="btn-primary-sm" (click)="fetchCockpitData()">
-      <span style="margin-right: 8px;">🔄</span> Actualiser les échéances
-     </button>
+      <!-- ── PROJECTS ── -->
+      <div *ngSwitchCase="'projects'">
+        <div class="projects-list-card">
+          <div class="card-header"><h3>📁 Tous les Projets</h3><span class="badge">{{ projects.length }}</span></div>
+          <table class="simple-table">
+            <thead><tr><th>Nom</th><th>Progrès</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let p of projects">
+                <td class="bold">{{ p.name }}</td>
+                <td>{{ p.progress || 0 }}%</td>
+                <td>{{ p.status }}</td>
+                <td>
+                  <button class="btn-outline-sm" (click)="viewProject(p.id)">Détails</button>
+                  <button class="btn-outline-sm danger" (click)="doArchive(p.id)">Archiver</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── ARCHIVES ── -->
+      <div *ngSwitchCase="'archives'">
+        <div class="projects-list-card">
+          <div class="card-header"><h3>📦 Archives</h3><span class="badge">{{ archivedProjects.length }}</span></div>
+          <table class="simple-table">
+            <thead><tr><th>Nom</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let p of archivedProjects">
+                <td>{{ p.name }}</td>
+                <td>{{ p.status }}</td>
+                <td>
+                  <button class="btn-outline-sm" (click)="doRestore(p.id)">Restaurer</button>
+                  <button class="btn-outline-sm" (click)="doEdit(p.id)">Modifier</button>
+                  <button class="btn-outline-sm danger" (click)="doDelete(p.id)">Supprimer</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── TEAM ── -->
+      <div *ngSwitchCase="'team'">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px">
+          <div *ngFor="let w of workload" class="team-card">
+            <div class="tc-avatar">{{ w.name[0] }}</div>
+            <div class="tc-info">
+              <h4>{{ w.name }}</h4>
+              <span class="tc-role">{{ w.role }}</span>
+            </div>
+            <div class="tc-stats">
+              <div><span class="tc-val">{{ w.utilization }}%</span><span class="tc-lbl">Utilisation</span></div>
+              <div><span class="tc-val">{{ w.assignedTasks }}</span><span class="tc-lbl">Tâches</span></div>
+            </div>
+          </div>
+          <div *ngIf="workload.length===0" style="grid-column:1/-1;text-align:center;color:#64748b;padding:3rem">
+            Aucune donnée équipe disponible.
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PLANNING ── -->
+      <div *ngSwitchCase="'planning'">
+        <div class="planning-header-pro">
+          <h2>🗓️ Planning Stratégique</h2>
+          <button class="btn-primary-sm" (click)="fetchCockpitData()">🔄 Actualiser</button>
+        </div>
+        <div *ngFor="let p of projects" class="timeline-card">
+          <div class="tl-header">
+            <div class="tl-title"><h4>{{ p.name }}</h4><span class="badge {{ p.status }}">{{ p.status }}</span></div>
+          </div>
+          <div class="tl-gantt-mini">
+            <div class="gantt-rail">
+              <div class="gantt-progress" [style.width.%]="p.progress||10" [class.delayed]="p.status==='DELAYED'"></div>
+            </div>
+          </div>
+          <div class="tl-footer">
+            <button class="btn-text-link" (click)="viewProject(p.id)">Accéder au Planning →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ── SIMULATOR AI (OLLAMA) — PROFESSIONAL INTERFACE ──
+      ═══════════════════════════════════════════════════════════ -->
+      <div *ngSwitchCase="'simulate'" class="simulator-view">
+
+        <!-- Header Hero -->
+        <div class="sim-hero">
+          <div class="sim-hero-left">
+            <div class="sim-hero-icon">🧪</div>
+            <div>
+              <h2 class="sim-hero-title">SmartPM AI Simulator</h2>
+              <p class="sim-hero-sub">Analyse prédictive et simulation de scénarios via <strong>Ollama</strong> · Données réelles MongoDB</p>
+            </div>
+          </div>
+          <div class="sim-hero-badges">
+            <span class="sim-badge-pill blue">🤖 LLM Local</span>
+            <span class="sim-badge-pill green">📡 DB Live</span>
+            <span class="sim-badge-pill purple">⚡ Streaming</span>
+          </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="sim-main-grid">
+
+          <!-- ── CONFIG PANEL ── -->
+          <div class="sim-config-panel">
+            <div class="panel-title">⚙️ Configuration</div>
+
+            <!-- Project Select -->
+            <div class="field-group">
+              <label>Projet à analyser <span class="req">*</span></label>
+              <select class="sim-select" [(ngModel)]="simulationProject" [disabled]="isSimulating">
+                <option value="" disabled>Choisir un projet...</option>
+                <option *ngFor="let p of projects" [value]="p.id">{{ p.name }}</option>
+              </select>
+              <div class="field-hint" *ngIf="simulationProject">
+                ✓ Données live chargées depuis la base
+              </div>
+            </div>
+
+            <!-- Scenario -->
+            <div class="field-group">
+              <label>Scénario de Simulation</label>
+              <div class="scenario-presets">
+                <button class="preset-btn" [class.active]="simulationScenario.includes('Retard')"
+                  (click)="simulationScenario='Retard de 2 semaines sur la phase de développement — impact sur les jalons clés.'"
+                  [disabled]="isSimulating">⏰ Retard</button>
+                <button class="preset-btn" [class.active]="simulationScenario.includes('congé de longue')"
+                  (click)="simulationScenario='Absence imprévue de 3 membres clés de l\'équipe (congé de longue durée).'"
+                  [disabled]="isSimulating">👤 Absence</button>
+                <button class="preset-btn" [class.active]="simulationScenario.includes('Bug critique')"
+                  (click)="simulationScenario='Bug critique découvert en phase de test — nécessite refactoring du module de navigation.'"
+                  [disabled]="isSimulating">🐛 Bug Critique</button>
+                <button class="preset-btn" [class.active]="simulationScenario.includes('Budget')"
+                  (click)="simulationScenario='Réduction budgétaire de 20% — optimisation des ressources nécessaire.'"
+                  [disabled]="isSimulating">💰 Budget</button>
+              </div>
+              <textarea class="sim-textarea" rows="4" [(ngModel)]="simulationScenario" [disabled]="isSimulating"
+                placeholder="Décrivez le scénario en détail..."></textarea>
+            </div>
+
+            <!-- Duration Slider -->
+            <div class="field-group">
+              <label>Horizon de simulation</label>
+              <div class="slider-row">
+                <input type="range" min="1" max="16" [(ngModel)]="simulationWeeks" [disabled]="isSimulating" class="sim-slider">
+                <div class="slider-val">{{ simulationWeeks }} <small>sem.</small></div>
+              </div>
+              <div class="slider-labels">
+                <span>1 sem.</span><span>4 sem.</span><span>8 sem.</span><span>16 sem.</span>
+              </div>
+            </div>
+
+            <!-- Model Selector -->
+            <div class="field-group">
+              <label>Modèle Ollama</label>
+              <div class="model-grid">
+                <button class="model-btn" *ngFor="let m of availableModels"
+                  [class.active]="selectedModel===m"
+                  (click)="selectedModel=m" [disabled]="isSimulating">
+                  <span class="model-icon">🤖</span>{{ m }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <button class="btn-simulate" (click)="startSimulation()" [disabled]="isSimulating || !simulationProject">
+              <span *ngIf="!isSimulating">🚀 Lancer la Simulation</span>
+              <span *ngIf="isSimulating" class="btn-loading">
+                <span class="spinner"></span> Simulation en cours...
+              </span>
+            </button>
+
+            <button class="btn-reset" *ngIf="simulationDone || simulationResult" (click)="resetSimulation()">
+              🔄 Réinitialiser
+            </button>
+          </div>
+
+          <!-- ── RESULTS PANEL ── -->
+          <div class="sim-results-panel">
+
+            <!-- Status Bar -->
+            <div class="results-statusbar">
+              <div class="rsb-left">
+                <span class="rsb-title">📊 Rapport de Simulation</span>
+                <span class="rsb-model" *ngIf="selectedModel">· {{ selectedModel }}</span>
+              </div>
+              <div class="rsb-right" *ngIf="simulationResult">
+                <span class="rsb-meta">{{ wordCount }} mots</span>
+                <span class="rsb-meta" *ngIf="simulationDone">· {{ simulationDuration }}s</span>
+                <button class="rsb-btn" (click)="copyResults()" *ngIf="simulationDone">
+                  📋 Copier
+                </button>
+              </div>
+            </div>
+
+            <!-- Streaming Indicator -->
+            <div class="streaming-bar" *ngIf="isSimulating">
+              <div class="streaming-dot"></div>
+              <span>Ollama génère le rapport...</span>
+              <span class="word-counter">{{ wordCount }} mots générés</span>
+            </div>
+
+            <!-- Results Content -->
+            <div class="results-body" [class.has-content]="!!simulationResult">
+
+              <!-- Empty State -->
+              <div class="empty-sim" *ngIf="!simulationResult && !isSimulating">
+                <div class="empty-sim-icon">🔬</div>
+                <h3>Prêt pour la simulation</h3>
+                <p>Sélectionnez un projet, configurez votre scénario et lancez l'analyse prédictive.</p>
+                <div class="empty-hints">
+                  <div class="hint-item">📡 Accès direct à la base de données MongoDB</div>
+                  <div class="hint-item">🧠 Analyse par LLM local via Ollama</div>
+                  <div class="hint-item">📋 Rapport structuré en 8 sections</div>
+                  <div class="hint-item">⚡ Résultats streamés en temps réel</div>
+                </div>
+              </div>
+
+              <!-- Report Content -->
+              <div class="sim-report" *ngIf="simulationResult">
+                <pre class="report-pre">{{ simulationResult }}<span *ngIf="isSimulating" class="cursor-blink">▋</span></pre>
+              </div>
+
+              <!-- Success Badge -->
+              <div class="done-banner" *ngIf="simulationDone">
+                ✅ Simulation terminée en {{ simulationDuration }}s · {{ wordCount }} mots · Modèle: {{ selectedModel }}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- end simulate -->
+
+    </div><!-- end tab-content-fade -->
+  </main>
+
+  <!-- ═══ MODAL ═══ -->
+  <div class="custom-modal-backdrop" *ngIf="customModal.show">
+    <div class="custom-modal-content">
+      <div class="cm-icon" [class.confirm]="customModal.type==='confirm'">
+        {{ customModal.type==='confirm' ? '❓' : '🔔' }}
+      </div>
+      <h2>{{ customModal.title }}</h2>
+      <p>{{ customModal.message }}</p>
+      <div class="cm-actions">
+        <button class="btn-cancel" *ngIf="customModal.type==='confirm'" (click)="customModal.show=false">Annuler</button>
+        <button class="btn-confirm" (click)="customModal.confirmCallback()">{{ getModalBtnLabel() }}</button>
+      </div>
     </div>
-
-    <div class="timeline-card" *ngFor="let p of projects">
-     <div class="tl-header">
-      <div class="tl-title">
-       <h4>{{ p.name }}</h4>
-       <span class="badge" [class]="p.status">{{ p.status }}</span>
-      </div>
-      <div class="tl-dates">
-       <span class="date-tag">Début: {{ (p.startDate || today) | date:'MMM yyyy' }}</span>
-       <span class="date-divider">→</span>
-       <span class="date-tag">Fin: {{ (p.targetEndDate || today) | date:'MMM yyyy' }}</span>
-      </div>
-     </div>
-
-     <div class="tl-gantt-mini">
-      <div class="gantt-rail">
-       <!-- Un bar simplifié pour l'avancement temporel -->
-       <div class="gantt-progress" [style.width.%]="p.progress || 10" [class.delayed]="p.status === 'DELAYED'"></div>
-      </div>
-      <div class="gantt-labels">
-       <span>Kick-off</span>
-       <span>SRR</span>
-       <span>PDR</span>
-       <span>CDR</span>
-       <span>TRB</span>
-       <span>Certification</span>
-      </div>
-     </div>
-     
-     <div class="tl-footer" style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
-      <div class="tl-team-avatars" style="display: flex; gap: -10px;">
-        <div *ngFor="let m of [1,2]" style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid #fff; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #64748b; margin-right: -8px;">U</div>
-        <div style="margin-left: 15px; font-size: 0.85rem; color: #64748b;">+{{ p.teamMembers?.length || 0 }} experts assignés</div>
-      </div>
-      <button class="btn-text-link" (click)="viewProject(p.id)">Accéder au Planning Détaillé →</button>
-     </div>
-    </div>
-
-    <div *ngIf="projects.length === 0" class="hero-card" style="text-align: center; padding: 60px;">
-     <h3>Aucun projet en cours de planification.</h3>
-     <p>Utilisez le bouton "+ Nouveau Projet" pour démarrer.</p>
-    </div>
-   </div>
-
   </div>
- </main>
 
- <!-- 💎 Custom Pro Modal -->
- <div class="custom-modal-backdrop" *ngIf="customModal.show">
-  <div class="custom-modal-content">
-   <div class="cm-icon" [class.confirm]="customModal.type === 'confirm'">
-    {{ customModal.type === 'confirm' ? '❓' : '🔔' }}
-   </div>
-   <h2>{{ customModal.title }}</h2>
-   <p>{{ customModal.message }}</p>
-   
-   <div class="cm-actions">
-    <button class="btn-cancel" *ngIf="customModal.type === 'confirm'" (click)="customModal.show = false">Annuler</button>
-    <button class="btn-confirm" (click)="customModal.confirmCallback()">
-     {{ getModalBtnLabel() }}
-    </button>
-   </div>
-  </div>
- </div>
- <!-- 🤖 SmartPM AI Chatbot (Gemini) -->
- <app-ai-chatbot></app-ai-chatbot>
+  <!-- ═══ AI CHATBOT ═══ -->
+  <app-ai-chatbot></app-ai-chatbot>
 
 </div>
-

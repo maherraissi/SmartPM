@@ -159,9 +159,8 @@ export class ProjectService {
   // Find all tasks associated with these projects
   const tasks = await this.taskModel.find({ subActivityId: { $in: subActivityIds } }).lean().exec();
 
-  // Gather all unique users involved in these projects or just global team
-  // Better to fetch actual assigned members or fall back to general users
-  let members = await this.userModel.find({ role: 'MEMBER' }).limit(10).lean().exec();
+  // Fetch all users in the company to display in the Team tab
+  let members = await this.userModel.find({ role: { $in: ['MEMBER', 'MANAGER'] } }).lean().exec();
 
   this.logger.log(`Found ${projects.length} projects, ${tasks.length} tasks and ${members.length} members in DB.`);
   
