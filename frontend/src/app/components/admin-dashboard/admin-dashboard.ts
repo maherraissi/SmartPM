@@ -30,9 +30,10 @@ export class AdminDashboard implements OnInit {
  userRoleFilter = '';
  userStatusFilter = '';
  roles = ['ADMIN', 'MANAGER', 'MEMBER'];
+ equipes = ['LLR', 'LLT', 'HLT'];
 
  showCreateUser = false;
- newUser: any = { firstName: '', lastName: '', email: '', password: '', role: 'MEMBER' };
+ newUser: any = { firstName: '', lastName: '', email: '', password: '', role: 'MEMBER', equipe: '' };
  
  showEditUser = false;
  editingUser: any = null;
@@ -210,7 +211,7 @@ export class AdminDashboard implements OnInit {
  }
 
  openCreateUser() {
-  this.newUser = { firstName: '', lastName: '', email: '', password: '', role: 'MEMBER' };
+  this.newUser = { firstName: '', lastName: '', email: '', password: '', role: 'MEMBER', equipe: '' };
   this.errorMessage = '';
   this.showCreateUser = true;
   this.cdr.detectChanges();
@@ -230,6 +231,7 @@ export class AdminDashboard implements OnInit {
    await firstValueFrom(this.adminService.updateUser(this.editingUser._id, {
     firstName: this.editingUser.firstName,
     lastName: this.editingUser.lastName,
+    equipe: this.editingUser.equipe,
    }));
    this.showEditUser = false;
    this.showSuccess('Profile updated!');
@@ -244,6 +246,12 @@ export class AdminDashboard implements OnInit {
  async updateRole(user: any) {
   this.savingUserId = user._id;
   try { await firstValueFrom(this.adminService.assignRole(user._id, user.role)); }
+  finally { this.savingUserId = null; }
+ }
+
+ async updateEquipe(user: any) {
+  this.savingUserId = user._id;
+  try { await firstValueFrom(this.adminService.updateUser(user._id, { equipe: user.equipe })); }
   finally { this.savingUserId = null; }
  }
 

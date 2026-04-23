@@ -37,9 +37,17 @@ export class ProjectDetail implements OnInit {
  // Custom Alert state
  customAlert = { show: false, title: '', message: '' };
 
+ today = new Date();
+
  showAlert(title: string, message: string) {
   this.customAlert = { show: true, title, message };
   this.cdr.detectChanges();
+ }
+
+ isDelayed(task: any): boolean {
+   if (task.status === 'CLOSED') return false;
+   if (!task.plannedEndDate) return false;
+   return new Date(task.plannedEndDate) < this.today;
  }
 
  constructor(

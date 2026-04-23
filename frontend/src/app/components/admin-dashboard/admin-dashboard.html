@@ -53,78 +53,114 @@
 
   <!-- ══════════════════════════════════ TAB: OVERVIEW ════════════ -->
   <section *ngIf="activeTab==='overview'" class="tab-content">
-   <header class="page-header">
-    <div>
+   <div class="hero-admin">
+    <div class="hero-content">
      <h1>Vue d'ensemble du Système</h1>
-     <p class="page-sub">Santé du système, utilisation de l'équipe et conformité SmartPM</p>
+     <p>Supervisez la santé, la sécurité et la conformité de l'infrastructure SmartPM.</p>
     </div>
-    <div class="header-actions">
-     <button class="btn-ghost" (click)="loadAuditLogs()">📋 View Audit Logs</button>
-     <button class="btn-primary" (click)="loadOverview()">↻ Refresh</button>
+    <div class="hero-actions">
+     <button class="btn-ghost glass-btn" (click)="loadAuditLogs()"><span class="icon">📋</span> Journal d'Audit</button>
+     <button class="btn-primary" (click)="loadOverview()"><span class="icon">↻</span> Actualiser</button>
     </div>
-   </header>
+   </div>
 
-   <div class="kpi-grid">
-    <div class="kpi-card kpi-blue">
-     <div class="kpi-icon">👥</div>
-     <div class="kpi-body">
-      <div class="kpi-num">{{ kpis.totalUsers || 0 }}</div>
-      <div class="kpi-label">Active Users</div>
+   <!-- Premium KPI Cards -->
+   <div class="kpi-premium-grid">
+    <div class="kpi-premium-card">
+     <div class="kpc-top">
+      <span class="kpc-title">Utilisateurs Actifs</span>
+      <div class="kpc-icon blue">👥</div>
      </div>
+     <div class="kpc-value">{{ kpis.totalUsers || 0 }}</div>
+     <div class="kpc-trend pos">↑ Systèmes opérationnels</div>
     </div>
-    <div class="kpi-card kpi-teal">
-     <div class="kpi-icon">🚀</div>
-     <div class="kpi-body">
-      <div class="kpi-num">{{ kpis.activeProjects || 0 }}</div>
-      <div class="kpi-label">Live Projects</div>
+
+    <div class="kpi-premium-card">
+     <div class="kpc-top">
+      <span class="kpc-title">Projets En Cours</span>
+      <div class="kpc-icon teal">🚀</div>
      </div>
+     <div class="kpc-value">{{ kpis.activeProjects || 0 }}</div>
+     <div class="kpc-trend pos">Flux continu</div>
     </div>
-    <div class="kpi-card kpi-green">
-     <div class="kpi-icon">🛡️</div>
-     <div class="kpi-body">
-      <div class="kpi-num">{{ kpis.certifiedMembers || 0 }}</div>
-      <div class="kpi-label">Certified</div>
+
+    <div class="kpi-premium-card">
+     <div class="kpc-top">
+      <span class="kpc-title">Garantie Conformité</span>
+      <div class="kpc-icon green">🛡️</div>
      </div>
+     <div class="kpc-value">{{ kpis.certifiedMembers || 0 }}</div>
+     <div class="kpc-trend pos">Certifications Valides</div>
     </div>
-    <div class="kpi-card kpi-orange">
-     <div class="kpi-icon">⚠️</div>
-     <div class="kpi-body">
-      <div class="kpi-num">{{ kpis.openCriticalAlerts || 0 }}</div>
-      <div class="kpi-label">Critical Alerts</div>
+
+    <div class="kpi-premium-card" [class.alert]="(kpis.openCriticalAlerts || 0) > 0">
+     <div class="kpc-top">
+      <span class="kpc-title">Alertes Critiques</span>
+      <div class="kpc-icon red">⚠️</div>
+     </div>
+     <div class="kpc-value">{{ kpis.openCriticalAlerts || 0 }}</div>
+     <div class="kpc-trend" [class.neg]="(kpis.openCriticalAlerts || 0) > 0" [class.pos]="(kpis.openCriticalAlerts || 0) === 0">
+      {{ (kpis.openCriticalAlerts || 0) > 0 ? 'Intervention Requise' : 'Aucune alerte' }}
      </div>
     </div>
    </div>
 
-   <div class="charts-row">
-    <div class="chart-card">
-     <h3 class="chart-title">Role Distribution</h3>
-     <div class="bar-chart">
-      <div class="bar-group" *ngFor="let r of getRoleData()">
-       <div class="bar-label">{{ r._id }}</div>
-       <div class="bar-track"><div class="bar-fill bar-admin" [style.width.%]="r.count * 10"></div></div>
-       <div class="bar-value">{{ r.count }}</div>
+   <div class="bento-grid">
+    <!-- Role Distribution Box -->
+    <div class="bento-box bento-roles">
+     <div class="bento-header">
+      <h3>Répartition des Rôles</h3>
+      <span class="bento-subtitle">Accès Plateforme</span>
+     </div>
+     <div class="role-list">
+      <div class="role-item" *ngFor="let r of getRoleData()">
+       <div class="ri-info">
+        <span class="ri-name">{{ r._id }}</span>
+        <span class="ri-count">{{ r.count }}</span>
+       </div>
+       <div class="ri-track">
+        <div class="ri-fill" [style.width.%]="r.count * 10"></div>
+       </div>
       </div>
      </div>
     </div>
-    <div class="chart-card">
-     <h3 class="chart-title">Progression des Formations</h3>
-     <div class="cert-bubbles">
-      <div class="cert-bubble" *ngFor="let c of getCertData()">
-       <div class="bubble-phase">{{ c._id }}</div>
-       <div class="bubble-count">{{ c.count }}</div>
+
+    <!-- Formation Distribution Box -->
+    <div class="bento-box bento-formations">
+     <div class="bento-header">
+      <h3>État des Formations</h3>
+      <span class="bento-subtitle">Avancement de l'équipe</span>
+     </div>
+     <div class="formation-pills">
+      <div class="f-pill" *ngFor="let c of getCertData()">
+       <span class="fp-name">{{ c._id }}</span>
+       <span class="fp-count">{{ c.count }}</span>
       </div>
-      <div class="empty-mini" *ngIf="!getCertData().length">Aucune donnée de formation.</div>
+      <div class="empty-state-minimal" *ngIf="!getCertData().length">
+       <span class="es-icon">🎓</span>
+       <p>Aucune formation assignée.</p>
+      </div>
      </div>
     </div>
-    <div class="chart-card chart-wide">
-     <h3 class="chart-title">Alertes de Conformité Récentes</h3>
-     <div class="mini-alert-list">
-      <div class="mini-alert" *ngFor="let a of getSnapshotAlerts()" [class]="'sev-'+a.severity.toLowerCase()">
-       <span class="ma-sev">{{ a.severity }}</span>
-       <span class="ma-msg">{{ a.message }}</span>
-       <span class="ma-time">{{ formatTime(a.createdAt).split(',')[1] }}</span>
+
+    <!-- Alert Box -->
+    <div class="bento-box bento-alerts">
+     <div class="bento-header">
+      <h3>Sécurité & Conformité</h3>
+      <span class="bento-subtitle">Derniers événements</span>
+     </div>
+     <div class="bento-alert-list">
+      <div class="b-alert-item" *ngFor="let a of getSnapshotAlerts()" [class]="'sev-'+a.severity.toLowerCase()">
+       <div class="ba-left">
+        <span class="ba-dot"></span>
+        <span class="ba-msg">{{ a.message }}</span>
+       </div>
+       <span class="ba-time">{{ formatTime(a.createdAt).split(',')[1] }}</span>
       </div>
-      <div class="empty-mini" *ngIf="!getSnapshotAlerts().length">Système conforme. Aucune alerte.</div>
+      <div class="empty-state-minimal" *ngIf="!getSnapshotAlerts().length">
+       <span class="es-icon">✅</span>
+       <p>Le système est 100% conforme.</p>
+      </div>
      </div>
     </div>
    </div>
@@ -159,7 +195,7 @@
    <div class="table-card" *ngIf="!loading['users']">
     <table class="data-table">
      <thead>
-      <tr><th>Membre</th><th>Rôle</th><th>Statut</th><th>Connexion</th><th>Actions</th></tr>
+      <tr><th>Membre</th><th>Equipe</th><th>Rôle</th><th>Statut</th><th>Connexion</th><th>Actions</th></tr>
      </thead>
      <tbody>
       <tr *ngFor="let u of users; trackBy: trackById" class="table-row">
@@ -169,6 +205,12 @@
          <div>{{ u.firstName }} {{ u.lastName }}</div>
          <div class="text-muted">{{ u.email }}</div>
         </div>
+       </td>
+       <td>
+        <select class="role-select" [(ngModel)]="u.equipe" (change)="updateEquipe(u)" [class.saving]="savingUserId===u._id">
+         <option value="">--</option>
+         <option *ngFor="let e of equipes" [value]="e">{{ e }}</option>
+        </select>
        </td>
        <td>
         <select class="role-select" [(ngModel)]="u.role" (change)="updateRole(u)" [class.saving]="savingUserId===u._id">
@@ -548,6 +590,13 @@
        <option value="MEMBER">MEMBER (Aerospace Engineer)</option>
       </select>
      </div>
+     <div class="form-group mt-3">
+      <span class="label">Equipe</span>
+      <select [(ngModel)]="newUser.equipe" class="builder-input">
+       <option value="">Aucune Equipe</option>
+       <option *ngFor="let e of equipes" [value]="e">{{ e }}</option>
+      </select>
+     </div>
     </div>
     <div class="modal-footer mt-4">
      <button class="btn-ghost" (click)="showCreateUser=false">Cancel</button>
@@ -586,6 +635,13 @@
        <option value="ADMIN">ADMIN</option>
        <option value="MANAGER">MANAGER</option>
        <option value="MEMBER">MEMBER</option>
+      </select>
+     </div>
+     <div class="form-group mt-3">
+      <span class="label">Equipe</span>
+      <select [(ngModel)]="editingUser.equipe" class="builder-input">
+       <option value="">Aucune Equipe</option>
+       <option *ngFor="let e of equipes" [value]="e">{{ e }}</option>
       </select>
      </div>
     </div>

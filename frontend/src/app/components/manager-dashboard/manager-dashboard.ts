@@ -4,7 +4,9 @@ import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProjectService } from '../../services/project';
 import { AiService } from '../../services/ai';
+import { NotificationService } from '../../services/notification';
 import { AiChatbotComponent } from '../ai-chatbot/ai-chatbot';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-manager-dashboard',
@@ -23,8 +25,11 @@ export class ManagerDashboard implements OnInit, OnDestroy {
   simulationScenario = 'Retard de 2 semaines sur la phase de développement — impact sur les jalons clés.';
   simulationWeeks = 4;
   simulationProject = '';
-  selectedModel = 'llama3';
-  availableModels: string[] = ['llama3', 'mistral', 'phi3', 'gemma'];
+  selectedModel = 'agent_1';
+  availableModels: {id: string, name: string}[] = [
+    {id: 'agent_1', name: 'Agent 1'},
+    {id: 'agent_2', name: 'Agent 2'}
+  ];
   simulationStartTime: number = 0;
   simulationDuration = 0;
   wordCount = 0;
@@ -46,6 +51,15 @@ export class ManagerDashboard implements OnInit, OnDestroy {
   certifications: any[] = [];
   today: Date = new Date();
 
+  // ─── Notifications ─────────────────────────────────────────────────────────
+  notifications: any[] = [];
+  unreadCount = 0;
+  showNotifs = false;
+
+  // Toast
+  liveToast = { show: false, title: '', message: '' };
+  private toastTimeout: any;
+
   customModal = {
     show: false,
     title: '',
@@ -54,11 +68,14 @@ export class ManagerDashboard implements OnInit, OnDestroy {
     confirmCallback: () => {}
   };
 
+  private subs: Subscription[] = [];
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private projectService: ProjectService,
     private aiService: AiService,
+    private notificationService: NotificationService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -68,11 +85,55 @@ export class ManagerDashboard implements OnInit, OnDestroy {
       if (params['tab']) this.activeTab = params['tab'];
       this.fetchCockpitData();
     });
-    this.loadOllamaModels();
+
+    // ─── Start live notification polling ────────────────────────────────────
+    this.notificationService.startPolling(4000);
+
+    const notifSub = this.notificationService.notifications$.subscribe(notifs => {
+      const prevUnread = this.unreadCount;
+      const newUnread = notifs.filter(n => !n.isRead).length;
+
+      if (newUnread > prevUnread) {
+        // Refresh cockpit data when a new notification arrives (e.g. task update)
+        this.fetchCockpitData();
+        const latest = notifs.find(n => !n.isRead);
+        if (latest) this.showToast(latest.title, latest.message);
+      }
+
+      this.notifications = notifs;
+      this.unreadCount = newUnread;
+      this.cdr.detectChanges();
+    });
+    this.subs.push(notifSub);
   }
 
   ngOnDestroy() {
     document.body.classList.remove('no-shell');
+    this.subs.forEach(s => s.unsubscribe());
+    this.notificationService.stopPolling();
+    clearTimeout(this.toastTimeout);
+  }
+
+  // ─── Notification UI ───────────────────────────────────────────────────────
+  toggleNotifs() {
+    this.showNotifs = !this.showNotifs;
+    if (this.showNotifs) {
+      this.notificationService.markAllAsRead();
+    }
+  }
+
+  markRead(id: string) {
+    this.notificationService.markAsRead(id).subscribe();
+  }
+
+  showToast(title: string, message: string) {
+    clearTimeout(this.toastTimeout);
+    this.liveToast = { show: true, title, message };
+    this.cdr.detectChanges();
+    this.toastTimeout = setTimeout(() => {
+      this.liveToast.show = false;
+      this.cdr.detectChanges();
+    }, 6000);
   }
 
   setTab(tab: string) {
@@ -89,14 +150,7 @@ export class ManagerDashboard implements OnInit, OnDestroy {
   }
 
   async loadOllamaModels() {
-    try {
-      const res = await fetch('http://localhost:8000/simulate/models');
-      const data = await res.json();
-      if (data.models && data.models.length > 0) {
-        this.availableModels = data.models;
-        this.cdr.detectChanges();
-      }
-    } catch { /* Ollama offline, keep defaults */ }
+    // Strictly use agent_1 and agent_2
   }
 
   fetchCockpitData() {
@@ -214,7 +268,7 @@ export class ManagerDashboard implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     } catch (err) {
       this.isSimulating = false;
-      this.simulationResult = '❌ Erreur AI. Vérifiez que Ollama est lancé (ollama serve).';
+      this.simulationResult = '❌ Erreur de génération. Vérifiez votre connexion à l\'Agent AI (ex: Ollama serve ou clé API).';
       this.cdr.detectChanges();
     }
   }

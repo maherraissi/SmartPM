@@ -33,7 +33,7 @@
       <div class="sim-nav-divider">IA & Simulation</div>
       <button class="nav-item nav-sim" [class.active]="activeTab==='simulate'" (click)="setTab('simulate')">
         <span class="nav-icon">🧪</span> Simulateur AI
-        <span class="nav-badge">Ollama</span>
+        <span class="nav-badge">Agents AI</span>
       </button>
     </nav>
 
@@ -58,6 +58,33 @@
       <div class="header-actions">
         <button class="btn-primary" (click)="goToWizard()">+ Nouveau Projet</button>
         <button class="btn-outline">Rapport PDF</button>
+
+        <!-- 🔔 Notification Bell -->
+        <div class="notif-bell-wrapper">
+          <button class="notif-bell-btn" (click)="toggleNotifs()" [class.active]="showNotifs">
+            🔔
+            <span class="notif-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+          </button>
+
+          <!-- Dropdown -->
+          <div class="notif-dropdown" *ngIf="showNotifs">
+            <div class="notif-drop-header">
+              <span>🔔 Notifications</span>
+              <span class="notif-unread-tag" *ngIf="unreadCount > 0">{{ unreadCount }} non lues</span>
+            </div>
+            <div class="notif-list">
+              <div *ngFor="let n of notifications" class="notif-item" [class.unread]="!n.isRead" (click)="markRead(n._id)">
+                <div class="notif-dot" *ngIf="!n.isRead"></div>
+                <div class="notif-body">
+                  <div class="notif-title">{{ n.title }}</div>
+                  <div class="notif-msg">{{ n.message }}</div>
+                </div>
+              </div>
+              <div *ngIf="notifications.length === 0" class="notif-empty">Aucune notification</div>
+            </div>
+          </div>
+        </div>
+
         <button class="btn-danger" (click)="logout()">🚪 Déconnexion</button>
       </div>
     </header>
@@ -160,7 +187,7 @@
             <thead><tr><th>Nom</th><th>Progrès</th><th>Statut</th><th>Actions</th></tr></thead>
             <tbody>
               <tr *ngFor="let p of projects">
-                <td class="bold">{{ p.name }}</td>
+                <td><span class="project-name-link bold" (click)="viewProject(p.id)">{{ p.name }}</span></td>
                 <td>{{ p.progress || 0 }}%</td>
                 <td>{{ p.status }}</td>
                 <td>
@@ -201,7 +228,7 @@
             <div class="tc-avatar">{{ w.name[0] }}</div>
             <div class="tc-info">
               <h4>{{ w.name }}</h4>
-              <span class="tc-role">{{ w.role }}</span>
+              <span class="tc-role">{{ w.equipe || w.role }}</span>
             </div>
             <div class="tc-stats">
               <div><span class="tc-val">{{ w.utilization }}%</span><span class="tc-lbl">Utilisation</span></div>
@@ -236,7 +263,7 @@
       </div>
 
       <!-- ═══════════════════════════════════════════════════════════
-           ── SIMULATOR AI (OLLAMA) — PROFESSIONAL INTERFACE ──
+           ── SIMULATOR AI — PROFESSIONAL INTERFACE ──
       ═══════════════════════════════════════════════════════════ -->
       <div *ngSwitchCase="'simulate'" class="simulator-view">
 
@@ -246,7 +273,7 @@
             <div class="sim-hero-icon">🧪</div>
             <div>
               <h2 class="sim-hero-title">SmartPM AI Simulator</h2>
-              <p class="sim-hero-sub">Analyse prédictive et simulation de scénarios via <strong>Ollama</strong> · Données réelles MongoDB</p>
+              <p class="sim-hero-sub">Analyse prédictive et simulation de scénarios via <strong>Agents AI</strong> · Données réelles MongoDB</p>
             </div>
           </div>
           <div class="sim-hero-badges">
@@ -310,12 +337,12 @@
 
             <!-- Model Selector -->
             <div class="field-group">
-              <label>Modèle Ollama</label>
+              <label>Agent AI</label>
               <div class="model-grid">
                 <button class="model-btn" *ngFor="let m of availableModels"
-                  [class.active]="selectedModel===m"
-                  (click)="selectedModel=m" [disabled]="isSimulating">
-                  <span class="model-icon">🤖</span>{{ m }}
+                  [class.active]="selectedModel===m.id"
+                  (click)="selectedModel=m.id" [disabled]="isSimulating">
+                  <span class="model-icon">🤖</span>{{ m.name }}
                 </button>
               </div>
             </div>
@@ -340,7 +367,7 @@
             <div class="results-statusbar">
               <div class="rsb-left">
                 <span class="rsb-title">📊 Rapport de Simulation</span>
-                <span class="rsb-model" *ngIf="selectedModel">· {{ selectedModel }}</span>
+                <span class="rsb-model" *ngIf="selectedModel">· {{ selectedModel === 'agent_1' ? 'Agent 1' : 'Agent 2' }}</span>
               </div>
               <div class="rsb-right" *ngIf="simulationResult">
                 <span class="rsb-meta">{{ wordCount }} mots</span>
@@ -354,7 +381,7 @@
             <!-- Streaming Indicator -->
             <div class="streaming-bar" *ngIf="isSimulating">
               <div class="streaming-dot"></div>
-              <span>Ollama génère le rapport...</span>
+              <span>Génération du rapport...</span>
               <span class="word-counter">{{ wordCount }} mots générés</span>
             </div>
 
@@ -368,7 +395,7 @@
                 <p>Sélectionnez un projet, configurez votre scénario et lancez l'analyse prédictive.</p>
                 <div class="empty-hints">
                   <div class="hint-item">📡 Accès direct à la base de données MongoDB</div>
-                  <div class="hint-item">🧠 Analyse par LLM local via Ollama</div>
+                  <div class="hint-item">🧠 Analyse détaillée par l'Agent AI</div>
                   <div class="hint-item">📋 Rapport structuré en 8 sections</div>
                   <div class="hint-item">⚡ Résultats streamés en temps réel</div>
                 </div>
@@ -381,7 +408,7 @@
 
               <!-- Success Badge -->
               <div class="done-banner" *ngIf="simulationDone">
-                ✅ Simulation terminée en {{ simulationDuration }}s · {{ wordCount }} mots · Modèle: {{ selectedModel }}
+                ✅ Simulation terminée en {{ simulationDuration }}s · {{ wordCount }} mots · Modèle: {{ selectedModel === 'agent_1' ? 'Agent 1' : 'Agent 2' }}
               </div>
             </div>
           </div>
@@ -409,5 +436,15 @@
 
   <!-- ═══ AI CHATBOT ═══ -->
   <app-ai-chatbot></app-ai-chatbot>
+
+  <!-- ═══ LIVE TOAST ═══ -->
+  <div class="live-toast" [class.show]="liveToast.show">
+    <div class="toast-icon">🔔</div>
+    <div class="toast-body">
+      <div class="toast-title">{{ liveToast.title }}</div>
+      <div class="toast-msg">{{ liveToast.message }}</div>
+    </div>
+    <button class="toast-close" (click)="liveToast.show=false">✕</button>
+  </div>
 
 </div>

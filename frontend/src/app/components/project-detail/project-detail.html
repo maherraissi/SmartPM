@@ -100,10 +100,20 @@
         </div>
        </div>
 
-       <div class="task-status">
-         <span class="badge-mini" [class]="task.status">{{ task.status }}</span>
-         <a class="doc-badge" *ngIf="task.evidenceLinks?.length > 0" [href]="task.evidenceLinks[0]" target="_blank" title="Voir document">📎</a>
-       </div>
+        <div class="task-status">
+          <span class="badge-mini delayed" *ngIf="isDelayed(task)">🚨 En Retard</span>
+          <span class="badge-mini" [class]="task.status" *ngIf="!isDelayed(task)">
+            <ng-container [ngSwitch]="task.status">
+              <span *ngSwitchCase="'TODO'">⏳ En attente</span>
+              <span *ngSwitchCase="'IN_PROGRESS'">⚙️ En cours</span>
+              <span *ngSwitchCase="'READY_FOR_REVIEW'">🔍 À réviser</span>
+              <span *ngSwitchCase="'REVIEWED'">✅ Revue faite</span>
+              <span *ngSwitchCase="'CLOSED'">🏆 Terminé</span>
+              <span *ngSwitchDefault>{{ task.status }}</span>
+            </ng-container>
+          </span>
+          <a class="doc-badge" *ngIf="task.evidenceLinks?.length > 0" [href]="task.evidenceLinks[0]" target="_blank" title="Voir document">📎 Doc</a>
+        </div>
       </div>
       
       <div class="no-tasks" *ngIf="sub.tasks.length === 0">
@@ -160,8 +170,8 @@
        </div>
        <div class="form-group flex-1">
         <label>Revue</label>
-        <select [name]="'reviewerId'+i" [(ngModel)]="t.reviewerId" required>
-         <option value="" disabled>Choisir...</option>
+        <select [name]="'reviewerId'+i" [(ngModel)]="t.reviewerId">
+         <option value="">Optionnelle...</option>
          <option *ngFor="let m of members" [value]="m._id">{{ m.firstName }} {{ m.lastName }}</option>
         </select>
        </div>
