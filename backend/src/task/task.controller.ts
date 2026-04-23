@@ -11,9 +11,16 @@ interface AuthRequest extends Request {
 export class TaskController {
  constructor(private readonly taskService: TaskService) {}
 
+ @Get('whoami')
+ @UseGuards(JwtAuthGuard)
+ whoAmI(@Req() req: AuthRequest) {
+  return { userId: req.user.userId, email: req.user.email, role: req.user.role };
+ }
+
  @Get('dashboard')
  @UseGuards(JwtAuthGuard)
  getDashboard(@Req() req: AuthRequest) {
+  console.log('[DASHBOARD] userId from token:', req.user.userId, '| email:', req.user.email);
   return this.taskService.getMemberDashboard(req.user.userId);
  }
 

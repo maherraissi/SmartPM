@@ -111,7 +111,7 @@ export class AdminUsersService {
 
  // ─── Update User ────────────────────────────────────────────────────────────
  async updateUser(
-  id: string, dto: Partial<{ firstName: string; lastName: string; team: string }>,
+  id: string, dto: Partial<{ firstName: string; lastName: string; equipe: string }>,
   adminId: string, adminEmail: string, ip: string,
  ) {
   const before = await this.userModel.findById(id, '-passwordHash').lean();

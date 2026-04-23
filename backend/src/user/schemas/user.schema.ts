@@ -59,6 +59,9 @@ export class User {
 
  @Prop({ default: true })
  isActive: boolean;
+
+ @Prop({ type: String, enum: ['LLR', 'LLT', 'HLT', ''], default: '' })
+ equipe?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

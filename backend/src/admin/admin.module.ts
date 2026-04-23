@@ -9,6 +9,7 @@ import { PlatformSettings, PlatformSettingsSchema }   from './schemas/platform-s
 import { ComplianceAlert, ComplianceAlertSchema }    from './schemas/compliance-alert.schema';
 import { AIUsageLog, AIUsageLogSchema }         from './schemas/ai-usage-log.schema';
 import { TransferRequest, TransferRequestSchema }    from './schemas/transfer-request.schema';
+import { Project, ProjectSchema }            from '../project/schemas/project.schema';
 
 // Controllers
 import { AdminUsersController }     from './users/admin-users.controller';
@@ -40,6 +41,7 @@ import { RolesGuard } from './guards/roles.guard';
    { name: ComplianceAlert.name, schema: ComplianceAlertSchema },
    { name: AIUsageLog.name,    schema: AIUsageLogSchema    },
    { name: TransferRequest.name, schema: TransferRequestSchema },
+   { name: Project.name, schema: ProjectSchema },
   ]),
  ],
  controllers: [

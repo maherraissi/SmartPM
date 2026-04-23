@@ -31,17 +31,35 @@ export class TaskService {
    throw new BadRequestException("Violation : L'auteur ne peut pas être le réviseur.");
   }
 
+  // Ensure dates are correctly typed
   const startDate = dto.plannedStartDate ? new Date(dto.plannedStartDate as string) : new Date();
   const endDate = dto.plannedEndDate 
    ? new Date(dto.plannedEndDate as string) 
    : this.calculateBusinessEndDate(startDate, (dto.estimatedDuration as number) || 1);
 
-  const newTask = new this.taskModel({
+  const taskData = {
    ...dto,
+   subActivityId: new Types.ObjectId(dto.subActivityId),
    plannedStartDate: startDate,
    plannedEndDate: endDate,
    status: TaskStatus.TODO,
-  });
+  };
+
+  // Prevent Mongoose CastError on empty strings
+  if (!dto.reviewerId) {
+    delete taskData.reviewerId;
+  } else {
+    taskData.reviewerId = new Types.ObjectId(dto.reviewerId);
+  }
+  
+  if (!dto.authorId) {
+    delete taskData.authorId;
+  } else {
+    taskData.authorId = new Types.ObjectId(dto.authorId);
+  }
+
+
+  const newTask = new this.taskModel(taskData);
 
   const savedTask = await newTask.save();
   
@@ -70,7 +88,12 @@ export class TaskService {
    const existing = await this.taskModel.find({ idempotencyKey });
    if (existing.length > 0) return existing;
 
-   const tasksToCreate = taskDtos.map(t => ({ ...t, idempotencyKey }));
+   const tasksToCreate = taskDtos.map(t => {
+    const mapped: any = { ...t, idempotencyKey, subActivityId: new Types.ObjectId(t.subActivityId) };
+    if (mapped.authorId) mapped.authorId = new Types.ObjectId(mapped.authorId);
+    if (mapped.reviewerId) mapped.reviewerId = new Types.ObjectId(mapped.reviewerId);
+    return mapped;
+   });
    const savedTasks = await this.taskModel.insertMany(tasksToCreate);
 
    // Notify owners for all created tasks
@@ -171,6 +194,7 @@ export class TaskService {
  }
 
  async getMemberDashboard(memberId: string) {
+  console.log('[DASHBOARD] memberId received:', memberId);
   const memberObjectId = new Types.ObjectId(memberId);
   
   const [authorTasks, reviewerTasks, myProjects] = await Promise.all([
@@ -178,8 +202,9 @@ export class TaskService {
     .populate('subActivityId')
     .lean()
     .exec(),
-   this.taskModel.find({ reviewerId: memberObjectId, status: TaskStatus.READY_FOR_REVIEW })
+   this.taskModel.find({ reviewerId: memberObjectId, status: { $ne: TaskStatus.CLOSED } })
     .populate('subActivityId')
+    .populate('authorId', 'name email firstName lastName')
     .lean()
     .exec(),
    this.projectModel.find({ teamMembers: memberObjectId, status: { $ne: ProjectStatus.ARCHIVED } })
@@ -187,21 +212,38 @@ export class TaskService {
     .exec()
   ]);
 
-  const todayTasks = authorTasks.map(t => ({
-   id: t._id,
-   time: t.plannedStartDate ? new Date(t.plannedStartDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'ASAP',
-   name: t.title,
-   type: 'Author',
-   project: (t as any).subActivityId?.projectName || 'SmartPM',
-   status: t.status === TaskStatus.IN_PROGRESS ? 'current' : 'upcoming',
-   duration: t.estimatedDuration
-  }));
+  const todayMidnight = new Date();
+  todayMidnight.setHours(0, 0, 0, 0);
+
+  const allTasks = authorTasks.map(t => {
+   const startDate = t.plannedStartDate ? new Date(t.plannedStartDate) : new Date();
+   const endDate = t.plannedEndDate ? new Date(t.plannedEndDate) : new Date();
+   const taskDay = new Date(startDate);
+   taskDay.setHours(0, 0, 0, 0);
+   const isOverdue = endDate < todayMidnight && t.status !== TaskStatus.CLOSED && t.status !== TaskStatus.IN_PROGRESS;
+   return {
+    id: t._id,
+    dayKey: taskDay.toISOString().split('T')[0],
+    plannedStartDate: t.plannedStartDate,
+    plannedEndDate: t.plannedEndDate,
+    time: startDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+    name: t.title,
+    type: 'Auteur',
+    project: (t as any).subActivityId?.projectName || 'SmartPM',
+    status: t.status,
+    displayStatus: isOverdue ? 'RETARD' : t.status,
+    duration: t.estimatedDuration,
+    isOverdue
+   };
+  });
+  const todayTasks = allTasks;
 
   const reviewsToDone = reviewerTasks.map(r => ({
    id: r._id,
-   colleague: 'Collègue', 
+   colleague: (r.authorId as any)?.firstName ? `${(r.authorId as any).firstName} ${(r.authorId as any).lastName}` : ((r.authorId as any)?.name || 'Collègue'),
    task: r.title,
    project: (r as any).subActivityId?.projectName || 'SmartPM',
+   status: r.status,
    comments: 0
   }));
 
@@ -214,15 +256,18 @@ export class TaskService {
    endDate: p.targetEndDate
   }));
 
+  const overdueCount = allTasks.filter(t => t.isOverdue).length;
+
   return {
-   todayTasks,
+   todayTasks: allTasks,
+   allTasks,
    reviewsToDone,
    myProjects: formattedProjects,
    performanceStats: [
     { label: 'Projets Actifs', value: myProjects.length.toString(), icon: '📁' },
-    { label: 'Tâches à faire', value: (authorTasks.filter(t => t.status !== TaskStatus.CLOSED).length).toString(), icon: '✅' },
-    { label: 'Taux de Revue', value: '100%', icon: '📈' },
-    { label: 'Certifications', value: (myProjects.length > 0 ? '2' : '1'), icon: '🎓' }
+    { label: 'Tâches Totales', value: allTasks.length.toString(), icon: '✅' },
+    { label: 'En Retard', value: overdueCount.toString(), icon: '🚨' },
+    { label: 'Revues', value: reviewerTasks.length.toString(), icon: '🔍' }
    ]
   };
  }

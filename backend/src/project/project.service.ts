@@ -41,7 +41,7 @@ export class ProjectService {
    status: ProjectStatus.PLANNING
   });
 
-  // Envoyer une notification à chaque membre
+  // Envoyer une notification à chaque membre de l'équipe
   if (this.notificationService && teamMembers.length > 0) {
    for (const memberId of teamMembers) {
     await this.notificationService.create(
@@ -52,6 +52,16 @@ export class ProjectService {
      'PROJECT_ASSIGNMENT'
     );
    }
+  }
+
+  // Envoyer une notification au manager qui a créé le projet
+  if (this.notificationService) {
+   await this.notificationService.create(
+    managerId,
+    '✅ Projet Déployé avec Succès',
+    `Le projet "${project.name}" a été créé et ${teamMembers.length} membre(s) ont été notifiés. Vous pouvez maintenant suivre l'avancement depuis votre cockpit.`,
+    'PROJECT_CREATED'
+   );
   }
 
   if (payload.activities && Array.isArray(payload.activities)) {
@@ -203,6 +213,7 @@ export class ProjectService {
    return {
     name: `${m.firstName} ${m.lastName}`,
     role: m.certifications?.[0] || 'Member',
+    equipe: m.equipe || '',
     assignedTasks: mTasks.length,
     utilization: mTasks.length > 0 ? Math.round((mInProgress / mTasks.length) * 100) : 0,
     status: mInProgress > 0 ? 'busy' : 'available'

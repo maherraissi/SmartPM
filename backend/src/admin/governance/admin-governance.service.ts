@@ -3,22 +3,26 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../../user/schemas/user.schema';
 import { ComplianceAlert, ComplianceAlertDocument, AlertStatus } from '../schemas/compliance-alert.schema';
+import { Project, ProjectDocument, ProjectStatus } from '../../project/schemas/project.schema';
 
 @Injectable()
 export class AdminGovernanceService {
  constructor(
   @InjectModel(User.name)      private userModel: Model<UserDocument>,
   @InjectModel(ComplianceAlert.name) private alertModel: Model<ComplianceAlertDocument>,
+  @InjectModel(Project.name)     private projectModel: Model<ProjectDocument>,
  ) {}
 
  // ─── Dashboard KPIs ───────────────────────────────────────────────────────
  async getDashboardKPIs() {
-  const [userStats, openAlerts, criticalAlerts] = await Promise.all([
+  const [userStats, openAlerts, criticalAlerts, activeProjects, certifiedMembers] = await Promise.all([
    this.userModel.aggregate([
     { $group: { _id: '$role', count: { $sum: 1 } } },
    ]),
    this.alertModel.countDocuments({ status: AlertStatus.OPEN }),
    this.alertModel.countDocuments({ status: AlertStatus.OPEN, severity: 'CRITICAL' }),
+   this.projectModel.countDocuments({ status: ProjectStatus.ACTIVE }),
+   this.userModel.countDocuments({ certifications: { $exists: true, $not: { $size: 0 } } })
   ]);
 
   const roleMap: Record<string, number> = {};
@@ -30,7 +34,10 @@ export class AdminGovernanceService {
    managers:      roleMap['MANAGER'] || 0,
    members:       roleMap['MEMBER'] || 0,
    openAlerts,
+   openCriticalAlerts: criticalAlerts,
    criticalAlerts,
+   activeProjects,
+   certifiedMembers,
   };
  }
 
@@ -54,8 +61,8 @@ export class AdminGovernanceService {
   ]);
 
   return {
-   roleDistribution,
-   certDistribution,
+   roles: roleDistribution,
+   certifications: certDistribution,
    recentAlerts,
    snapshotAt: new Date(),
   };
