@@ -7,20 +7,32 @@
   <h2>Bon retour</h2>
   <p class="subtitle">Accès sécurisé à votre espace de gestion</p>
 
+  <!-- Message d'erreur inline -->
+  <div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+
   <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
    <div class="input-group">
     <label>Adresse e-mail</label>
-    <input type="email" name="email" [(ngModel)]="loginData.email" required placeholder="nom@entreprise.com">
+    <input type="email" name="email" [(ngModel)]="loginData.email" required placeholder="nom@entreprise.com" [class.input-error]="errorMessage">
    </div>
 
    <div class="input-group mt-3">
-    <label>Mot de passe</label>
-    <input type="password" name="password" [(ngModel)]="loginData.password" required placeholder="••••••••">
+    <div class="label-row">
+     <label>Mot de passe</label>
+     <button type="button" class="forgot-link" (click)="showForgot = !showForgot">Mot de passe oublié ?</button>
+    </div>
+    <div class="password-wrapper">
+     <input [type]="showPassword ? 'text' : 'password'" name="password" [(ngModel)]="loginData.password" required placeholder="••••••••" [class.input-error]="errorMessage">
+     <button type="button" class="show-pwd-btn" (click)="showPassword = !showPassword" tabindex="-1">{{ showPassword ? '🙈' : '👁️' }}</button>
+    </div>
+    <div class="forgot-hint" *ngIf="showForgot">
+     💡 Contactez votre administrateur ou connectez-vous via <strong>Google / Github</strong>.
+    </div>
    </div>
 
    <button type="submit" class="btn-auth mt-4" [disabled]="!loginForm.valid || isLoading">
     <span *ngIf="!isLoading">Se connecter</span>
-    <span *ngIf="isLoading">Authentification...</span>
+    <span *ngIf="isLoading">⏳ Authentification...</span>
    </button>
   </form>
 
@@ -45,15 +57,5 @@
   </div>
 
   <p class="footer-link">Pas encore de compte ? <a routerLink="/register">S'inscrire</a></p>
- </div>
-
- <!-- 💎 Custom Pro Alert -->
- <div class="modal-backdrop" *ngIf="customAlert.show" (click)="customAlert.show = false">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-   <div class="modal-icon">🔔</div>
-   <h3>{{ customAlert.title }}</h3>
-   <p>{{ customAlert.message }}</p>
-   <button class="btn-auth" (click)="customAlert.show = false">D'accord</button>
-  </div>
  </div>
 </div>

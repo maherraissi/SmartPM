@@ -29,4 +29,8 @@ export class TaskService {
  updateTaskStatus(taskId: string, status: string): Observable<any> {
   return this.http.patch<any>(`${this.apiUrl}/${taskId}/status`, { status }, { headers: this.headers() });
  }
+
+ getFormations(): Observable<any[]> {
+  return this.http.get<any[]>('http://localhost:3000/training/all', { headers: this.headers() });
+ }
 }

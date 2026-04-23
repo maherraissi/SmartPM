@@ -75,7 +75,7 @@
 
     <!-- 🔔 Notifications Bell -->
     <div class="notif-wrapper">
-     <button class="btn-notif" (click)="toggleNotifs()">
+     <button class="btn-notif" (click)="toggleNotifs()" title="Notifications">
       <span class="bell-icon">🔔</span>
       <span class="notif-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
      </button>
@@ -98,6 +98,11 @@
       </div>
      </div>
     </div>
+    
+    <!-- 🚪 Top Right Logout Button -->
+    <button class="btn-danger" (click)="logout()" title="Déconnexion">
+     🚪 Déconnexion
+    </button>
    </div>
   </header>
 
@@ -180,116 +185,338 @@
    </div>
   </div>
 
-  <!-- 🗓 Today's tasks in slots -->
-  <section class="tasks-today-section" *ngIf="activeTab === 'tasks'">
-   <div class="card-header">
-    <h3>📌 Mes Tâches du Jour</h3>
-    <span class="time-slot-badge">8:00 - 12:00 | 14:00 - 17:00</span>
+  <!-- ── REVIEWS TAB ── -->
+  <div *ngIf="activeTab === 'reviews'" class="reviews-tab-full">
+   <div class="tab-header">
+    <h2>🔍 Mes Revues de Pairs</h2>
+    <p class="tab-sub">Tâches que vous devez examiner et valider pour vos collègues.</p>
    </div>
-   <div class="task-grid">
-    <div class="task-slot-card" *ngFor="let t of todayTasks" [class.current]="t.status==='current'">
-     <div class="slot-time">{{ t.time }}</div>
-     <div class="slot-body">
-      <h4>{{ t.name }}</h4>
-      <div class="slot-meta">
-       <span class="badge-role">{{ t.type }}</span>
-       <span class="project-tag">{{ t.project }}</span>
-       <span class="duration-tag">⏱️ {{ t.duration }}h</span>
+
+   <div class="reviews-grid">
+    <div class="review-card" *ngFor="let r of reviewsToDone" [class.ready]="r.status === 'READY_FOR_REVIEW'">
+     <div class="review-card-header">
+      <div class="reviewer-avatar">{{ r.colleague?.charAt(0) || '?' }}</div>
+      <div class="reviewer-info">
+       <strong>{{ r.colleague }}</strong>
+       <span class="review-project-tag">{{ r.project }}</span>
       </div>
+      <span class="review-status-badge" 
+            [class.ready]="r.status === 'READY_FOR_REVIEW'" 
+            [class.waiting]="r.status === 'TODO' || r.status === 'IN_PROGRESS' || r.status === 'RETARD'"
+            [class.in-progress]="r.status === 'IN_REVIEW'"
+            [class.done]="r.status === 'REVIEWED'">
+       <ng-container [ngSwitch]="r.status">
+         <span *ngSwitchCase="'READY_FOR_REVIEW'">🚀 PRÊT</span>
+         <span *ngSwitchCase="'IN_REVIEW'">⚙️ EN COURS</span>
+         <span *ngSwitchCase="'REVIEWED'">✅ TERMINÉ</span>
+         <span *ngSwitchDefault>⏳ À venir</span>
+       </ng-container>
+      </span>
      </div>
-     <div class="slot-actions">
-      <button class="btn-start" *ngIf="t.status === 'upcoming'" (click)="startTask(t)">Démarrer</button>
-      <button class="btn-running" *ngIf="t.status === 'current'" disabled>En cours...</button>
-     </div>
-    </div>
-   </div>
-  </section>
 
-  <div class="exec-panels mt-4" *ngIf="activeTab === 'tasks'">
-   <!-- 🔍 Tasks to Review -->
-   <div class="review-panel flex-2">
-    <div class="card-header">
-     <h3>🔍 File des Revues de Pairs</h3>
-    </div>
-    <div class="colleague-review-item" *ngFor="let r of reviewsToDone">
-     <div class="cr-info">
-      <strong>{{ r.colleague }}</strong> : {{ r.task }}
-      <p>{{ r.project }} • {{ r.comments }} commentaires en attente</p>
+     <div class="review-card-body">
+      <h4 class="review-task-name">{{ r.task }}</h4>
+      <p class="review-hint" *ngIf="r.status === 'TODO' || r.status === 'IN_PROGRESS' || r.status === 'RETARD'">
+       ⏳ En attente que <strong>{{ r.colleague }}</strong> termine sa tâche avant de pouvoir lancer la revue.
+      </p>
+      <p class="review-hint ready-hint" *ngIf="r.status === 'READY_FOR_REVIEW'">
+       ✅ La tâche est prête — vous pouvez lancer la revue maintenant.
+      </p>
+      <p class="review-hint in-progress-hint" *ngIf="r.status === 'IN_REVIEW'">
+       🔍 Vous êtes en train d'examiner cette tâche. Validez-la une fois terminé.
+      </p>
+      <p class="review-hint ready-hint" *ngIf="r.status === 'REVIEWED'">
+       🎉 Vous avez terminé cette revue avec succès.
+      </p>
      </div>
-     <div class="cr-actions">
-      <button class="btn-action-sm">Démarrer la Revue</button>
-     </div>
-    </div>
-   </div>
 
-   <!-- 📂 Evidence Upload Space -->
-   <div class="evidence-panel flex-1">
-    <div class="card-header">
-     <h3>📂 Documentation / Preuves</h3>
+     <div class="review-card-footer">
+      <button class="btn-launch-review" *ngIf="r.status === 'READY_FOR_REVIEW'" (click)="startReview(r)">
+       ▶ Lancer la Revue
+      </button>
+      <button class="btn-finish-review" *ngIf="r.status === 'IN_REVIEW'" (click)="finishReview(r)">
+       ✅ Terminer la Revue
+      </button>
+      <button class="btn-launch-review" disabled *ngIf="r.status === 'REVIEWED'">
+       ✅ Revue validée
+      </button>
+      <button class="btn-launch-review" disabled *ngIf="r.status === 'TODO' || r.status === 'IN_PROGRESS' || r.status === 'RETARD'">
+       ⏸ Attendre
+      </button>
+     </div>
     </div>
-    <div class="upload-zone">
-     <span class="upload-icon">☁️</span>
-     <p>Glissez screenshots, docs ou rapports ici</p>
-     <button class="btn-outline-sm">Télécharger une preuve</button>
+
+    <!-- Empty state -->
+    <div class="reviews-empty" *ngIf="reviewsToDone.length === 0">
+     <div class="empty-icon">🔍</div>
+     <h3>Aucune revue assignée</h3>
+     <p>Vous n'avez pas de tâche de revue pour le moment.</p>
     </div>
    </div>
   </div>
 
-  <div class="exec-panels mt-4" *ngIf="activeTab === 'tasks'">
-   <!-- 💬 Team Feedback & Feed -->
-   <div class="feedback-panel flex-1">
-    <div class="card-header">
-     <h3>💬 Discussion d'Équipe</h3>
-    </div>
-    <div class="comment-list">
-     <div class="comment-item" *ngFor="let c of teamComments">
-      <div class="ci-header">
-       <strong>@{{ c.author }}</strong> • <small>{{ c.time }}</small>
+  <!-- ── TRAINING TAB ── -->
+  <div *ngIf="activeTab === 'training'" class="training-tab-full">
+   <div class="tab-header">
+    <h2>🎓 Mes Formations</h2>
+    <p class="tab-sub">Suivez vos certifications et modules d'apprentissage.</p>
+   </div>
+   <div class="training-grid-full">
+     <div class="training-card-full" *ngFor="let tt of trainingTracks">
+      <div class="tc-header">
+       <h4>{{ tt.name }}</h4>
+       <span class="tc-badge" [class.done]="tt.progress === 100">{{ tt.progress === 100 ? '✅ Complété' : 'En cours' }}</span>
       </div>
-      <p>{{ c.msg }}</p>
+      <div class="tc-progress-bar">
+       <div class="tc-fill" [style.width]="tt.progress + '%'" [class.done-bg]="tt.progress === 100"></div>
+      </div>
+      <p class="tc-progress-text">{{ tt.progress }}% achevé</p>
      </div>
-     <div class="comment-input">
-      <input type="text" [(ngModel)]="newCommentText" (keyup.enter)="sendComment()" placeholder="Écrire un commentaire ou mentionner @...">
+     <div class="no-data-full" *ngIf="trainingTracks.length === 0">
+      <div class="icon">🎓</div>
+      <h3>Aucune formation requise</h3>
+      <p>Toutes vos certifications sont à jour.</p>
      </div>
+   </div>
+  </div>
+
+  <!-- ── STATS TAB ── -->
+  <div *ngIf="activeTab === 'productivity'" class="stats-tab-full">
+   <div class="tab-header">
+    <h2>📈 Mes Statistiques</h2>
+    <p class="tab-sub">Analysez vos performances et votre avancement global.</p>
+   </div>
+   <div class="stats-grid-full">
+     <div class="stat-card-full" *ngFor="let p of performanceStats">
+      <div class="stat-icon-large">{{ p.icon }}</div>
+      <div class="stat-info-full">
+       <h3>{{ p.value }}</h3>
+       <p>{{ p.label }}</p>
+      </div>
+     </div>
+     <div class="no-data-full" *ngIf="performanceStats.length === 0">
+      <div class="icon">📈</div>
+      <h3>Aucune donnée</h3>
+      <p>Commencez à travailler sur vos tâches pour générer des statistiques.</p>
+     </div>
+   </div>
+  </div>
+
+  <!-- ── EVIDENCE TAB ── -->
+  <div *ngIf="activeTab === 'evidence'" class="evidence-tab-full">
+   <div class="tab-header">
+    <h2>📂 Dépôt de Preuves et Documents</h2>
+    <p class="tab-sub">Uploadez vos livrables et documents justificatifs liés à vos projets.</p>
+   </div>
+   <div class="evidence-upload-container">
+    <div class="upload-zone-large" (click)="fileInput.click()">
+     <div class="upload-icon-large">☁️</div>
+     <h3>Glissez-déposez vos fichiers ici</h3>
+     <p>ou cliquez pour parcourir (PDF, DOCX, ZIP - Max 50MB)</p>
+     <input type="file" #fileInput style="display:none" (change)="uploadEvidence($event)">
+     <button class="btn-upload-primary">Sélectionner un fichier</button>
+    </div>
+   </div>
+  </div>
+
+  <!-- ── BENTO DASHBOARD (TASKS) ── -->
+  <div class="bento-dashboard" *ngIf="activeTab === 'tasks'">
+   
+   <!-- 📌 Vue Jour par Jour -->
+   <div class="bento-item bento-tasks">
+
+    <!-- ── Navigation Jour ── -->
+    <div class="day-nav-bar">
+     <button class="day-nav-btn" (click)="prevDay()" [disabled]="!canPrev">‹</button>
+
+     <div class="day-nav-center" *ngIf="currentDay">
+      <div class="day-nav-title" [class.today]="currentDay.isToday" [class.past]="currentDay.isPast && !currentDay.isToday">
+       {{ currentDay.label }}
+      </div>
+      <div class="day-nav-meta">
+       <span class="tasks-count">{{ currentDay.tasks.length }} mission(s)</span>
+       <span class="overdue-chip" *ngIf="currentDay.isPast && !currentDay.isToday && currentDay.tasks.length > 0">
+        ⚠️ Non terminée(s)
+       </span>
+      </div>
+      <!-- Dots indicator -->
+      <div class="day-dots">
+       <span class="dot"
+        *ngFor="let d of groupedTasksByDay; let i = index"
+        [class.active]="i === selectedDayIndex"
+        [class.past]="d.isPast && !d.isToday"
+        [class.today]="d.isToday"
+        (click)="selectedDayIndex = i">
+       </span>
+      </div>
+     </div>
+
+     <button class="day-nav-btn" (click)="nextDay()" [disabled]="!canNext">›</button>
+    </div>
+
+    <!-- ── Tâches du Jour Sélectionné ── -->
+    <div class="task-grid" *ngIf="currentDay">
+     <div class="task-slot-card"
+       *ngFor="let t of currentDay.tasks"
+       [class.current]="t.status === 'IN_PROGRESS'"
+       [class.overdue]="t.isOverdue">
+
+      <div class="slot-time">
+       <span class="status-dot" [class.green]="t.status==='IN_PROGRESS'" [class.red]="t.isOverdue"></span>
+       {{ t.time }}
+      </div>
+
+      <div class="slot-body">
+       <h4>{{ t.name }}</h4>
+       <div class="slot-meta">
+        <span class="badge-role">{{ t.type }}</span>
+        <span class="project-tag">{{ t.project }}</span>
+        <span class="duration-tag">⏱️ {{ t.duration }}h</span>
+       </div>
+       <span class="task-status-badge" [ngClass]="t.displayStatus">
+        <ng-container [ngSwitch]="t.displayStatus">
+         <span *ngSwitchCase="'RETARD'">🚨 En Retard</span>
+         <span *ngSwitchCase="'IN_PROGRESS'">⚙️ En cours</span>
+         <span *ngSwitchCase="'TODO'">⏳ En attente</span>
+         <span *ngSwitchCase="'READY_FOR_REVIEW'">🔍 À réviser</span>
+         <span *ngSwitchCase="'REVIEWED'">✅ Revue faite</span>
+         <span *ngSwitchDefault>{{ t.displayStatus }}</span>
+        </ng-container>
+       </span>
+      </div>
+
+      <div class="slot-actions">
+       <button class="btn-start"
+        *ngIf="t.status === 'TODO' || t.isOverdue"
+        (click)="startTask(t)">
+        {{ t.isOverdue ? '🔄 Reprendre' : '▶ Démarrer' }}
+       </button>
+       
+       <ng-container *ngIf="t.status === 'IN_PROGRESS'">
+         <button class="btn-finish" (click)="finishSpecificTask(t)">
+          ✅ Terminer
+         </button>
+       </ng-container>
+      </div>
+     </div>
+    </div>
+
+    <div class="no-data-mini" *ngIf="groupedTasksByDay.length === 0">
+     Aucune tâche assignée pour le moment.
     </div>
    </div>
 
-   <!-- 🎓 Training progress -->
-   <div class="training-panel flex-1">
-    <div class="card-header">
-     <h3>🎓 Mes Formations & Quiz</h3>
-    </div>
-    <div class="training-track" *ngFor="let tt of trainingTracks">
-     <div class="tt-header">
-      <span>{{ tt.name }}</span>
-      <strong>{{ tt.progress }}%</strong>
-     </div>
-     <div class="tt-progress">
-      <div class="tt-fill" [style.width]="tt.progress + '%'"></div>
-     </div>
-    </div>
-    <button class="btn-quiz mt-3">Passer le Quiz</button>
-   </div>
 
-   <!-- 📈 Personal efficiency -->
-   <div class="productivity-panel flex-1">
+   <!-- 📈 Personal efficiency (Motivation) -->
+   <div class="bento-item bento-productivity">
     <div class="card-header">
-     <h3>📈 Tableau de Motivation</h3>
+     <h3 class="text-white">📈 Motivation</h3>
     </div>
     <div class="perf-grid">
      <div class="perf-item" *ngFor="let p of performanceStats">
       <span class="perf-icon">{{ p.icon }}</span>
       <div class="perf-data">
        <div class="p-val">{{ p.value }}</div>
-       <div class="p-label">{{ p.label }}</div>
+       <div class="p-label text-white-muted">{{ p.label }}</div>
       </div>
      </div>
     </div>
    </div>
+
+   <!-- 🔍 Tasks to Review -->
+   <div class="bento-item bento-reviews">
+    <div class="card-header">
+     <h3>🔍 Revues Prioritaires</h3>
+    </div>
+    <div class="reviews-list">
+     <div class="colleague-review-item" *ngFor="let r of reviewsToDone" [class.ready]="r.status === 'READY_FOR_REVIEW'">
+      <div class="cr-info">
+       <div class="cr-header">
+         <strong>{{ r.colleague }}</strong>
+         <span class="status-mini" [class.ready]="r.status === 'READY_FOR_REVIEW'">
+           {{ r.status === 'READY_FOR_REVIEW' ? '🚀 PRÊT' : '⏳ À venir' }}
+         </span>
+       </div>
+       <div class="cr-task">{{ r.task }}</div>
+       <p class="cr-project">{{ r.project }}</p>
+      </div>
+      <div class="cr-actions">
+       <button class="btn-action-sm" [disabled]="r.status !== 'READY_FOR_REVIEW'">{{ r.status === 'READY_FOR_REVIEW' ? 'Lancer' : 'Attendre' }}</button>
+      </div>
+     </div>
+     <div class="no-data-mini" *ngIf="reviewsToDone.length === 0">
+      Aucune revue en attente.
+     </div>
+    </div>
+   </div>
+
+   <!-- 🎓 Training progress -->
+   <div class="bento-item bento-training">
+    <div class="card-header">
+     <h3>🎓 Formations Requises</h3>
+    </div>
+    <div class="training-list">
+     <div class="training-track" *ngFor="let tt of trainingTracks">
+      <div class="tt-header">
+       <span>{{ tt.name }}</span>
+       <strong [class.success]="tt.progress === 100">{{ tt.progress }}%</strong>
+      </div>
+      <div class="tt-progress">
+       <div class="tt-fill" [style.width]="tt.progress + '%'" [class.success-bg]="tt.progress === 100"></div>
+      </div>
+     </div>
+     <div class="no-data-mini" *ngIf="trainingTracks.length === 0">
+      Toutes vos certifications sont à jour.
+     </div>
+    </div>
+   </div>
+
+   <!-- 💬 Team Feedback -->
+   <div class="bento-item bento-feedback">
+    <div class="card-header">
+     <h3>💬 Flux d'Équipe</h3>
+    </div>
+    <div class="comment-list">
+     <div class="comment-items-wrapper">
+      <div class="comment-item" *ngFor="let c of teamComments | slice:0:3">
+       <div class="ci-header">
+        <strong>@{{ c.author }}</strong> • <small>{{ c.time }}</small>
+       </div>
+       <p>{{ c.msg }}</p>
+      </div>
+     </div>
+     <div class="comment-input">
+      <input type="text" [(ngModel)]="newCommentText" (keyup.enter)="sendComment()" placeholder="Un mot pour l'équipe @...">
+     </div>
+    </div>
+   </div>
+
+   <!-- 📂 Evidence Upload Space -->
+   <div class="bento-item bento-evidence">
+    <div class="card-header">
+     <h3>📂 Dépôt</h3>
+    </div>
+    <div class="upload-zone">
+     <span class="upload-icon">☁️</span>
+     <p>Glissez vos Preuves</p>
+     <button class="btn-outline-sm">Upload</button>
+    </div>
+   </div>
+
   </div>
  </main>
 
  <!-- 🤖 SmartPM AI Chatbot -->
  <app-ai-chatbot></app-ai-chatbot>
+
+ <!-- 🔔 Live Toast -->
+ <div class="live-toast-mem" [class.show]="liveToast.show">
+  <div class="toast-icon-mem">🔔</div>
+  <div class="toast-body-mem">
+   <div class="toast-title-mem">{{ liveToast.title }}</div>
+   <div class="toast-msg-mem">{{ liveToast.message }}</div>
+  </div>
+  <button class="toast-close-mem" (click)="liveToast.show=false">✕</button>
+ </div>
 
 </div>

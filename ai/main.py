@@ -316,107 +316,92 @@ Phases & Activites :
 {act_str}
 
 =================================================================
-SCENARIO A ANALYSER
+INSTRUCTION / SCENARIO DE L'UTILISATEUR
 =================================================================
-Scenario       : {request.scenario}
-Horizon        : {request.duration_weeks} semaines
-Variables supp.: {json.dumps(request.variables or {}, ensure_ascii=False)}
+Scenario / Demande : {request.scenario}
+Horizon d'analyse  : {request.duration_weeks} semaines
+Variables supp.    : {json.dumps(request.variables or {}, ensure_ascii=False)}
 
-=================================================================
-RAPPORT REQUIS — Structure obligatoire (8 sections)
-=================================================================
-
-## 1. RESUME EXECUTIF
-[Impact global du scenario sur ce projet specifique. 3-4 phrases precises.]
-
-## 2. ANALYSE D'IMPACT DETAILLEE
-### 2a. Impact Planning
-[Decalages precis en jours/semaines sur les jalons, phases affectees]
-### 2b. Impact Ressources
-[Charge equipe, goulots d'etranglement, disponibilite membres]
-### 2c. Impact Financier
-[Estimation surcoûts en % ou heures supplementaires]
-
-## 3. MATRICE DES RISQUES
-| Risque | Probabilite | Severite | Impact Global |
-|--------|-------------|----------|---------------|
-[Remplis 4-6 lignes avec les risques identifies depuis le contexte reel]
-
-## 4. TACHES ET PHASES CRITIQUES AFFECTEES
-[Liste priorisee des taches/phases directement touchees, avec ordre d'urgence]
-
-## 5. SCENARIOS PROBABILISTES
-### Optimiste (P10) — Si tout se passe bien
-### Nominal (P50) — Cas le plus probable
-### Pessimiste (P90) — Si les risques s'accumulent
-
-## 6. PLAN D'ACTION RECOMMANDE (7 actions)
-1. [Action immediate — dans les 48h]
-2. [Action court terme — semaine 1]
-3. [Action court terme — semaine 2]
-4. [Action moyen terme — semaines 3-4]
-5. [Mitigation risque principal]
-6. [Ajustement ressources]
-7. [Indicateur de validation]
-
-## 7. KPIs DE SUIVI
-[3-5 metriques avec seuils d'alerte verts/oranges/rouges]
-
-## 8. RECOMMANDATION FINALE
-[GO / GO CONDITIONNEL / NO-GO — avec justification claire en 2-3 phrases]
-
-Utilise les donnees reelles ci-dessus pour personnaliser CHAQUE section. Sois precis et professionnel.
+DIRECTIVES IMPORTANTES :
+1. Reponds **DIRECTEMENT** et **PRECISEMMENT** a la demande de l'utilisateur ci-dessus.
+2. N'utilise PAS un format de rapport standard fixe. Adapte ta reponse (tableaux, listes, bullet points) pour repondre exactement au besoin exprime dans le "Scenario / Demande".
+3. Utilise les donnees reelles du projet fournies plus haut pour justifier ton analyse (Ressources, Taches en retard, etc.).
+4. Si l'utilisateur demande un tableau, fournis un tableau MarkDown. S'il demande un planning, fournis un planning détaillé.
+5. Sois concis et va droit au but. Evite le blabla inutile pour que la reponse soit rapide a generer.
 """
 
     model_name = request.model_name or "llama3"
 
-    async def ollama_stream():
-        try:
-            stream = ollama.chat(
-                model=model_name,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": (
-                            "Tu es un expert senior en gestion de projets logiciels critiques (avionique, spatial, automobile). "
-                            "Tu parles exclusivement francais. Tes rapports sont structures, precis et directement actionnables. "
-                            "Tu utilises les donnees reelles du projet pour personaliser chaque section de ton analyse."
-                        )
-                    },
-                    {"role": "user", "content": prompt}
-                ],
-                stream=True,
-                options={
-                    "temperature":     0.25,
-                    "num_predict":     2500,
-                    "top_p":           0.85,
-                    "repeat_penalty":  1.15,
-                    "num_ctx":         4096,
-                }
-            )
-            for chunk in stream:
-                content = chunk.get("message", {}).get("content", "")
-                if content:
-                    yield content
-
-        except Exception as e:
-            err_str = str(e)
-            if "not found" in err_str.lower():
-                yield (
-                    f"\nModele '{model_name}' non trouve dans Ollama.\n\n"
-                    f"Pour l'installer:\n  ollama pull {model_name}\n\n"
-                    f"Modeles recommandes:\n  ollama pull llama3\n  ollama pull mistral\n  ollama pull phi3"
+    if model_name == "agent_2" or model_name.lower().startswith("gemini"):
+        async def gemini_stream():
+            try:
+                system_instruction = (
+                    "Tu es un expert senior en gestion de projets logiciels critiques (avionique, spatial, automobile). "
+                    "Tu parles exclusivement francais. Tes rapports sont structures, precis et directement actionnables. "
+                    "Tu utilises les donnees reelles du projet pour personaliser chaque section de ton analyse."
                 )
-            elif "connection" in err_str.lower() or "refused" in err_str.lower():
-                yield (
-                    f"\nOllama n'est pas accessible.\n\n"
-                    f"Solution:\n  1. Ouvrez un terminal\n  2. Executez: ollama serve\n  3. Relancez la simulation\n\n"
-                    f"Erreur: {err_str}"
-                )
-            else:
-                yield f"\nErreur Simulation: {err_str}"
+                full_prompt = system_instruction + "\n\n" + prompt
+                
+                generation_config = genai.types.GenerationConfig(temperature=0.25)
+                # stream=True with Gemini
+                response = await gemini_model.generate_content_async(full_prompt, generation_config=generation_config, stream=True)
+                async for chunk in response:
+                    if chunk.text:
+                        yield chunk.text
+            except Exception as e:
+                yield f"\nErreur Gemini Simulation: {str(e)}"
+        
+        return StreamingResponse(gemini_stream(), media_type="text/plain")
 
-    return StreamingResponse(ollama_stream(), media_type="text/plain")
+    else:
+        async def ollama_stream():
+            try:
+                actual_model = "llama3" if model_name == "agent_1" else model_name
+                stream = ollama.chat(
+                    model=actual_model,
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": (
+                                "Tu es un expert senior en gestion de projets logiciels critiques (avionique, spatial, automobile). "
+                                "Tu parles exclusivement francais. Tes rapports sont structures, precis et directement actionnables. "
+                                "Tu utilises les donnees reelles du projet pour personaliser chaque section de ton analyse."
+                            )
+                        },
+                        {"role": "user", "content": prompt}
+                    ],
+                    stream=True,
+                    options={
+                        "temperature":     0.25,
+                        "num_predict":     2500,
+                        "top_p":           0.85,
+                        "repeat_penalty":  1.15,
+                        "num_ctx":         4096,
+                    }
+                )
+                for chunk in stream:
+                    content = chunk.get("message", {}).get("content", "")
+                    if content:
+                        yield content
+
+            except Exception as e:
+                err_str = str(e)
+                if "not found" in err_str.lower():
+                    yield (
+                        f"\nModele '{model_name}' non trouve dans Ollama.\n\n"
+                        f"Pour l'installer:\n  ollama pull {model_name}\n\n"
+                        f"Modeles recommandes:\n  ollama pull llama3\n  ollama pull mistral\n  ollama pull phi3"
+                    )
+                elif "connection" in err_str.lower() or "refused" in err_str.lower():
+                    yield (
+                        f"\nOllama n'est pas accessible.\n\n"
+                        f"Solution:\n  1. Ouvrez un terminal\n  2. Executez: ollama serve\n  3. Relancez la simulation\n\n"
+                        f"Erreur: {err_str}"
+                    )
+                else:
+                    yield f"\nErreur Simulation: {err_str}"
+
+        return StreamingResponse(ollama_stream(), media_type="text/plain")
 
 
 # ── LIST OLLAMA MODELS ────────────────────────────────────────────
@@ -425,6 +410,8 @@ async def list_ollama_models():
     try:
         result = ollama.list()
         models = [m.get("model", m.get("name","?")) for m in result.get("models", [])]
+        if api_key:
+            models.insert(0, "Gemini-2.5-Flash")
         return {"models": models}
     except Exception as e:
         return {"models": [], "error": str(e)}

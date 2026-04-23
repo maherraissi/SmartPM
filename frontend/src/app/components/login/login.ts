@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -13,26 +13,30 @@ import { Router, RouterModule } from '@angular/router';
 export class Login {
  loginData = { email: '', password: '' };
  isLoading = false;
- customAlert = { show: false, title: '', message: '' };
+ errorMessage = '';
+ showPassword = false;
+ showForgot = false;
 
- showAlert(title: string, message: string) {
-  this.customAlert = { show: true, title, message };
- }
-
- constructor(private router: Router) {}
+ constructor(private router: Router, private cdr: ChangeDetectorRef) {}
 
  async onSubmit() {
   this.isLoading = true;
+  this.errorMessage = '';
   try {
+   const controller = new AbortController();
+   const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
+
    const res = await fetch('http://localhost:3000/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(this.loginData)
+    body: JSON.stringify(this.loginData),
+    signal: controller.signal
    });
+   clearTimeout(timeoutId);
+
    const data = await res.json();
    if (data.access_token) {
     localStorage.setItem('token', data.access_token);
-    // Decode JWT payload to get role
     const payload = JSON.parse(atob(data.access_token.split('.')[1]));
     const role: string = payload.role || 'MEMBER';
     const routes: Record<string, string> = {
@@ -42,22 +46,27 @@ export class Login {
     };
     this.router.navigate([routes[role] || '/member']);
    } else {
-    this.showAlert('Accès Refusé', data.message || 'Identifiants incorrects');
+    this.errorMessage = '❌ Email ou mot de passe incorrect. Vérifiez vos identifiants.';
+    this.cdr.detectChanges();
    }
-  } catch (err) {
-   this.showAlert('Erreur Connexion', 'Erreur réseau. Vérifiez votre connexion.');
+  } catch (err: any) {
+   if (err.name === 'AbortError') {
+    this.errorMessage = '⏱️ Le serveur ne répond pas. Réessayez dans quelques secondes.';
+   } else {
+    this.errorMessage = '🔌 Erreur réseau. Vérifiez votre connexion.';
+   }
+   this.cdr.detectChanges();
   } finally {
    this.isLoading = false;
+   this.cdr.detectChanges();
   }
  }
 
  loginWithGoogle() {
-  console.log('Redirecting to Google Auth...');
   window.location.href = 'http://localhost:3000/auth/google';
  }
 
  loginWithGithub() {
-  console.log('Redirecting to Github Auth...');
   window.location.href = 'http://localhost:3000/auth/github';
  }
 }
