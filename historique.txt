@@ -1,88 +1,119 @@
-# 🚀 Architecture & Historique du Système SmartPM 
+# 🚀 Architecture Globale & Documentation Exhaustive du Système SmartPM
 
-Ce document constitue le registre central de la plateforme SmartPM. Il détaille la structure technique, les choix technologiques et le rôle de chaque composant pour assurer la conformité aux standards aéronautiques de haut niveau.
-
----
-
-## 🏗️ Vision & Architecture Globale
-SmartPM est une **Engineering Execution & Competency Platform** dédiée au cycle de vie logiciel. Elle ne se contente pas de gérer des tickets, elle orchestre la production d'artefacts critiques avec une ségrégation stricte des rôles.
-
-### 🧩 La Triade Technologique :
-1. **Backend (Port 3000)** : Développé avec **NestJS**, moteur robuste gérant la logique métier, l'authentification et les connexions à la base de données **MongoDB Atlas**. Utilisation de Mongoose pour la modélisation des données.
-2. **Frontend (Port 4200)** : Une Single-Page Application (SPA) moderne sous **Angular 18+** (mode Standalone), offrant des interfaces "Cockpit" pour chaque profil d'utilisateur. Design system basé sur le "Glassmorphism" et des micro-animations premium.
-3. **AI Service (Port 8000)** : Microservice **Python (FastAPI)** agissant comme le cerveau intelligent pour l'auto-planning, l'analyse de risques et le support technique via LLM.
+Ce document constitue la **source de vérité absolue** et le registre central de la plateforme **SmartPM**. Il détaille avec une précision granulaire la structure technique, l'architecture logicielle, les choix technologiques et les flux de travail (workflows) mis en place pour garantir un niveau de qualité et de traçabilité conforme aux standards industriels les plus exigeants (notamment aéronautiques).
 
 ---
 
-## 📁 Dictionnaire Exhaustif des Fichiers
+## 🏗️ 1. Vision Stratégique & Architecture Technique
 
-### 1. 📂 Racine du Projet (`/`)
-*  `package.json` : Définit les scripts de démarrage synchronisés via `concurrently`. La commande `npm run dev` lance simultanément le Backend, le Frontend et l'IA.
-*  `README.md` : Guide d'installation et de configuration globale.
-*  `historique.txt` : Ce document (votre source de vérité).
-*  `check-db.ts` / `check-db.js` : Scripts de diagnostic pour vérifier la connectivité MongoDB et l'intégrité des données dans les environnements cloud.
+SmartPM n'est pas un simple gestionnaire de tâches. C'est une **Engineering Execution & Competency Platform** complète. Son objectif est d'orchestrer la production d'artefacts critiques avec une ségrégation stricte des rôles (Création vs Validation) et une intégration de l'Intelligence Artificielle au cœur du processus de décision.
 
-### 2. ⚙️ Backend Services (`/backend/src/`)
-*Structuré par domaines métier (Modules).*
+### 🧩 La Triade Technologique
+L'application repose sur une architecture moderne en micro-services, articulée autour de 3 piliers interconnectés :
 
-#### 👥 Users & Auth (`/auth/` & `/user/`)
-*  `user.schema.ts` : Définit l'utilisateur aéronautique avec ses **certifications** (HLR, LLR, LLT, etc.) et ses rôles (`ADMIN`, `MANAGER`, `MEMBER`).
-*  `auth.controller.ts` : Gère la sécurité, le JWT et la redirection intelligente post-connexion selon le rôle.
+1. **Le Cœur (Backend - Port 3000)** : 
+   - **Framework** : NestJS (Node.js/TypeScript).
+   - **Rôle** : Moteur robuste gérant la logique métier, l'authentification sécurisée (JWT), et la validation stricte des règles métier.
+   - **Base de données** : MongoDB Atlas avec Mongoose pour la modélisation et la validation de schémas.
 
-#### 📊 Projects & Teams (`/project/`)
-*  `project.schema.ts` : Structure les projets avec suivi de progression, dates clés et assignation d'équipe.
-*  `project.service.ts` : Cœur de la gestion de projet, incluant le déploiement automatique, la gestion des archives (Restaurer/Supprimer) et le calcul des métriques de charge.
+2. **L'Interface Utilisateur (Frontend - Port 4200)** : 
+   - **Framework** : Angular 18+ (Architecture Standalone).
+   - **Rôle** : Single-Page Application (SPA) réactive.
+   - **Design System** : Approche "Cockpit" pour un pilotage optimal. Utilisation de CSS natif avancé, de "Glassmorphism", de grilles "Bento", et d'animations premium.
 
-#### 📝 Tasks & Compliance (`/task/`)
-*  `task.schema.ts` : Fichier CRITIQUE. Gère l'indépendance obligatoire (**Author != Reviewer**). Stocke les IDs de conformité, les artifacts liés et le tracking temporel.
-*  `task.service.ts` : Implémente le **Moteur Temporel Aéro** (calcul des dates ignorant les week-ends, basé sur 7h/jour).
+3. **Le Cerveau IA (AI Service - Port 8000)** : 
+   - **Framework** : Python (FastAPI).
+   - **Rôle** : Microservice agissant comme un agent intelligent. Il analyse les bases de données en temps réel via "Motor" pour le planning automatique, la détection des risques, la génération de rapports de simulation et le support technique conversationnel (LLM).
 
-#### 🔔 NOUVEAU : Notifications & Alertes (`/notification/`)
-*  `notification.schema.ts` : Modèle pour les alertes (Type: Tâche assignée, commentaire reçu, alerte de délai).
-*  `notification.service.ts` : Système d'alertes en temps réel intégré au cycle de vie des tâches.
+---
 
-#### 💬 NOUVEAU : System de Commentaires (`/comment/`)
-*  `comment.schema.ts` : Permet la collaboration sur les tâches avec un historique immuable pour l'audit .
-*  `comment.service.ts` : Gère la création et la récupération des fils de discussion par tâche.
+## 📁 2. Dictionnaire Exhaustif du Codebase (De A à Z)
 
-#### 🧠 AI-Integration (`/ai-integration/`)
-*  `ai-integration.service.ts` : Pont entre le backend NestJS et le microservice Python. Prépare le contexte (data mapping) pour que l'IA puisse répondre avec précision.
+### 📂 2.1. Racine du Projet (`/`)
+- `package.json` : Fichier de configuration centralisé. Il définit les dépendances et, surtout, les scripts de lancement synchronisés via `concurrently`. Le script `npm run dev` lance simultanément le Backend, le Frontend et l'IA.
+- `README.md` : Guide d'installation et de configuration globale des variables d'environnement.
+- `historique.txt` : Ce document de référence.
+- `check-db.ts` / `check-db.js` : Scripts de diagnostic pour vérifier la bonne connectivité à MongoDB Atlas avant le lancement des serveurs.
 
-### 3. 🎨 Frontend App (`/frontend/src/app/`)
-*Interface utilisateur haut de gamme.*
+### ⚙️ 2.2. Backend Services (`/backend/src/`)
+*L'architecture est structurée par domaines métier (Domain-Driven Design).*
+
+#### 👥 Module Users & Auth (`/auth/` & `/users/`)
+- `user.schema.ts` : Définit l'utilisateur avec ses informations de connexion, ses rôles (`ADMIN`, `MANAGER`, `MEMBER`) et ses **certifications** (compétences acquises).
+- `auth.controller.ts` & `auth.service.ts` : Gère le hachage des mots de passe (bcrypt), la génération des tokens JWT, et la logique de redirection post-connexion selon le rôle.
+
+#### 📊 Module Projects & Teams (`/projects/`)
+- `project.schema.ts` : Modèle de données pour les projets (nom, description, dates de début et de fin, statuts `ACTIF`, `ARCHIVÉ`, et liste des membres assignés).
+- `project.service.ts` : Contient la logique de cycle de vie d'un projet, incluant le calcul dynamique des métriques de charge de travail et la gestion des équipes.
+
+#### 📝 Module Tasks & Compliance (`/tasks/`)
+- `task.schema.ts` : **Fichier Critique**. Définit les missions. Il intègre obligatoirement un `authorId` (qui fait la tâche) et un `reviewerId` (qui valide la tâche). Inclut l'Enumération des statuts (`TODO`, `IN_PROGRESS`, `READY_FOR_REVIEW`, `IN_REVIEW`, `REVIEWED`, `BLOCKED`, `CLOSED`).
+- `task.service.ts` : Implémente le **Moteur Temporel Aéro**. Ce moteur calcule les dates d'échéance en se basant sur des journées de travail de 7h/jour et en ignorant automatiquement les week-ends.
+
+#### 🔔 Module Notifications & Alertes (`/notifications/`)
+- `notification.schema.ts` : Modèle des alertes envoyées aux utilisateurs (type : assignation, alerte de délai, rappel de revue).
+- `notification.service.ts` : Système d'alerte en temps réel utilisé dans tout le cycle de vie applicatif.
+
+#### 💬 Module System de Commentaires (`/comments/`)
+- `comment.schema.ts` : Permet la collaboration textuelle sur les tâches avec un historique immuable pour l'auditabilité.
+
+#### 🧠 Module AI-Integration (`/ai/`)
+- `ai-integration.service.ts` : Le pont HTTP entre le backend NestJS et le microservice Python. Prépare le contexte métier sécurisé pour que l'IA réponde avec précision sans exposer de données sensibles.
+
+### 🎨 2.3. Frontend Application (`/frontend/src/app/`)
+*Développé pour l'excellence visuelle et l'efficacité opérationnelle.*
 
 #### 🧩 Composants Clés (`/components/`)
-*  `ai-assistant/` : Widget flottant intelligent accessible partout.
-*  `ai-chatbot/` : Interface de discussion plein écran (Design "Glassmorphism").
-*  `ai-tools-panel/` : Panneau d'outils rapides alimentés par l'IA (Analyse de risque, Résumé de doc).
-*  `manager-dashboard/` : Vue stratégique avec cockpit de pilotage (Auto-planning AI, suivi de charge visuel).
-*  `member-dashboard/` : Vue opérationnelle pour les ingénieurs (Focus sur les tâches critiques et conformité).
-*  `project-wizard/` : Assistant de création de projet ultra-premium avec sélection d'équipe basée sur les compétences.
+- `login/` : Interface de connexion sécurisée avec gestion des erreurs en temps réel et détection de rechargement asynchrone (ChangeDetectorRef).
+- `admin-dashboard/` : Vue globale pour les administrateurs permettant de surveiller le système et d'affecter les utilisateurs.
+- `manager-dashboard/` : Cockpit stratégique pour les chefs de projet. Inclut l'auto-planning propulsé par l'IA et une vue globale de la charge des équipes.
+- `member-dashboard/` : L'espace de travail d'exécution par excellence. Conçu en "Bento Grid", il contient des sous-onglets dynamiques :
+  - **Vue Tâches** : Affichage jour par jour de la charge de travail avec chronomètre global.
+  - **Vue Revues** : Affichage exclusif des revues de pairs assignées.
+  - **Vue Formations** : Suivi des certifications avec barres de progression.
+  - **Vue Stats** : Visualisation de l'efficacité (Motivation, Qualité).
+  - **Vue Preuves/Docs** : Zone d'upload Dropzone pour livrer des documents.
+- `ai-chatbot/` & `ai-assistant/` : Interfaces conversationnelles avec SmartPM AI, intégrées en surimpression "Glassmorphism" partout dans l'application.
 
-#### 📡 Services (`/services/`)
-*  `ai.ts` : Gestion du streaming des réponses LLM et des outils IA.
-*  `notification.ts` : Service de polling/websockets pour les alertes utilisateur.
-*  `comment.ts` : Logic frontend pour la collaboration en temps réel.
+#### 📡 Services Frontend (`/services/`)
+- `task.service.ts` : Gère les appels API CRUD vers le backend pour récupérer les tableaux de bord groupés.
+- `notification.service.ts` : Maintient un polling léger (ou WebSocket) pour actualiser instantanément l'interface quand une alerte est reçue.
 
-### 4. 🧠 Intelligence Artificielle (`/ai/`)
-*Moteur de décision basé sur les LLMs.*
+### 🧠 2.4. Intelligence Artificielle (`/ai/`)
+*Le cerveau décisionnel de SmartPM.*
+- `main.py` : L'API FastAPI asynchrone.
+- **Moteur LLM** : Utilise les modèles avancés (Gemini / OpenAI) via des prompts structurés ("System Prompts") imposant des réponses formatées en JSON ou Markdown.
+- **Accès Direct DB** : Lit directement MongoDB pour offrir des rapports instantanés et générer un simulateur de scénarios complexes.
 
-*  `main.py` : Application FastAPI.
-  *  **Route `/chat`** : Utilise **Gemini 2.0 Flash** (vitesse extrême) avec **OpenAI gpt-4o-mini** en secours.
-  *  **Context-Aware Analysis** : L'IA accède directement à MongoDB via **Motor** pour analyser les données réelles sans intervention humaine.
-*  `test_mongo.py` : Script de validation de la connexion IA -> Database.
+---
+
+## ⚙️ 3. Workflow & Cycle de Vie des Tâches (State Machine)
+
+L'application force un cycle de vie strict pour garantir la traçabilité de bout en bout :
+
+1. **TODO (À faire)** : La tâche est assignée. L'utilisateur clique sur "▶ Démarrer".
+2. **IN_PROGRESS (En cours)** : Le chronomètre du dashboard se lance. Le statut passe à `IN_PROGRESS`. L'utilisateur peut l'interrompre ou cliquer sur "✅ Terminer".
+3. **READY_FOR_REVIEW (Prêt pour revue)** : La tâche sort du scope de l'Auteur et entre dans la boîte de réception ("Onglet Revues") du Réviseur assigné.
+4. **IN_REVIEW (Revue en cours)** : Le réviseur clique sur "Lancer la Revue" pour examiner le travail.
+5. **REVIEWED (Terminé / Validé)** : Le réviseur clique sur "✅ Terminer la Revue", validant officiellement le livrable.
+6. **RETARD (Statut Dynamique)** : Géré à la volée. Si la date de fin planifiée est dépassée et que la tâche n'est pas terminée, le frontend et le backend l'affichent automatiquement en "🚨 En Retard".
 
 ---
 
-## 🛠️ Fonctionnalités Spécifiques & Sécurité
-*  **Règle d'Indépendance ()** : Le système interdit nativement qu'une personne soit à la fois auteur et vérificateur d'une même tâche.
-*  **Audit Trail Premium** : Chaque action (commentaire, changement de statut, assignation) est enregistrée avec un timestamp précis et l'ID de l'acteur.
-*  **UI Cockpit Professional** : Design "Dark Mode" par défaut avec accents bleus aéronautiques, typographie "Outfit" et animations fluides.
-*  **IA Prédictive** : Capable de suggérer des dates de fin de projet en analysant la charge de l'équipe et la complexité des tâches.
+## 🛡️ 4. Règles d'Or et Sécurité Aéronautique
+
+- **Règle d'Indépendance Stricte (Maker-Checker)** : L'architecture de la base de données (Task Schema) possède deux identifiants distincts (`authorId` et `reviewerId`). Le système interdit nativement qu'une même personne valide son propre travail.
+- **Gestion d'État Immuable** : La mise à jour du statut dans le Dashboard déclenche immédiatement une détection de changement asynchrone (`ChangeDetectorRef`) pour que l'interface reste toujours synchronisée avec la base de données.
+- **Réplication et Sécurisation des Données** : Les scripts de démarrage prévoient la connexion aux bases de données Atlas avec la tolérance aux coupures réseau temporaires (Timeouts) gérée élégamment côté client.
 
 ---
-**Dernière mise à jour : 15 Avril 2026**
-*  **Ajout des modules de Notifications et Commentaires.**
-*  **Intégration du Assistant AI Flottant et du Tools Panel.**
-*  **Standardisation des services Backend et déploiement du système de diagnostic DB.**
-*  **Correction des erreurs de sérialisation JSON pour les objets complexes MongoDB.**
+
+## 🔄 5. Historique des Dernières Mises à Jour Critiques
+
+Afin de maintenir ce système à son plus haut niveau d'exigence, les corrections suivantes ont été récemment apportées et validées de bout en bout :
+
+- **Fix du Freeze de Connexion** : Implémentation du rafraîchissement d'Angular (`ChangeDetectorRef`) sur l'écran Login pour forcer l'affichage instantané des erreurs d'authentification.
+- **Architecture de l'Onglet Revues** : Création de la page complète de gestion des revues (`activeTab === 'reviews'`) avec intégration du bouton `startReview()` et `finishReview()`.
+- **Ajout de l'état `IN_REVIEW`** : Ajout formel de l'énumération `IN_REVIEW` dans le Backend (Mongoose Schema) pour autoriser la validation du statut "En cours de revue".
+- **Bouton de Terminaison Rapide** : Ajout du bouton "✅ Terminer" permettant à l'ingénieur de finaliser une tâche "IN_PROGRESS" directement depuis la Timeline.
+- **Développement des Onglets Complémentaires** : Construction des vues pleine page pour les Formations (Training), les Statistiques de productivité (Stats), et la gestion des Preuves (Documents upload) avec intégration des données backend en temps réel.
