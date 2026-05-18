@@ -220,7 +220,10 @@ export class TaskService {
    const endDate = t.plannedEndDate ? new Date(t.plannedEndDate) : new Date();
    const taskDay = new Date(startDate);
    taskDay.setHours(0, 0, 0, 0);
-   const isOverdue = endDate < todayMidnight && t.status !== TaskStatus.CLOSED && t.status !== TaskStatus.IN_PROGRESS;
+   const isOverdue = endDate < todayMidnight
+    && t.status !== TaskStatus.CLOSED
+    && t.status !== TaskStatus.IN_PROGRESS
+    && t.status !== TaskStatus.READY_FOR_REVIEW;
    return {
     id: t._id,
     dayKey: taskDay.toISOString().split('T')[0],
