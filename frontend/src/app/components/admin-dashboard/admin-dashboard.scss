@@ -1534,3 +1534,199 @@ $transition: 0.2s cubic-bezier(.4,0,.2,1);
   .es-icon { font-size: 28px; opacity: 0.5; }
   p { font-size: 13px; }
 }
+
+// -- New Formation Architect Elements -----------------------------------------
+
+.builder-input-sm {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px; padding: 7px 12px; font-size: 12px; color: #e2e8f0;
+  width: 100%; outline: none;
+  &:focus { border-color: #38b2ac; }
+}
+
+.options-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;
+}
+
+.quiz-preview { max-height: 200px; }
+
+.quiz-card {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 12px; margin-bottom: 8px;
+
+  .quiz-card-top {
+    display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;
+    strong { font-size: 13px; color: #e2e8f0; line-height: 1.4; }
+  }
+  .quiz-options {
+    display: flex; flex-direction: column; gap: 4px;
+    .quiz-opt {
+      font-size: 12px; color: #94a3b8; padding: 3px 0;
+      &.correct { color: #4ade80; font-weight: 700; }
+    }
+  }
+}
+
+.add-question-bar {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 12px;
+}
+
+// Assign modal list
+.assign-user-list {
+  display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto;
+
+  .assign-user-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; border-radius: 10px; cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: background 0.2s;
+    &:hover { background: rgba(56,178,172,0.08); }
+    input[type=checkbox] { width: 16px; height: 16px; accent-color: #38b2ac; flex-shrink: 0; }
+  }
+}
+
+// Transfer request reject inline
+.reject-inline {
+  display: flex; align-items: center; gap: 6px; margin-top: 6px;
+  input { flex: 1; }
+}
+
+// Path tag color variants
+.f-path-tag {
+  &.red   { background: rgba(239,68,68,0.15); color: #f87171; border-color: rgba(239,68,68,0.3); }
+  &.green { background: rgba(74,222,128,0.15); color: #4ade80; border-color: rgba(74,222,128,0.3); }
+}
+
+// Formation card footer with multiple buttons
+.f-footer {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+// Status pills for training
+.status-pill-minimal {
+  &.COMPLETED  { background: rgba(74,222,128,0.15); color: #4ade80; }
+  &.IN_PROGRESS, &.In-Progress { background: rgba(56,178,172,0.15); color: #38b2ac; }
+  &.FAILED     { background: rgba(239,68,68,0.15); color: #f87171; }
+  &.ASSIGNED   { background: rgba(148,163,184,0.15); color: #94a3b8; }
+  &.Not-Started { background: rgba(148,163,184,0.1); color: #64748b; }
+}
+
+// Status pill variants
+.status-pill {
+  &.status-pending  { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  &.status-approved { background: rgba(74,222,128,0.15); color: #4ade80; }
+  &.status-rejected { background: rgba(239,68,68,0.15); color: #f87171; }
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff; border: none; border-radius: 8px; padding: 6px 14px;
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+  &:hover { opacity: 0.85; }
+}
+
+.sc-url {
+  font-size: 11px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px;
+}
+
+.field-label.mt-4 { margin-top: 16px; }
+.mb-2 { margin-bottom: 8px; }
+
+// ── Admin Training Progress Bar (status-aware) ─────────────────────────────
+.adm-progress-wrap {
+  height: 8px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 4px;
+
+  .adm-progress-bar {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1s ease;
+    min-width: 2px;
+
+    &.bar-assigned   { background: #94a3b8; }
+    &.bar-inprogress { background: linear-gradient(90deg, #3b82f6, #6366f1); }
+    &.bar-done       { background: linear-gradient(90deg, #10b981, #059669); }
+    &.bar-failed     { background: linear-gradient(90deg, #ef4444, #dc2626); }
+  }
+}
+
+.adm-progress-pct {
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748b;
+
+  &.pct-done     { color: #10b981; }
+  &.pct-failed   { color: #ef4444; }
+  &.pct-progress { color: #3b82f6; }
+}
+
+// ── Training Analytics Dashboard ────────────────────────────────────────────
+.analytics-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.akpi-card {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 18px 20px;
+  transition: transform $transition;
+
+  &:hover { transform: translateY(-3px); }
+
+  .akpi-val   { font-size: 2rem; font-weight: 800; line-height: 1; }
+  .akpi-label { font-size: 11px; color: $text-muted; margin: 6px 0 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .akpi-bar   { height: 6px; background: rgba(0,0,0,0.06); border-radius: 10px; overflow: hidden; }
+  .akpi-fill  {
+    height: 100%; border-radius: 10px; transition: width 1s ease;
+    background: linear-gradient(90deg, $green, $green-light);
+    &.blue-fill   { background: linear-gradient(90deg, $blue, #60a5fa); }
+    &.orange-fill { background: linear-gradient(90deg, $orange, #fb923c); }
+    &.red-fill    { background: linear-gradient(90deg, $red, #f87171); }
+  }
+
+  &.green  { border-color: rgba($green,0.3);  .akpi-val { color: $green; } }
+  &.blue   { border-color: rgba($blue,0.3);   .akpi-val { color: $blue; } }
+  &.orange { border-color: rgba($orange,0.3); .akpi-val { color: $orange; } }
+  &.red    { border-color: rgba($red,0.3);    .akpi-val { color: $red; } }
+}
+
+.formation-chart-card {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  padding: 20px 24px;
+
+  .chart-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: $text-dim;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.f-chart-bars { display: flex; flex-direction: column; gap: 12px; }
+
+.f-chart-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 60px 44px;
+  align-items: center;
+  gap: 12px;
+
+  .fcr-label { font-size: 12px; font-weight: 700; color: $text-dim; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fcr-track { height: 10px; background: rgba(0,0,0,0.05); border-radius: 10px; overflow: hidden;
+    .fcr-fill { height: 100%; background: linear-gradient(90deg, $green, $green-light); border-radius: 10px; transition: width 1.2s ease; }
+  }
+  .fcr-count { font-size: 11px; color: $text-muted; text-align: center; }
+  .fcr-pct   { font-size: 12px; font-weight: 800; color: $green; text-align: right; }
+}

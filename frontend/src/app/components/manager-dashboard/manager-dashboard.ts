@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, NgZone, ApplicationRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -21,18 +21,10 @@ export class ManagerDashboard implements OnInit, OnDestroy {
 
   // Simulator state
   isSimulating = false;
-  simulationResult = '';
-  simulationScenario = 'Retard de 2 semaines sur la phase de développement — impact sur les jalons clés.';
-  simulationWeeks = 4;
+  simulationData: any = null;
+  simulationError = '';
   simulationProject = '';
-  selectedModel = 'agent_1';
-  availableModels: {id: string, name: string}[] = [
-    {id: 'agent_1', name: 'Agent 1'},
-    {id: 'agent_2', name: 'Agent 2'}
-  ];
-  simulationStartTime: number = 0;
   simulationDuration = 0;
-  wordCount = 0;
   simulationDone = false;
 
   // Dashboard KPIs
@@ -69,6 +61,7 @@ export class ManagerDashboard implements OnInit, OnDestroy {
   };
 
   private subs: Subscription[] = [];
+  private cockpitPollInterval: any; // Live polling every 10s for task updates
 
   constructor(
     private router: Router,
@@ -76,13 +69,21 @@ export class ManagerDashboard implements OnInit, OnDestroy {
     private projectService: ProjectService,
     private aiService: AiService,
     private notificationService: NotificationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private zone: NgZone,
+    private appRef: ApplicationRef
   ) {}
 
   ngOnInit() {
     document.body.classList.add('no-shell');
     this.route.queryParams.subscribe(params => {
-      if (params['tab']) this.activeTab = params['tab'];
+      const savedTab = localStorage.getItem('smartpm_manager_tab');
+      if (params['tab']) {
+        this.activeTab = params['tab'];
+        localStorage.setItem('smartpm_manager_tab', params['tab']);
+      } else if (savedTab) {
+        this.activeTab = savedTab;
+      }
       this.fetchCockpitData();
     });
 
@@ -105,12 +106,18 @@ export class ManagerDashboard implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     });
     this.subs.push(notifSub);
+
+    // ─── Live polling every 10s: keeps manager in sync with member task updates ─
+    this.cockpitPollInterval = setInterval(() => {
+      this.fetchCockpitData();
+    }, 10000);
   }
 
   ngOnDestroy() {
     document.body.classList.remove('no-shell');
     this.subs.forEach(s => s.unsubscribe());
     this.notificationService.stopPolling();
+    clearInterval(this.cockpitPollInterval);
     clearTimeout(this.toastTimeout);
   }
 
@@ -138,6 +145,7 @@ export class ManagerDashboard implements OnInit, OnDestroy {
 
   setTab(tab: string) {
     this.activeTab = tab;
+    localStorage.setItem('smartpm_manager_tab', tab);
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { tab },
@@ -149,9 +157,7 @@ export class ManagerDashboard implements OnInit, OnDestroy {
     return this.customModal.type === 'confirm' ? 'Confirmer' : 'Ok, compris';
   }
 
-  async loadOllamaModels() {
-    // Strictly use agent_1 and agent_2
-  }
+  // Removed - no longer needed
 
   fetchCockpitData() {
     this.isLoading = true;
@@ -245,43 +251,53 @@ export class ManagerDashboard implements OnInit, OnDestroy {
     }
     this.isSimulating = true;
     this.simulationDone = false;
-    this.simulationResult = '';
-    this.wordCount = 0;
+    this.simulationData = null;
+    this.simulationError = '';
     this.simulationDuration = 0;
-    this.simulationStartTime = Date.now();
+    const t0 = Date.now();
 
-    try {
-      await this.aiService.simulateProject(
-        this.simulationProject,
-        this.simulationScenario,
-        this.simulationWeeks,
-        (chunk) => {
-          this.simulationResult += chunk;
-          this.wordCount = this.simulationResult.split(/\s+/).filter(w => w).length;
+    this.aiService.simulate(this.simulationProject).subscribe({
+      next: (res: any) => {
+        this.zone.run(() => {
+          this.simulationData = res.simulation;
+          this.simulationDuration = Math.round((Date.now() - t0) / 1000);
+          this.isSimulating = false;
+          this.simulationDone = true;
+          
+          // Force multiple detection cycles to be sure
           this.cdr.detectChanges();
-        },
-        this.selectedModel
-      );
-      this.simulationDuration = Math.round((Date.now() - this.simulationStartTime) / 1000);
-      this.isSimulating = false;
-      this.simulationDone = true;
-      this.cdr.detectChanges();
-    } catch (err) {
-      this.isSimulating = false;
-      this.simulationResult = '❌ Erreur de génération. Vérifiez votre connexion à l\'Agent AI (ex: Ollama serve ou clé API).';
-      this.cdr.detectChanges();
-    }
+          setTimeout(() => {
+            this.cdr.detectChanges();
+            this.appRef.tick();
+          }, 0);
+        });
+      },
+      error: () => {
+        this.zone.run(() => {
+          this.simulationError = '❌ Tous les services IA sont indisponibles. Vérifiez vos clés API.';
+          this.isSimulating = false;
+          this.cdr.detectChanges();
+        });
+      }
+    });
+  }
+
+  getRiskColor(level: string): string {
+    const map: any = { FAIBLE: '#10b981', MOYEN: '#f59e0b', 'ÉLEVÉ': '#ef4444', CRITIQUE: '#7c2d12' };
+    return map[level] || '#64748b';
   }
 
   resetSimulation() {
-    this.simulationResult = '';
+    this.simulationData = null;
     this.simulationDone = false;
-    this.wordCount = 0;
+    this.simulationError = '';
     this.simulationDuration = 0;
   }
 
   copyResults() {
-    navigator.clipboard?.writeText(this.simulationResult)
+    if (!this.simulationData) return;
+    const text = JSON.stringify(this.simulationData, null, 2);
+    navigator.clipboard?.writeText(text)
       .then(() => this.showAlert('✅ Copié', 'Rapport copié dans le presse-papier.'));
   }
 

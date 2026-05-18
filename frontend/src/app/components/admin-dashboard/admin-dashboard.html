@@ -256,56 +256,88 @@
      <p class="page-sub">Gérez les parcours d'apprentissage et les ressources SmartPM</p>
     </div>
     <div class="header-actions">
-     <button class="btn-primary" (click)="showCreateFormation = true">+ Nouveau Module</button>
+     <button class="btn-primary" (click)="openCreateFormation()">+ Nouveau Module</button>
     </div>
    </header>
 
-   <!-- 🎓 Premium Formation Cards -->
+   <!-- 🎓 Formation Cards -->
    <div class="grid-3 mt-4">
     <div class="formation-card-item premium" *ngFor="let f of activeFormations">
      <div class="f-type-tag">{{ f.targetPhase }}</div>
      <div class="f-content">
       <h3>{{ f.title }}</h3>
       <p class="f-desc">{{ f.description }}</p>
-      
       <div class="f-stats-row">
-       <div class="f-stat">
-        <span class="fs-icon">⏳</span>
-        <span class="fs-text">{{ f.durationWeeks }}w</span>
-       </div>
-       <div class="f-stat">
-        <span class="fs-icon">📝</span>
-        <span class="fs-text">{{ f.quizDurationMinutes }}m</span>
-       </div>
-       <div class="f-stat">
-        <span class="fs-icon">📁</span>
-        <span class="fs-text">{{ f.materials?.length || 0 }}</span>
-       </div>
+       <div class="f-stat"><span class="fs-icon">⏳</span><span class="fs-text">{{ f.durationWeeks }}w</span></div>
+       <div class="f-stat"><span class="fs-icon">📝</span><span class="fs-text">{{ f.quizDurationMinutes }}m</span></div>
+       <div class="f-stat"><span class="fs-icon">📚</span><span class="fs-text">{{ f.lessons?.length || 0 }} leçons</span></div>
+       <div class="f-stat"><span class="fs-icon">❓</span><span class="fs-text">{{ f.quiz?.length || 0 }} Q</span></div>
       </div>
      </div>
      <div class="f-footer">
-      <button class="btn-primary btn-sm btn-f-wide" (click)="openAssignModal(f)">Assign Team</button>
+      <button class="btn-ghost btn-sm" (click)="openEditFormation(f)">✏️ Modifier</button>
+      <button class="btn-primary btn-sm" (click)="openAssignModal(f)">👥 Assigner</button>
+      <button class="btn-icon btn-danger" (click)="deleteFormation(f)" title="Supprimer">🗑️</button>
      </div>
+    </div>
+    <div class="empty-state" *ngIf="activeFormations.length === 0 && !loading['formations']">
+     <span style="font-size:2rem">🎓</span><p>Aucun module de formation. Créez-en un !</p>
     </div>
    </div>
 
-   <!-- 👥 Real-Time Assignments Status -->
+   <!-- 👥 Team Training Status -->
+
+   <!-- 📊 ANALYTICS FORMATIONS -->
+   <div class="section-block mt-5" *ngIf="trainingAnalytics">
+    <div class="section-header-row">
+     <h2 class="section-title">📊 Analytics Formations</h2>
+     <span class="badge-grey">{{ trainingAnalytics.total }} membres suivis</span>
+    </div>
+    <div class="analytics-kpi-row">
+     <div class="akpi-card green">
+      <div class="akpi-val">{{ trainingAnalytics.completionRate }}%</div>
+      <div class="akpi-label">Taux de Réussite</div>
+      <div class="akpi-bar"><div class="akpi-fill" [style.width.%]="trainingAnalytics.completionRate"></div></div>
+     </div>
+     <div class="akpi-card blue">
+      <div class="akpi-val">{{ trainingAnalytics.avgScore }}%</div>
+      <div class="akpi-label">Score Quiz Moyen</div>
+      <div class="akpi-bar"><div class="akpi-fill blue-fill" [style.width.%]="trainingAnalytics.avgScore"></div></div>
+     </div>
+     <div class="akpi-card orange">
+      <div class="akpi-val">{{ trainingAnalytics.inProgress }}</div>
+      <div class="akpi-label">En Cours</div>
+      <div class="akpi-bar"><div class="akpi-fill orange-fill" [style.width.%]="(trainingAnalytics.inProgress / trainingAnalytics.total) * 100"></div></div>
+     </div>
+     <div class="akpi-card red">
+      <div class="akpi-val">{{ trainingAnalytics.failed }}</div>
+      <div class="akpi-label">Échoués</div>
+      <div class="akpi-bar"><div class="akpi-fill red-fill" [style.width.%]="(trainingAnalytics.failed / trainingAnalytics.total) * 100"></div></div>
+     </div>
+    </div>
+    <div class="formation-chart-card" *ngIf="trainingAnalytics.formations.length > 0">
+     <div class="chart-title">Complétion par Formation</div>
+     <div class="f-chart-bars">
+      <div class="f-chart-row" *ngFor="let f of trainingAnalytics.formations">
+       <div class="fcr-label">{{ f.title }}</div>
+       <div class="fcr-track">
+        <div class="fcr-fill" [style.width.%]="f.total > 0 ? (f.completed / f.total) * 100 : 0"></div>
+       </div>
+       <div class="fcr-count">{{ f.completed }}/{{ f.total }}</div>
+       <div class="fcr-pct">{{ f.total > 0 ? ((f.completed / f.total) * 100).toFixed(0) : 0 }}%</div>
+      </div>
+     </div>
+    </div>
+   </div>
    <div class="section-block mt-5">
     <div class="section-header-row">
-      <h2 class="section-title">👥 Team Training Status</h2>
-      <span class="badge-grey">{{ assignmentStats.length }} Members/Managers</span>
+     <h2 class="section-title">👥 Statut Formation par Membre</h2>
+     <span class="badge-grey">{{ assignmentStats.length }} Membres/Managers</span>
     </div>
-    
     <div class="table-card">
      <table class="data-table">
       <thead>
-       <tr>
-        <th>Member / Manager</th>
-        <th>Path</th>
-        <th>Progress</th>
-        <th>Score</th>
-        <th>Status</th>
-       </tr>
+       <tr><th>Membre</th><th>Équipe</th><th>Dernière Formation</th><th>Progression</th><th>Score</th><th>Statut</th><th>Complétées</th></tr>
       </thead>
       <tbody>
        <tr *ngFor="let a of assignmentStats" class="table-row">
@@ -316,101 +348,201 @@
           <span class="badge-role">{{ a.role }}</span>
          </div>
         </td>
+        <td><span class="f-path-tag">{{ a.equipe }}</span></td>
         <td><span class="f-path-tag">{{ a.formation }}</span></td>
-        <td>
-          <div class="progress-wrap">
-           <div class="progress-bar" [style.width.%]="a.progress"></div>
-           <span class="progress-text">{{ a.progress }}%</span>
+         <td style="min-width:160px;">
+          <div class="adm-progress-wrap">
+           <div class="adm-progress-bar"
+             [class.bar-assigned]="a.status==='ASSIGNED' || a.status==='Not Started'"
+             [class.bar-inprogress]="a.status==='IN_PROGRESS'"
+             [class.bar-done]="a.status==='COMPLETED'"
+             [class.bar-failed]="a.status==='FAILED'"
+             [style.width.%]="a.progress">
+           </div>
           </div>
-        </td>
+          <span class="adm-progress-pct"
+             [class.pct-done]="a.status==='COMPLETED'"
+             [class.pct-failed]="a.status==='FAILED'"
+             [class.pct-progress]="a.status==='IN_PROGRESS'">
+           {{ a.progress }}%
+          </span>
+         </td>
         <td class="text-center"><strong>{{ a.score !== null ? a.score + '%' : '--' }}</strong></td>
         <td>
-         <span class="status-pill-minimal" [class]="a.status?.replace(' ', '-')">
-          {{ a.status }}
-         </span>
+         <span class="status-pill-minimal" [class]="a.status?.replace(' ', '-')">{{ a.status }}</span>
         </td>
+        <td class="text-center">{{ a.completedCount || 0 }}</td>
        </tr>
       </tbody>
      </table>
-     <div class="empty-state" *ngIf="assignmentStats.length === 0">No members found to show training status.</div>
+     <div class="empty-state" *ngIf="assignmentStats.length === 0">Aucun membre trouvé.</div>
     </div>
    </div>
 
-   <!-- 📥 Premium Course Builder Modal -->
+   <!-- 🔄 Transfer Requests -->
+   <div class="section-block mt-5">
+    <div class="section-header-row">
+     <h2 class="section-title">🔄 Demandes de Transfert d'Équipe</h2>
+     <span class="badge-grey">{{ transferRequests.length }} demande(s)</span>
+    </div>
+    <div class="table-card">
+     <table class="data-table" *ngIf="transferRequests.length > 0">
+      <thead>
+       <tr><th>Membre</th><th>De</th><th>Vers</th><th>Motif</th><th>Statut</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+       <tr *ngFor="let r of transferRequests" class="table-row">
+        <td class="user-cell">
+         <div class="avatar-sm">{{ r.userId?.firstName?.charAt(0) || '?' }}</div>
+         <div class="user-info">
+          <strong>{{ r.userId?.firstName }} {{ r.userId?.lastName }}</strong>
+          <span class="text-muted">{{ r.userId?.email }}</span>
+         </div>
+        </td>
+        <td><span class="f-path-tag red">{{ r.fromEquipe }}</span></td>
+        <td><span class="f-path-tag green">{{ r.toEquipe }}</span></td>
+        <td class="text-muted">{{ r.reason }}</td>
+        <td><span class="status-pill" [class]="getStatusClass(r.status)">{{ r.status }}</span></td>
+        <td class="actions-cell" *ngIf="r.status === 'PENDING'">
+         <button class="btn-sm btn-success" (click)="approveTransfer(r)">✅ Approuver</button>
+         <div class="reject-inline">
+          <input type="text" [(ngModel)]="rejectNoteMap[r._id]" placeholder="Note de rejet..." class="builder-input-sm">
+          <button class="btn-sm btn-ghost" (click)="rejectTransfer(r)">❌ Rejeter</button>
+         </div>
+        </td>
+        <td *ngIf="r.status !== 'PENDING'" class="text-muted">{{ r.adminNote || '—' }}</td>
+       </tr>
+      </tbody>
+     </table>
+     <div class="empty-state" *ngIf="transferRequests.length === 0">
+      <span style="font-size:1.5rem">🔄</span><p>Aucune demande de transfert en cours.</p>
+     </div>
+    </div>
+   </div>
+
+   <!-- ── Formation Builder Modal ── -->
    <div class="modal-overlay" *ngIf="showCreateFormation">
     <div class="modal-card course-builder">
-     <!-- Absolute Close Button -->
      <button class="btn-abs-close" (click)="showCreateFormation = false">&times;</button>
-     
      <div class="modal-header">
       <div class="mh-left">
-       <span class="mh-badge">NEW</span>
+       <span class="mh-badge">{{ editingFormation ? 'EDIT' : 'NEW' }}</span>
        <h3>🎓 Formation Architect</h3>
       </div>
      </div>
-     
+
      <div class="modal-body builder-layout">
-      <!-- Left: Basic Config -->
+      <!-- Left: Config -->
       <div class="builder-side config-side">
-       <label class="field-label">General Configuration</label>
+       <label class="field-label">Configuration Générale</label>
        <div class="form-group mb-3">
-        <span class="label">Formation Path</span>
+        <span class="label">Parcours</span>
         <select [(ngModel)]="newFormation.title" class="builder-input">
          <option value="LLR">Low Level Requirements (LLR)</option>
          <option value="LLT">Low Level Testing (LLT)</option>
          <option value="HLT">High Level Testing (HLT)</option>
         </select>
        </div>
-       
        <div class="row-flex gap-2">
         <div class="form-group flex-1">
-         <span class="label">Duration (Weeks)</span>
+         <span class="label">Durée (semaines)</span>
          <input type="number" [(ngModel)]="newFormation.durationWeeks" class="builder-input" min="1" max="4">
         </div>
         <div class="form-group flex-1">
-         <span class="label">Quiz (Min)</span>
-         <input type="number" [(ngModel)]="newFormation.quizDurationMinutes" class="builder-input" min="15" max="60">
+         <span class="label">Quiz (minutes)</span>
+         <input type="number" [(ngModel)]="newFormation.quizDurationMinutes" class="builder-input" min="15" max="120">
         </div>
        </div>
-
+       <div class="form-group mt-2">
+        <span class="label">Score de Passage (%)</span>
+        <input type="number" [(ngModel)]="newFormation.passingScore" class="builder-input" min="50" max="100">
+       </div>
        <div class="form-group mt-3">
-        <span class="label">Objective / Description</span>
-        <textarea [(ngModel)]="newFormation.description" class="builder-area" placeholder="Briefly explain what this training covers..."></textarea>
+        <span class="label">Objectif / Description</span>
+        <textarea [(ngModel)]="newFormation.description" class="builder-area" placeholder="Décrivez ce que couvre cette formation..."></textarea>
        </div>
       </div>
 
-      <!-- Right: Content Builder -->
+      <!-- Right: Lessons + Quiz -->
       <div class="builder-side syllabus-side">
-       <label class="field-label">📚 Curriculum Builder ({{ newFormation.materials.length }} Items)</label>
-       
+
+       <!-- LESSONS -->
+       <label class="field-label">📚 Leçons ({{ newFormation.lessons.length }})</label>
        <div class="curriculum-preview custom-scroll">
-        <div class="syllabus-card-compact" *ngFor="let m of newFormation.materials; let i = index">
-         <div class="sc-drag">⋮⋮</div>
-         <div class="sc-icon">{{ m.type === 'VIDEO' ? '🎥' : '📄' }}</div>
+        <div class="syllabus-card-compact" *ngFor="let l of newFormation.lessons; let i = index">
+         <div class="sc-icon">{{ l.resourceType === 'VIDEO' ? '🎥' : l.resourceType === 'PDF' ? '📄' : '📁' }}</div>
          <div class="sc-main">
-          <strong>{{ m.title }}</strong>
-          <span>{{ m.url }}</span>
+          <strong>{{ l.name }}</strong>
+          <a [href]="l.resourceUrl" target="_blank" class="text-muted sc-url">{{ l.resourceUrl }}</a>
          </div>
-         <button class="sc-del" (click)="newFormation.materials.splice(i,1)">&times;</button>
+         <button class="sc-del" (click)="removeLesson(i)">&times;</button>
         </div>
-        <div class="empty-curriculum" *ngIf="newFormation.materials.length === 0">
+        <div class="empty-curriculum" *ngIf="newFormation.lessons.length === 0">
          <div class="ec-icon">📁</div>
-         <p>Your syllabus is empty. Start adding lessons below.</p>
+         <p>Aucune leçon. Ajoutez-en ci-dessous.</p>
+        </div>
+       </div>
+       <div class="add-lesson-bar mt-2">
+        <div class="lesson-inputs" style="display:flex; gap:10px; align-items:center;">
+         <input type="text" [(ngModel)]="tempLesson.name" placeholder="Nom de la leçon..." class="flex-2 builder-input">
+         
+         <div class="flex-3" style="position:relative;">
+          <input *ngIf="!uploadedFileName && !uploadingLesson" type="file" (change)="handleFileUpload($event)" accept=".pdf,.mp4,.webm,.mov" class="builder-input" style="padding:4px;">
+          <div *ngIf="uploadingLesson" class="upload-status" style="padding:8px; background:#f0f4f8; border-radius:4px; font-size:0.9rem;">
+           ⏳ Upload en cours...
+           <div class="progress-wrap mt-1"><div class="progress-bar" [style.width.%]="uploadProgress"></div></div>
+          </div>
+          <div *ngIf="uploadedFileName && !uploadingLesson" class="upload-status" style="padding:8px; background:#e6ffe6; border-radius:4px; font-size:0.9rem; color: green; font-weight:bold;">
+           ✅ {{ uploadedFileName }}
+          </div>
+         </div>
+        </div>
+        <div class="lesson-footer mt-2">
+         <select [(ngModel)]="tempLesson.resourceType" class="flex-1 builder-input">
+          <option value="VIDEO">🎥 Vidéo</option>
+          <option value="PDF">📄 PDF</option>
+          <option value="DOCUMENT">📁 Document URL</option>
+         </select>
+         <button class="btn-primary btn-sm" (click)="addLesson()">+ Ajouter</button>
         </div>
        </div>
 
-       <div class="add-lesson-bar mt-3">
-        <div class="lesson-inputs">
-         <input type="text" [(ngModel)]="tempMaterial.title" placeholder="Lesson name...">
-         <input type="text" [(ngModel)]="tempMaterial.url" placeholder="Resource link (URL)...">
+       <!-- QUIZ -->
+       <label class="field-label mt-4">❓ Quiz ({{ newFormation.quiz.length }} questions)</label>
+       <div class="curriculum-preview custom-scroll quiz-preview">
+        <div class="quiz-card" *ngFor="let q of newFormation.quiz; let i = index">
+         <div class="quiz-card-top">
+          <strong>Q{{ i+1 }}. {{ q.question }}</strong>
+          <button class="sc-del" (click)="removeQuestion(i)">&times;</button>
+         </div>
+         <div class="quiz-options">
+          <span *ngFor="let o of q.options; let j = index" class="quiz-opt" [class.correct]="j === q.correctIndex">
+           {{ j === q.correctIndex ? '✅' : '○' }} {{ o }}
+          </span>
+         </div>
+        </div>
+        <div class="empty-curriculum" *ngIf="newFormation.quiz.length === 0">
+         <div class="ec-icon">❓</div>
+         <p>Aucune question. Ajoutez-en ci-dessous.</p>
+        </div>
+       </div>
+       <div class="add-question-bar mt-2">
+        <input type="text" [(ngModel)]="tempQuestion.question" placeholder="Question..." class="builder-input mb-2">
+        <div class="options-grid">
+         <input *ngFor="let o of tempQuestion.options; let j = index" type="text"
+                [(ngModel)]="tempQuestion.options[j]" [placeholder]="'Option ' + (j+1) + '...'" class="builder-input-sm">
         </div>
         <div class="lesson-footer mt-2">
-         <select [(ngModel)]="tempMaterial.type" class="flex-1">
-          <option value="VIDEO">Video Lecture</option>
-          <option value="PDF">PDF Guide</option>
-          <option value="DOCUMENT">Document</option>
-         </select>
-         <button class="btn-primary btn-sm" (click)="addMaterialToFormation()">+ Add Lesson</button>
+         <div class="flex-1">
+          <span class="label">Bonne réponse :</span>
+          <select [(ngModel)]="tempQuestion.correctIndex" class="builder-input-sm">
+           <option [value]="0">Option 1</option>
+           <option [value]="1">Option 2</option>
+           <option [value]="2">Option 3</option>
+           <option [value]="3">Option 4</option>
+          </select>
+         </div>
+         <button class="btn-primary btn-sm" (click)="addQuizQuestion()">+ Ajouter Question</button>
         </div>
        </div>
       </div>
@@ -418,11 +550,45 @@
 
      <div class="modal-footer">
       <button class="btn-ghost" (click)="showCreateFormation = false">Annuler</button>
-      <button class="btn-primary" (click)="saveFormation()">Publier le Module</button>
+      <button class="btn-primary" (click)="saveFormation()">{{ editingFormation ? '💾 Mettre à jour' : '🚀 Publier le Module' }}</button>
      </div>
     </div>
    </div>
+
+   <!-- ── Assign Team Modal ── -->
+   <div class="modal-overlay" *ngIf="showAssignModal">
+    <div class="modal" (click)="$event.stopPropagation()">
+     <div class="modal-header">
+      <h3>👥 Assigner — {{ assigningFormation?.title }}</h3>
+      <button class="btn-abs-close" (click)="showAssignModal = false">&times;</button>
+     </div>
+     <div class="modal-body">
+      <p class="text-muted mb-3">Sélectionnez les membres à assigner à cette formation :</p>
+      <div class="assign-user-list custom-scroll">
+       <label class="assign-user-row" *ngFor="let u of assignableUsers">
+        <input type="checkbox" [checked]="selectedUserIds.has(u._id)" (change)="toggleUserSelection(u._id)">
+        <div class="avatar-sm">{{ getInitials(u) }}</div>
+        <div class="user-info">
+         <strong>{{ u.firstName }} {{ u.lastName }}</strong>
+         <span class="text-muted">{{ u.equipe || 'Aucune équipe' }} · {{ u.role }}</span>
+        </div>
+       </label>
+       <div class="empty-state" *ngIf="assignableUsers.length === 0">Aucun membre disponible.</div>
+      </div>
+     </div>
+     <div class="modal-footer">
+      <button class="btn-ghost" (click)="showAssignModal = false">Annuler</button>
+      <button class="btn-primary" (click)="confirmAssign()" [disabled]="selectedUserIds.size === 0">
+       ✅ Assigner ({{ selectedUserIds.size }} sélectionné(s))
+      </button>
+     </div>
+    </div>
+   </div>
+
   </section>
+
+
+
 
   <!-- ══════════════════════════════════ TAB: ALERTS ══════════════ -->
   <section *ngIf="activeTab==='alerts'" class="tab-content">

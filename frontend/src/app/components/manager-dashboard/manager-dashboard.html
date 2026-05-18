@@ -109,11 +109,36 @@
             <span class="kpi-val">{{ delayedTasks }}</span>
             <span class="kpi-label">Tâches en Retard</span>
           </div>
+          <!-- NEW: Pending Reviews KPI card -->
+          <div class="kpi-card" style="border-left: 4px solid #f59e0b;">
+            <div class="kpi-top"><span class="kpi-icon">🔍</span><span class="badge" style="background:rgba(245,158,11,.15);color:#b45309">En attente</span></div>
+            <span class="kpi-val" style="color:#b45309">{{ reviews.length }}</span>
+            <span class="kpi-label">Revues à Valider</span>
+          </div>
           <div class="kpi-card success">
             <div class="kpi-top"><span class="kpi-icon">✅</span></div>
             <span class="kpi-val">{{ milestonesCompleted }}</span>
             <span class="kpi-label">Jalons Validés</span>
           </div>
+        </div>
+
+        <!-- NEW: Pending Reviews Table -->
+        <div class="projects-list-card" *ngIf="reviews.length > 0" style="margin-bottom: 24px; border-left: 4px solid #f59e0b;">
+          <div class="card-header">
+            <h3>🔍 Tâches en Attente de Revue</h3>
+            <span class="badge" style="background:rgba(245,158,11,.15);color:#b45309">{{ reviews.length }} à valider</span>
+          </div>
+          <table class="simple-table">
+            <thead><tr><th>Tâche</th><th>Auteur</th><th>Durée</th><th>Statut</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let r of reviews">
+                <td><strong>{{ r.task }}</strong></td>
+                <td>{{ r.author }}</td>
+                <td>{{ r.time }}</td>
+                <td><span class="badge" style="background:#fef3c7;color:#b45309;border:1px solid #fde68a;">⏳ En attente</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <div class="projects-list-card">
@@ -262,9 +287,6 @@
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════════════════════════
-           ── SIMULATOR AI — PROFESSIONAL INTERFACE ──
-      ═══════════════════════════════════════════════════════════ -->
       <div *ngSwitchCase="'simulate'" class="simulator-view">
 
         <!-- Header Hero -->
@@ -273,13 +295,13 @@
             <div class="sim-hero-icon">🧪</div>
             <div>
               <h2 class="sim-hero-title">SmartPM AI Simulator</h2>
-              <p class="sim-hero-sub">Analyse prédictive et simulation de scénarios via <strong>Agents AI</strong> · Données réelles MongoDB</p>
+              <p class="sim-hero-sub">Analyse prédictive via <strong>Cloud AI Multi-Engine</strong> · Données réelles MongoDB</p>
             </div>
           </div>
           <div class="sim-hero-badges">
-            <span class="sim-badge-pill blue">🤖 LLM Local</span>
+            <span class="sim-badge-pill blue">✨ Gemini 2.0</span>
+            <span class="sim-badge-pill purple">⚡ Groq Llama 3</span>
             <span class="sim-badge-pill green">📡 DB Live</span>
-            <span class="sim-badge-pill purple">⚡ Streaming</span>
           </div>
         </div>
 
@@ -302,48 +324,24 @@
               </div>
             </div>
 
-            <!-- Scenario -->
-            <div class="field-group">
-              <label>Scénario de Simulation</label>
-              <div class="scenario-presets">
-                <button class="preset-btn" [class.active]="simulationScenario.includes('Retard')"
-                  (click)="simulationScenario='Retard de 2 semaines sur la phase de développement — impact sur les jalons clés.'"
-                  [disabled]="isSimulating">⏰ Retard</button>
-                <button class="preset-btn" [class.active]="simulationScenario.includes('congé de longue')"
-                  (click)="simulationScenario='Absence imprévue de 3 membres clés de l\'équipe (congé de longue durée).'"
-                  [disabled]="isSimulating">👤 Absence</button>
-                <button class="preset-btn" [class.active]="simulationScenario.includes('Bug critique')"
-                  (click)="simulationScenario='Bug critique découvert en phase de test — nécessite refactoring du module de navigation.'"
-                  [disabled]="isSimulating">🐛 Bug Critique</button>
-                <button class="preset-btn" [class.active]="simulationScenario.includes('Budget')"
-                  (click)="simulationScenario='Réduction budgétaire de 20% — optimisation des ressources nécessaire.'"
-                  [disabled]="isSimulating">💰 Budget</button>
+            <!-- Project Preview Card (New) -->
+            <div class="sim-project-preview" *ngIf="simulationProject && !isSimulating">
+              <div class="preview-header">
+                <span class="preview-icon">📂</span>
+                <div class="preview-info">
+                  <div class="preview-name">{{ getProjectName(simulationProject) }}</div>
+                  <div class="preview-meta">Données opérationnelles prêtes</div>
+                </div>
               </div>
-              <textarea class="sim-textarea" rows="4" [(ngModel)]="simulationScenario" [disabled]="isSimulating"
-                placeholder="Décrivez le scénario en détail..."></textarea>
-            </div>
-
-            <!-- Duration Slider -->
-            <div class="field-group">
-              <label>Horizon de simulation</label>
-              <div class="slider-row">
-                <input type="range" min="1" max="16" [(ngModel)]="simulationWeeks" [disabled]="isSimulating" class="sim-slider">
-                <div class="slider-val">{{ simulationWeeks }} <small>sem.</small></div>
-              </div>
-              <div class="slider-labels">
-                <span>1 sem.</span><span>4 sem.</span><span>8 sem.</span><span>16 sem.</span>
-              </div>
-            </div>
-
-            <!-- Model Selector -->
-            <div class="field-group">
-              <label>Agent AI</label>
-              <div class="model-grid">
-                <button class="model-btn" *ngFor="let m of availableModels"
-                  [class.active]="selectedModel===m.id"
-                  (click)="selectedModel=m.id" [disabled]="isSimulating">
-                  <span class="model-icon">🤖</span>{{ m.name }}
-                </button>
+              <div class="preview-stats">
+                <div class="ps-item">
+                  <span class="ps-label">Statut</span>
+                  <span class="ps-val badge">Actif</span>
+                </div>
+                <div class="ps-item">
+                  <span class="ps-label">Intégrité</span>
+                  <span class="ps-val" style="color: #10b981;">100%</span>
+                </div>
               </div>
             </div>
 
@@ -351,11 +349,10 @@
             <button class="btn-simulate" (click)="startSimulation()" [disabled]="isSimulating || !simulationProject">
               <span *ngIf="!isSimulating">🚀 Lancer la Simulation</span>
               <span *ngIf="isSimulating" class="btn-loading">
-                <span class="spinner"></span> Simulation en cours...
+                <span class="spinner"></span> Analyse IA en cours...
               </span>
             </button>
-
-            <button class="btn-reset" *ngIf="simulationDone || simulationResult" (click)="resetSimulation()">
+            <button class="btn-reset" *ngIf="simulationDone || simulationData" (click)="resetSimulation()">
               🔄 Réinitialiser
             </button>
           </div>
@@ -363,58 +360,110 @@
           <!-- ── RESULTS PANEL ── -->
           <div class="sim-results-panel">
 
-            <!-- Status Bar -->
-            <div class="results-statusbar">
-              <div class="rsb-left">
-                <span class="rsb-title">📊 Rapport de Simulation</span>
-                <span class="rsb-model" *ngIf="selectedModel">· {{ selectedModel === 'agent_1' ? 'Agent 1' : 'Agent 2' }}</span>
+            <!-- Loading State -->
+            <div class="sim-loading-state" *ngIf="isSimulating">
+              <div class="sim-ai-pulse">
+                <div class="pulse-ring"></div>
+                <div class="pulse-core">🤖</div>
               </div>
-              <div class="rsb-right" *ngIf="simulationResult">
-                <span class="rsb-meta">{{ wordCount }} mots</span>
-                <span class="rsb-meta" *ngIf="simulationDone">· {{ simulationDuration }}s</span>
-                <button class="rsb-btn" (click)="copyResults()" *ngIf="simulationDone">
-                  📋 Copier
-                </button>
+              <h3>Analyse en cours...</h3>
+              <p>Les moteurs IA analysent votre projet en temps réel</p>
+              <div class="engine-chain">
+                <span class="engine-pill active">Gemini 2.0</span>
+                <span class="chain-arrow">→</span>
+                <span class="engine-pill">Groq</span>
+                <span class="chain-arrow">→</span>
+                <span class="engine-pill">OpenRouter</span>
               </div>
             </div>
 
-            <!-- Streaming Indicator -->
-            <div class="streaming-bar" *ngIf="isSimulating">
-              <div class="streaming-dot"></div>
-              <span>Génération du rapport...</span>
-              <span class="word-counter">{{ wordCount }} mots générés</span>
+            <!-- Error State -->
+            <div class="sim-error-state" *ngIf="simulationError && !isSimulating">
+              <div class="err-icon">⚠️</div>
+              <h3>Service IA Indisponible</h3>
+              <p>{{ simulationError }}</p>
             </div>
 
-            <!-- Results Content -->
-            <div class="results-body" [class.has-content]="!!simulationResult">
+            <!-- Empty State -->
+            <div class="empty-sim" *ngIf="!simulationData && !isSimulating && !simulationError">
+              <div class="empty-sim-icon">🔬</div>
+              <h3>Prêt pour la simulation</h3>
+              <p>Sélectionnez un projet, configurez votre scénario et lancez l'analyse prédictive.</p>
+              <div class="empty-hints">
+                <div class="hint-item">✨ Gemini 2.0 Flash · Groq Llama 3 · OpenRouter Mistral</div>
+                <div class="hint-item">📡 Accès direct à la base de données MongoDB</div>
+                <div class="hint-item">📊 Rapport structuré avec Score de Risque</div>
+                <div class="hint-item">💡 Recommandations actionnables immédiates</div>
+              </div>
+            </div>
 
-              <!-- Empty State -->
-              <div class="empty-sim" *ngIf="!simulationResult && !isSimulating">
-                <div class="empty-sim-icon">🔬</div>
-                <h3>Prêt pour la simulation</h3>
-                <p>Sélectionnez un projet, configurez votre scénario et lancez l'analyse prédictive.</p>
-                <div class="empty-hints">
-                  <div class="hint-item">📡 Accès direct à la base de données MongoDB</div>
-                  <div class="hint-item">🧠 Analyse détaillée par l'Agent AI</div>
-                  <div class="hint-item">📋 Rapport structuré en 8 sections</div>
-                  <div class="hint-item">⚡ Résultats streamés en temps réel</div>
+            <!-- ── PROFESSIONAL RESULTS CARDS ── -->
+            <div class="sim-pro-results" *ngIf="simulationData && !isSimulating">
+
+              <!-- Done banner -->
+              <div class="done-banner-pro">
+                <div class="db-left">
+                  <span class="db-check">✅</span>
+                  <span>Analyse terminée en {{ simulationDuration }}s · <strong>Cloud AI Multi-Engine</strong></span>
+                </div>
+                <button class="rsb-btn" (click)="copyResults()">📋 Copier JSON</button>
+              </div>
+
+              <!-- Row 1: Risk Score + Confidence Index -->
+              <div class="result-top-row">
+                <!-- Risk Score Card -->
+                <div class="risk-score-card" [style.border-color]="getRiskColor(simulationData.riskLevel)">
+                  <div class="rsc-label">Score de Risque</div>
+                  <div class="rsc-value" [style.color]="getRiskColor(simulationData.riskLevel)">
+                    {{ simulationData.riskScore }}<small>/100</small>
+                  </div>
+                  <div class="rsc-badge"
+                    [style.background]="getRiskColor(simulationData.riskLevel) + '20'"
+                    [style.color]="getRiskColor(simulationData.riskLevel)"
+                    [style.border-color]="getRiskColor(simulationData.riskLevel)">
+                    {{ simulationData.riskLevel }}
+                  </div>
+                </div>
+
+                <!-- Confidence Index Card -->
+                <div class="delivery-card">
+                  <div class="dc-icon">🎯</div>
+                  <div class="dc-label">Indice de Confiance</div>
+                  <div class="dc-value">{{ simulationData.confidenceScore || 95 }}%</div>
+                  <div class="dc-status">Analyse Multi-Engine</div>
                 </div>
               </div>
 
-              <!-- Report Content -->
-              <div class="sim-report" *ngIf="simulationResult">
-                <pre class="report-pre">{{ simulationResult }}<span *ngIf="isSimulating" class="cursor-blink">▋</span></pre>
+              <!-- Summary -->
+              <div class="result-summary-box">
+                <div class="rsb-label">📋 Résumé Exécutif IA</div>
+                <p class="rsb-text">{{ simulationData.summary }}</p>
               </div>
 
-              <!-- Success Badge -->
-              <div class="done-banner" *ngIf="simulationDone">
-                ✅ Simulation terminée en {{ simulationDuration }}s · {{ wordCount }} mots · Modèle: {{ selectedModel === 'agent_1' ? 'Agent 1' : 'Agent 2' }}
+              <!-- Recommendations -->
+              <div class="result-list-section" *ngIf="simulationData.recommendations?.length">
+                <div class="rls-title">💡 Recommandations Prioritaires</div>
+                <div class="rls-item rec" *ngFor="let r of simulationData.recommendations; let i = index">
+                  <span class="rls-num">{{ i + 1 }}</span>
+                  <span>{{ r }}</span>
+                </div>
+              </div>
+
+              <!-- Critical Path -->
+              <div class="result-list-section" *ngIf="simulationData.criticalPath?.length">
+                <div class="rls-title">⚡ Chemin Critique</div>
+                <div class="rls-item crit" *ngFor="let c of simulationData.criticalPath">
+                  <span class="rls-dot">→</span>
+                  <span>{{ c }}</span>
+                </div>
               </div>
             </div>
-          </div>
 
+          </div>
         </div>
       </div><!-- end simulate -->
+
+
 
     </div><!-- end tab-content-fade -->
   </main>

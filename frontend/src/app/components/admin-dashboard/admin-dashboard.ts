@@ -2,6 +2,8 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../services/admin.service';
+import { TrainingService } from '../../services/training';
+import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
 type TabId = 'overview' | 'users' | 'formations' | 'governance' | 'alerts' | 'ai' | 'settings';
@@ -50,33 +52,164 @@ export class AdminDashboard implements OnInit {
  showAuditLogs = false;
  auditLogs: any[] = [];
 
- // Formations Logic
- activeFormations: any[] = [
-  { title: 'Low Level Requirements (LLR)', targetPhase: 'LLR', durationWeeks: 1, quizDurationMinutes: 30, description: 'LLR authoring/review flow.', materials: [] },
-  { title: 'Low Level Testing (LLT)', targetPhase: 'LLT', durationWeeks: 2, quizDurationMinutes: 45, description: 'MCDC and Unit testing.', materials: [] },
-  { title: 'High Level Testing (HLT)', targetPhase: 'HLT', durationWeeks: 2, quizDurationMinutes: 45, description: 'High Level testing for Aerospace.', materials: [] }
- ];
+ // ── Formations ─────────────────────────────────────────────────────────────
+ activeFormations: any[] = [];
  assignmentStats: any[] = [];
 
+ // Create / Edit formation
  showCreateFormation = false;
- newFormation: any = { title: 'LLR', durationWeeks: 1, quizDurationMinutes: 30, description: '', materials: [] };
- tempMaterial: any = { title: '', type: 'VIDEO', url: '' };
+ editingFormation: any = null;
+ newFormation: any = {
+  title: 'LLR', targetPhase: 'LLR', durationWeeks: 1, quizDurationMinutes: 30,
+  passingScore: 80, description: '', lessons: [], quiz: []
+ };
+ // Temp lesson
+ tempLesson: any = { name: '', resourceUrl: '', resourceType: 'VIDEO' };
+ // Upload state
+ uploadingLesson = false;
+ uploadProgress = 0;
+ uploadedFileName = '';
+ // Temp quiz question
+ tempQuestion: any = { question: '', options: ['', '', '', ''], correctIndex: 0 };
 
- addMaterialToFormation() {
-  if (this.tempMaterial.title) {
-   this.newFormation.materials.push({ ...this.tempMaterial });
-   this.tempMaterial = { title: '', type: 'VIDEO', url: '' };
+ addLesson() {
+  if (!this.tempLesson.name || !this.tempLesson.resourceUrl) return;
+  this.newFormation.lessons.push({ ...this.tempLesson });
+  this.tempLesson = { name: '', resourceUrl: '', resourceType: 'VIDEO' };
+  this.uploadedFileName = '';
+ }
+ removeLesson(i: number) { this.newFormation.lessons.splice(i, 1); }
+
+ async handleFileUpload(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input?.files?.[0];
+  if (!file) return;
+  this.uploadingLesson = true;
+  this.uploadedFileName = file.name;
+  this.uploadProgress = 0;
+  try {
+   const res: any = await firstValueFrom(this.trainingService.uploadFile(file));
+   this.tempLesson.resourceUrl = res.url;
+   this.tempLesson.resourceType = res.resourceType;
+   this.uploadProgress = 100;
+  } catch (e: any) {
+   this.errorMessage = e?.error?.message || 'Erreur lors de l\'upload du fichier';
+   this.uploadedFileName = '';
+  } finally {
+   this.uploadingLesson = false;
+   input.value = '';
   }
  }
 
- saveFormation() {
-  this.activeFormations.push({ ...this.newFormation, targetPhase: this.newFormation.title });
-  this.showCreateFormation = false;
-  this.newFormation = { title: 'LLR', durationWeeks: 1, quizDurationMinutes: 30, description: '', materials: [] };
+ addQuizQuestion() {
+  if (!this.tempQuestion.question || this.tempQuestion.options.some((o: string) => !o.trim())) return;
+  this.newFormation.quiz.push({ ...this.tempQuestion, options: [...this.tempQuestion.options] });
+  this.tempQuestion = { question: '', options: ['', '', '', ''], correctIndex: 0 };
+ }
+ removeQuestion(i: number) { this.newFormation.quiz.splice(i, 1); }
+
+ openCreateFormation() {
+  this.editingFormation = null;
+  this.newFormation = { title: 'LLR', targetPhase: 'LLR', durationWeeks: 1, quizDurationMinutes: 30, passingScore: 80, description: '', lessons: [], quiz: [] };
+  this.tempLesson = { name: '', resourceUrl: '', resourceType: 'VIDEO' };
+  this.tempQuestion = { question: '', options: ['', '', '', ''], correctIndex: 0 };
+  this.showCreateFormation = true;
  }
 
- openAssignModal(f: any) {
-  this.showSuccess(`Assignment manager for ${f.title} is coming soon!`);
+ openEditFormation(f: any) {
+  this.editingFormation = f;
+  this.newFormation = {
+   title: f.title, targetPhase: f.targetPhase, durationWeeks: f.durationWeeks,
+   quizDurationMinutes: f.quizDurationMinutes, passingScore: f.passingScore || 80,
+   description: f.description,
+   lessons: f.lessons ? [...f.lessons.map((l: any) => ({ ...l }))] : [],
+   quiz: f.quiz ? [...f.quiz.map((q: any) => ({ ...q, options: [...q.options] }))] : [],
+  };
+  this.tempLesson = { name: '', resourceUrl: '', resourceType: 'VIDEO' };
+  this.tempQuestion = { question: '', options: ['', '', '', ''], correctIndex: 0 };
+  this.showCreateFormation = true;
+ }
+
+ async saveFormation() {
+  this.newFormation.targetPhase = this.newFormation.title;
+  try {
+   if (this.editingFormation?._id) {
+    await firstValueFrom(this.trainingService.updateFormation(this.editingFormation._id, this.newFormation));
+    this.showSuccess('Formation mise à jour !');
+   } else {
+    await firstValueFrom(this.trainingService.createFormation(this.newFormation));
+    this.showSuccess('Formation créée !');
+   }
+   this.showCreateFormation = false;
+   await this.loadFormations();
+  } catch (e: any) { this.errorMessage = e?.error?.message || 'Erreur lors de la sauvegarde'; }
+ }
+
+ async deleteFormation(f: any) {
+  this.confirmAction('Supprimer la formation', `Voulez-vous vraiment supprimer "${f.title}" ?`, async () => {
+   await firstValueFrom(this.trainingService.deleteFormation(f._id));
+   await this.loadFormations();
+   this.showSuccess('Formation supprimée.');
+  });
+ }
+
+ // ── Assign Modal ──────────────────────────────────────────────────────────────
+ showAssignModal = false;
+ assigningFormation: any = null;
+ assignableUsers: any[] = [];
+ selectedUserIds: Set<string> = new Set();
+
+ async openAssignModal(f: any) {
+  this.assigningFormation = f;
+  this.selectedUserIds = new Set();
+  // Load members/managers only
+  try {
+   const res: any = await firstValueFrom(this.adminService.getUsers({ limit: 100 }));
+   this.assignableUsers = (res?.users || res || []).filter((u: any) => u.role !== 'ADMIN');
+  } catch (e) { this.assignableUsers = []; }
+  this.showAssignModal = true;
+ }
+
+ toggleUserSelection(uid: string) {
+  this.selectedUserIds.has(uid) ? this.selectedUserIds.delete(uid) : this.selectedUserIds.add(uid);
+ }
+
+ async confirmAssign() {
+  if (!this.assigningFormation || this.selectedUserIds.size === 0) return;
+  try {
+   const res: any = await firstValueFrom(
+    this.trainingService.assignMembers(this.assigningFormation._id, Array.from(this.selectedUserIds))
+   );
+   this.showAssignModal = false;
+   this.showSuccess(`${res.assigned} membre(s) assigné(s) à la formation.`);
+  } catch (e: any) { this.errorMessage = e?.error?.message || 'Erreur d\'assignation'; }
+ }
+
+ // ── Transfer Requests ─────────────────────────────────────────────────────────
+ transferRequests: any[] = [];
+ rejectNoteMap: Record<string, string> = {};
+
+ async loadTransferRequests() {
+  try {
+   this.transferRequests = await firstValueFrom(this.trainingService.getAllTransferRequests());
+  } catch (e) { this.transferRequests = []; }
+ }
+
+ async approveTransfer(r: any) {
+  this.confirmAction('Approuver le transfert',
+   `Approuver le transfert de ${r.userId?.firstName} vers l'équipe ${r.toEquipe} ?`,
+   async () => {
+    await firstValueFrom(this.trainingService.approveTransfer(r._id));
+    await this.loadTransferRequests();
+    this.showSuccess('Transfert approuvé — équipe mise à jour.');
+   });
+ }
+
+ async rejectTransfer(r: any) {
+  const note = this.rejectNoteMap[r._id] || 'Demande refusée';
+  await firstValueFrom(this.trainingService.rejectTransfer(r._id, note));
+  await this.loadTransferRequests();
+  this.showSuccess('Demande rejetée.');
  }
 
  // Alerts
@@ -97,21 +230,40 @@ export class AdminDashboard implements OnInit {
  settingsSaving = false;
  newHoliday = '';
 
- constructor(private adminService: AdminService, private cdr: ChangeDetectorRef) {}
+ constructor(
+  private adminService: AdminService,
+  private trainingService: TrainingService,
+  private router: Router,
+  private cdr: ChangeDetectorRef
+ ) {}
 
  async ngOnInit() {
+  // Restore last active tab from localStorage
+  const savedTab = localStorage.getItem('smartpm_admin_tab') as TabId;
+  if (savedTab) this.activeTab = savedTab;
   await this.loadOverview();
+  // Load data for the restored tab if it's not overview
+  if (this.activeTab !== 'overview') {
+   switch (this.activeTab) {
+    case 'users':     this.loadUsers();     break;
+    case 'formations':  this.loadFormations(); this.loadTransferRequests(); break;
+    case 'alerts':    this.loadAlerts();    break;
+    case 'ai':      this.loadAI();      break;
+    case 'settings':   this.loadSettings();   break;
+   }
+  }
  }
 
  switchTab(tab: TabId) {
   if (this.activeTab === tab) return;
   this.activeTab = tab;
+  localStorage.setItem('smartpm_admin_tab', tab); // Persist tab on refresh
   
   // Fire and forget loading to keep UI responsive
   switch (tab) {
    case 'overview':    this.loadOverview();    break;
    case 'users':     this.loadUsers();      break;
-   case 'formations':   this.loadFormations();   break;
+   case 'formations':   this.loadFormations(); this.loadTransferRequests(); break;
    case 'alerts':     this.loadAlerts();     break;
    case 'ai':       this.loadAI();       break;
    case 'settings':    this.loadSettings();    break;
@@ -303,31 +455,38 @@ export class AdminDashboard implements OnInit {
   } catch(e) { console.error(e); this.auditLogs = []; }
  }
 
- // ─── FORMATIONS (Replacing legacy Certs) ──────────────────────────────────
+ // ─── FORMATIONS ───────────────────────────────────────────────────────────
  async loadFormations() {
   this.loading['formations'] = true;
   this.cdr.detectChanges();
   try {
-   // 1. Load active formations
-   const formations: any = await firstValueFrom(this.adminService.getCompetencyMatrix()); // Re-using service for now or fetch list
-   // 2. Load all users to show their status
-   const usersRes: any = await firstValueFrom(this.adminService.getUsers({ limit: 100 }));
-   const allTeam = usersRes?.users || usersRes || [];
-   
-   // Filter out Admins, keep Managers and Members
-   this.assignmentStats = allTeam
-    .filter((u: any) => u.role !== 'ADMIN')
-    .map((u: any) => ({
+   const [formations, allProgress, usersRes]: any = await Promise.all([
+    firstValueFrom(this.trainingService.getAllFormations()),
+    firstValueFrom(this.trainingService.getAllUsersProgress()).catch(() => []),
+    firstValueFrom(this.adminService.getUsers({ limit: 100 })),
+   ]);
+   this.activeFormations = formations || [];
+
+   const allTeam = (usersRes?.users || usersRes || []).filter((u: any) => u.role !== 'ADMIN');
+   // Build assignment stats per user
+   this.assignmentStats = allTeam.map((u: any) => {
+    const records = (allProgress || []).filter((r: any) => r.userId?._id === u._id || r.userId === u._id);
+    const completed = records.filter((r: any) => r.status === 'COMPLETED').length;
+    const latest = records.sort((a: any, b: any) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())[0];
+    return {
+     _id: u._id,
      userName: `${u.firstName} ${u.lastName}`,
      role: u.role,
-     formation: u.currentFormation || 'None Assigned',
-     progress: u.trainingProgress || 0,
-     score: u.lastQuizScore || null,
-     status: u.trainingStatus || 'Not Started'
-    }));
-
-  } catch(e) { 
-   console.error(e); 
+     equipe: u.equipe || '—',
+     formation: latest?.trainingId?.title || 'None Assigned',
+     progress: latest?.progress || 0,
+     score: latest?.quizScore ?? null,
+     status: latest?.status || 'Not Started',
+     completedCount: completed,
+    };
+   });
+  } catch(e) {
+   console.error(e);
   } finally {
    this.loading['formations'] = false;
    this.cdr.detectChanges();
@@ -460,7 +619,7 @@ export class AdminDashboard implements OnInit {
 
  logout() {
   localStorage.removeItem('token');
-  window.location.href = '/login';
+  this.router.navigate(['/login']);
  }
 
  // ─── NOTIFICATIONS & CONFIRM ──────────────────────────────────────────────
@@ -482,5 +641,35 @@ export class AdminDashboard implements OnInit {
  showSuccess(msg: string) {
   this.successMessage = msg;
   setTimeout(() => this.successMessage = '', 4000);
+ }
+
+ // ── 📊 Training Analytics Getter ─────────────────────────────────────────────
+ get trainingAnalytics() {
+  const stats = this.assignmentStats;
+  if (!stats.length) return null;
+  const total = stats.length;
+  const completed  = stats.filter((s: any) => s.status === 'COMPLETED').length;
+  const inProgress = stats.filter((s: any) => s.status === 'IN_PROGRESS').length;
+  const failed     = stats.filter((s: any) => s.status === 'FAILED').length;
+  const assigned   = stats.filter((s: any) => s.status === 'ASSIGNED' || s.status === 'Not Started').length;
+  const withScore  = stats.filter((s: any) => s.score !== null && s.score !== undefined);
+  const avgScore   = withScore.length
+    ? Math.round(withScore.reduce((a: number, b: any) => a + b.score, 0) / withScore.length)
+    : 0;
+
+  const fMap: Record<string, { title: string; completed: number; total: number }> = {};
+  for (const s of stats) {
+   const key = s.formation || 'Non assignée';
+   if (!fMap[key]) fMap[key] = { title: key, completed: 0, total: 0 };
+   fMap[key].total++;
+   if (s.status === 'COMPLETED') fMap[key].completed++;
+  }
+
+  return {
+   total, completed, inProgress, failed, assigned,
+   completionRate: Math.round((completed / total) * 100),
+   avgScore,
+   formations: Object.values(fMap).slice(0, 5)
+  };
  }
 }

@@ -261,22 +261,98 @@
     <h2>🎓 Mes Formations</h2>
     <p class="tab-sub">Suivez vos certifications et modules d'apprentissage.</p>
    </div>
+   
    <div class="training-grid-full">
      <div class="training-card-full" *ngFor="let tt of trainingTracks">
       <div class="tc-header">
-       <h4>{{ tt.name }}</h4>
-       <span class="tc-badge" [class.done]="tt.progress === 100">{{ tt.progress === 100 ? '✅ Complété' : 'En cours' }}</span>
+       <h4>{{ tt.trainingId?.title || 'Formation Inconnue' }}</h4>
+       <div style="display:flex; gap:10px; align-items:center;">
+        <span class="tc-badge" [class.done]="tt.status === 'COMPLETED'">{{ tt.status }}</span>
+        <button class="btn-abs-close" style="position:static; width:24px; height:24px; font-size:1.2rem; display:flex; justify-content:center; align-items:center; color:#ef4444; border:1px solid #fee2e2; background:#fef2f2; border-radius:4px;" title="Supprimer la formation" (click)="removeFormation(tt)">&times;</button>
+       </div>
       </div>
+      <p class="text-muted" style="font-size:0.9rem; margin-top:-5px; margin-bottom:15px;">{{ tt.trainingId?.description }}</p>
+      
       <div class="tc-progress-bar">
-       <div class="tc-fill" [style.width]="tt.progress + '%'" [class.done-bg]="tt.progress === 100"></div>
+       <div class="tc-fill" [style.width]="tt.progress + '%'" [class.done-bg]="tt.status === 'COMPLETED'"></div>
       </div>
-      <p class="tc-progress-text">{{ tt.progress }}% achevé</p>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+       <p class="tc-progress-text" style="margin:0;">{{ tt.progress }}% achevé</p>
+       <strong *ngIf="tt.quizScore !== null">Score: {{ tt.quizScore }}%</strong>
+      </div>
+
+      <!-- 📚 Lessons List for IN_PROGRESS -->
+      <div *ngIf="tt.status === 'IN_PROGRESS'" class="tc-lessons" style="background:#f8fafc; padding:15px; border-radius:8px; margin-top:15px; margin-bottom:15px;">
+       <h5 style="margin-top:0; margin-bottom:10px; font-size:0.95rem; color:#334155;">📚 Matériel Pédagogique</h5>
+       <div *ngFor="let lesson of tt.trainingId?.lessons; let i = index" 
+            style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:#fff; border:1px solid #e2e8f0; border-radius:6px; margin-bottom:8px;">
+         <div style="display:flex; align-items:center; gap:10px;">
+           <span style="font-size:1.2rem;">{{ lesson.resourceType === 'VIDEO' ? '🎥' : '📄' }}</span>
+           <div>
+             <div style="font-weight:600; font-size:0.9rem; color:#1e293b;">{{ lesson.name }}</div>
+             <div style="font-size:0.8rem; color:#64748b;">{{ lesson.resourceType }}</div>
+           </div>
+         </div>
+         <button class="btn-outline-sm" style="font-size:0.8rem; padding:6px 12px;" (click)="openLesson(lesson)">Ouvrir</button>
+       </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="tc-actions mt-3" style="display:flex; gap:10px; flex-wrap:wrap;">
+       <button class="btn-primary btn-sm" style="flex:1;" *ngIf="tt.status === 'ASSIGNED'" (click)="startFormation(tt)">▶ Commencer</button>
+       <button class="btn-outline-sm" style="flex:1;" *ngIf="tt.status === 'IN_PROGRESS' && tt.progress < 100" (click)="completeLesson(tt, 100)">✅ Terminer Leçons</button>
+       <button class="btn-success btn-sm" style="flex:1;" *ngIf="tt.status === 'IN_PROGRESS' && tt.progress === 100" (click)="startQuiz(tt)">📝 Passer le Quiz</button>
+       <button class="btn-outline-sm" style="flex:1; color:#ef4444; border-color:#ef4444;" *ngIf="tt.status === 'FAILED'" (click)="startQuiz(tt)">🔄 Réessayer le Quiz</button>
+       <button class="btn-cert" *ngIf="tt.status === 'COMPLETED'" (click)="downloadCertificate(tt)">📄 Télécharger Certificat</button>
+      </div>
      </div>
      <div class="no-data-full" *ngIf="trainingTracks.length === 0">
       <div class="icon">🎓</div>
       <h3>Aucune formation requise</h3>
       <p>Toutes vos certifications sont à jour.</p>
      </div>
+   </div>
+
+   <!-- ── 🔄 DEMANDE DE TRANSFERT ── -->
+   <div class="section-block mt-5">
+    <div class="section-header-row">
+     <h2 class="section-title">🔄 Demande de Transfert d'Équipe</h2>
+    </div>
+    
+    <div class="form-grid-2" style="background:#fff; padding:20px; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.03);">
+     <div class="form-group">
+      <span class="label">Équipe souhaitée</span>
+      <select [(ngModel)]="newTransfer.toEquipe" class="builder-input">
+       <option value="">Sélectionnez une équipe...</option>
+       <option *ngFor="let eq of equipes" [value]="eq">{{ eq }}</option>
+      </select>
+     </div>
+     <div class="form-group">
+      <span class="label">Motif du transfert</span>
+      <input type="text" [(ngModel)]="newTransfer.reason" placeholder="Ex: J'ai fini ma formation HLT..." class="builder-input">
+     </div>
+     <div class="form-group" style="grid-column: span 2;">
+      <button class="btn-primary" style="width:100%;" (click)="requestTransfer()">Envoyer la demande</button>
+     </div>
+    </div>
+
+    <!-- Historique des transferts -->
+    <div class="table-card mt-4" *ngIf="transferRequests.length > 0">
+     <table class="data-table">
+      <thead>
+       <tr><th>De</th><th>Vers</th><th>Statut</th><th>Note Admin</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+       <tr *ngFor="let r of transferRequests" class="table-row">
+        <td><span class="f-path-tag red">{{ r.fromEquipe }}</span></td>
+        <td><span class="f-path-tag green">{{ r.toEquipe }}</span></td>
+        <td><span class="status-pill" [class.status-pending]="r.status==='PENDING'" [class.status-approved]="r.status==='APPROVED'" [class.status-rejected]="r.status==='REJECTED'">{{ r.status }}</span></td>
+        <td class="text-muted">{{ r.adminNote || '—' }}</td>
+        <td class="text-muted">{{ r.createdAt | date:'shortDate' }}</td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
    </div>
   </div>
 
@@ -335,7 +411,7 @@
       </div>
       <div class="day-nav-meta">
        <span class="tasks-count">{{ currentDay.tasks.length }} mission(s)</span>
-       <span class="overdue-chip" *ngIf="currentDay.isPast && !currentDay.isToday && currentDay.tasks.length > 0">
+       <span class="overdue-chip" *ngIf="currentDay.isPast && !currentDay.isToday && currentDay.hasPendingTasks">
         ⚠️ Non terminée(s)
        </span>
       </div>
@@ -346,7 +422,7 @@
         [class.active]="i === selectedDayIndex"
         [class.past]="d.isPast && !d.isToday"
         [class.today]="d.isToday"
-        (click)="selectedDayIndex = i">
+        (click)="selectDay(i)">
        </span>
       </div>
      </div>
@@ -373,12 +449,11 @@
         <span class="project-tag">{{ t.project }}</span>
         <span class="duration-tag">⏱️ {{ t.duration }}h</span>
        </div>
-       <span class="task-status-badge" [ngClass]="t.displayStatus">
+       <span class="task-status-badge" [ngClass]="t.displayStatus" *ngIf="t.status?.toUpperCase() !== 'READY_FOR_REVIEW' && t.status?.toUpperCase() !== 'REVIEWED' && t.status?.toUpperCase() !== 'CLOSED'">
         <ng-container [ngSwitch]="t.displayStatus">
          <span *ngSwitchCase="'RETARD'">🚨 En Retard</span>
          <span *ngSwitchCase="'IN_PROGRESS'">⚙️ En cours</span>
          <span *ngSwitchCase="'TODO'">⏳ En attente</span>
-         <span *ngSwitchCase="'READY_FOR_REVIEW'">🔍 À réviser</span>
          <span *ngSwitchCase="'REVIEWED'">✅ Revue faite</span>
          <span *ngSwitchDefault>{{ t.displayStatus }}</span>
         </ng-container>
@@ -387,7 +462,7 @@
 
       <div class="slot-actions">
        <button class="btn-start"
-        *ngIf="t.status === 'TODO' || t.isOverdue"
+        *ngIf="(t.status === 'TODO' || t.isOverdue) && t.status !== 'IN_PROGRESS' && t.status !== 'READY_FOR_REVIEW' && t.status !== 'REVIEWED' && t.status !== 'CLOSED'"
         (click)="startTask(t)">
         {{ t.isOverdue ? '🔄 Reprendre' : '▶ Démarrer' }}
        </button>
@@ -397,6 +472,10 @@
           ✅ Terminer
          </button>
        </ng-container>
+
+       <!-- Status badge when task is submitted or reviewed -->
+       <span class="badge-submitted" *ngIf="t.status === 'READY_FOR_REVIEW'">🔍 Soumis pour revue</span>
+       <span class="badge-reviewed" *ngIf="t.status === 'REVIEWED' || t.status === 'CLOSED'">✅ Validé</span>
       </div>
      </div>
     </div>
@@ -458,11 +537,35 @@
     <div class="training-list">
      <div class="training-track" *ngFor="let tt of trainingTracks">
       <div class="tt-header">
-       <span>{{ tt.name }}</span>
-       <strong [class.success]="tt.progress === 100">{{ tt.progress }}%</strong>
+       <span class="tt-title">{{ tt.trainingId?.title || tt.name || 'Formation' }}</span>
+       <span class="tt-status-chip"
+         [class.chip-assigned]="tt.status==='ASSIGNED'"
+         [class.chip-progress]="tt.status==='IN_PROGRESS'"
+         [class.chip-done]="tt.status==='COMPLETED'"
+         [class.chip-failed]="tt.status==='FAILED'">
+        {{ tt.status==='ASSIGNED' ? '📋 Assigné' : tt.status==='IN_PROGRESS' ? '⚙️ En cours' : tt.status==='COMPLETED' ? '✅ Terminé' : '❌ Échoué' }}
+       </span>
       </div>
-      <div class="tt-progress">
-       <div class="tt-fill" [style.width]="tt.progress + '%'" [class.success-bg]="tt.progress === 100"></div>
+      <div class="tt-progress-row">
+       <div class="tt-progress">
+        <div class="tt-fill"
+          [style.width]="tt.progress + '%'"
+          [class.fill-assigned]="tt.status==='ASSIGNED'"
+          [class.fill-progress]="tt.status==='IN_PROGRESS'"
+          [class.fill-done]="tt.status==='COMPLETED'"
+          [class.fill-failed]="tt.status==='FAILED'">
+        </div>
+       </div>
+       <strong class="tt-pct"
+          [class.pct-done]="tt.status==='COMPLETED'"
+          [class.pct-failed]="tt.status==='FAILED'">
+        {{ tt.progress }}%
+       </strong>
+      </div>
+      <div class="tt-footer-row" *ngIf="tt.quizScore !== null && tt.quizScore !== undefined">
+       <span class="tt-score-chip" [class.score-pass]="tt.quizScore >= (tt.trainingId?.passingScore || 80)" [class.score-fail]="tt.quizScore < (tt.trainingId?.passingScore || 80)">
+        📝 Score Quiz : {{ tt.quizScore }}%
+       </span>
       </div>
      </div>
      <div class="no-data-mini" *ngIf="trainingTracks.length === 0">
@@ -505,6 +608,71 @@
 
   </div>
  </main>
+
+  <!-- ── 📝 QUIZ INTERACTIF MODAL ── -->
+  <div class="modal-overlay" *ngIf="activeQuiz">
+   <div class="modal" (click)="$event.stopPropagation()" style="max-width: 600px;">
+    <div class="modal-header" style="align-items:flex-start;">
+     <h3>📝 Certification : {{ activeQuiz.trainingId.title }}</h3>
+     <div style="display:flex;align-items:center;gap:12px;">
+      <div *ngIf="!quizResult" class="quiz-timer-badge" [class.urgent]="quizTimerUrgent">⏱️ {{ formatQuizTimer(quizTimeLeft) }}</div>
+      <button class="btn-abs-close" (click)="closeQuiz()">&times;</button>
+     </div>
+    </div>
+    
+    <div class="modal-body">
+     <div *ngIf="!quizResult">
+      <div class="quiz-progress" style="margin-bottom: 20px;">
+       <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+        <span class="text-muted">Question {{ currentQuestionIndex + 1 }} sur {{ activeQuiz.trainingId.quiz.length }}</span>
+       </div>
+       <div class="progress-wrap" style="height: 6px; background:#e0e0e0; border-radius:3px; overflow:hidden;">
+        <div class="progress-bar" [style.width.%]="((currentQuestionIndex + 1) / activeQuiz.trainingId.quiz.length) * 100" style="background:var(--primary); height:100%;"></div>
+       </div>
+      </div>
+
+      <div class="question-block" *ngIf="activeQuiz.trainingId.quiz[currentQuestionIndex] as q">
+       <h4 style="font-size:1.1rem; margin-bottom: 15px;">{{ q.question }}</h4>
+       <div class="options-list" style="display:flex; flex-direction:column; gap:10px;">
+        <label *ngFor="let opt of q.options; let i = index" class="quiz-option" 
+               style="padding:12px; border:1px solid #ddd; border-radius:8px; cursor:pointer; display:flex; align-items:center; transition:0.2s;"
+               [style.border-color]="quizAnswers[currentQuestionIndex] === i ? 'var(--primary)' : '#ddd'"
+               [style.background]="quizAnswers[currentQuestionIndex] === i ? 'rgba(0,102,255,0.05)' : '#fff'">
+         <input type="radio" [name]="'q'+currentQuestionIndex" [value]="i" [(ngModel)]="quizAnswers[currentQuestionIndex]" style="margin-right:10px;">
+         <span>{{ opt }}</span>
+        </label>
+       </div>
+      </div>
+     </div>
+
+     <!-- Résultat du Quiz -->
+     <div *ngIf="quizResult" style="text-align:center; padding: 20px 0;">
+      <div style="font-size: 3rem; margin-bottom: 10px;">
+       {{ quizResult.passed ? '🎉' : '❌' }}
+      </div>
+      <h3>{{ quizResult.passed ? 'Félicitations !' : 'Test Échoué' }}</h3>
+      <p class="text-muted mt-2">Vous avez obtenu un score de <strong>{{ quizResult.score }}%</strong></p>
+      <p class="text-muted">Score minimum requis : {{ activeQuiz.trainingId.passingScore }}%</p>
+     <div class="mt-3" style="margin-top:18px;">
+      <button class="btn-cert" *ngIf="quizResult.passed" (click)="downloadCertificate(activeQuiz)">📄 Télécharger mon Certificat</button>
+     </div>
+     </div>
+    </div>
+
+    <div class="modal-footer" style="justify-content:space-between;">
+     <button class="btn-ghost" (click)="closeQuiz()">{{ quizResult ? 'Fermer' : 'Quitter' }}</button>
+     
+     <div *ngIf="!quizResult">
+      <button class="btn-primary" *ngIf="currentQuestionIndex < activeQuiz.trainingId.quiz.length - 1" (click)="nextQuestion()" [disabled]="quizAnswers[currentQuestionIndex] === -1">
+       Question Suivante ➡️
+      </button>
+      <button class="btn-success" *ngIf="currentQuestionIndex === activeQuiz.trainingId.quiz.length - 1" (click)="submitQuiz()" [disabled]="quizAnswers[currentQuestionIndex] === -1">
+       Valider le Test ✅
+      </button>
+     </div>
+    </div>
+   </div>
+  </div>
 
  <!-- 🤖 SmartPM AI Chatbot -->
  <app-ai-chatbot></app-ai-chatbot>
