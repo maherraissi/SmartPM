@@ -39,6 +39,12 @@ from openai import AsyncOpenAI
 openai_api_key = os.environ.get("OPENAI_API_KEY", "")
 openai_client = AsyncOpenAI(api_key=openai_api_key) if openai_api_key else None
 
+groq_api_key = os.environ.get("GROQ_API_KEY", "")
+groq_client = AsyncOpenAI(api_key=groq_api_key, base_url="https://api.groq.com/openai/v1") if groq_api_key else None
+
+or_api_key = os.environ.get("OPENROUTER_API_KEY", "")
+or_client = AsyncOpenAI(api_key=or_api_key, base_url="https://openrouter.ai/api/v1") if or_api_key else None
+
 # ── MONGODB ───────────────────────────────────────────────────────
 import motor.motor_asyncio
 from bson import ObjectId
@@ -256,19 +262,48 @@ async def chat(request: ChatRequest):
                 if chunk.text: yield chunk.text
             return
         except Exception as e_gemini:
-            if openai_client:
+            print(f"[CHAT] Gemini error: {e_gemini}")
+            messages = [{"role":"system","content":system}]
+            for m in recent: messages.append({"role":m.role,"content":m.content})
+            messages.append({"role":"user","content":request.message})
+            
+            # Fallback 1: Groq
+            if groq_client:
+                print("[CHAT] Trying Groq fallback...")
                 try:
-                    messages = [{"role":"system","content":system}]
-                    for m in recent: messages.append({"role":m.role,"content":m.content})
-                    messages.append({"role":"user","content":request.message})
-                    stream = await openai_client.chat.completions.create(model="gpt-4o-mini", messages=messages, stream=True)
+                    stream = await groq_client.chat.completions.create(model="llama-3.1-8b-instant", messages=messages, stream=True, temperature=0.3)
                     async for chunk_oa in stream:
                         content = chunk_oa.choices[0].delta.content
                         if content: yield content
+                    return
+                except Exception as e_groq:
+                    print(f"[CHAT] Groq error: {e_groq}")
+            
+            # Fallback 2: OpenRouter
+            if or_client:
+                print("[CHAT] Trying OpenRouter fallback...")
+                try:
+                    stream = await or_client.chat.completions.create(model="mistralai/mistral-7b-instruct:free", messages=messages, stream=True, temperature=0.3)
+                    async for chunk_oa in stream:
+                        content = chunk_oa.choices[0].delta.content
+                        if content: yield content
+                    return
+                except Exception as e_or:
+                    print(f"[CHAT] OpenRouter error: {e_or}")
+
+            # Fallback 3: OpenAI
+            if openai_client:
+                print("[CHAT] Trying OpenAI fallback...")
+                try:
+                    stream = await openai_client.chat.completions.create(model="gpt-4o-mini", messages=messages, stream=True, temperature=0.3)
+                    async for chunk_oa in stream:
+                        content = chunk_oa.choices[0].delta.content
+                        if content: yield content
+                    return
                 except Exception as e_oa:
-                    yield f"[Erreur Gemini: {str(e_gemini)}] [Erreur OpenAI: {str(e_oa)}]"
-            else:
-                yield f"[Erreur Gemini: {str(e_gemini)}]"
+                    print(f"[CHAT] OpenAI error: {e_oa}")
+            
+            yield "⚠️ Désolé, les services IA sont actuellement surchargés (Quota atteint). Veuillez réessayer plus tard."
 
     return StreamingResponse(stream_generator(), media_type="text/plain")
 

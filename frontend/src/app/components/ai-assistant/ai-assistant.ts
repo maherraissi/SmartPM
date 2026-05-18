@@ -19,7 +19,7 @@ export class AiAssistantComponent implements OnInit, AfterViewChecked {
   messages: ChatMessage[] = [];
   userInput = '';
   isTyping = false;
-  ollamaStatus: 'checking' | 'online' | 'offline' = 'checking';
+  aiStatus: 'checking' | 'online' | 'offline' = 'checking';
 
   simulatorResult: any = null;
   isSimulating = false;
@@ -46,9 +46,9 @@ export class AiAssistantComponent implements OnInit, AfterViewChecked {
   checkStatus() {
     this.aiService.getStatus().subscribe({
       next: (data: any) => {
-        this.ollamaStatus = data.ollama === 'online' ? 'online' : 'offline';
+        this.aiStatus = 'online';
       },
-      error: () => { this.ollamaStatus = 'offline'; }
+      error: () => { this.aiStatus = 'offline'; }
     });
   }
 

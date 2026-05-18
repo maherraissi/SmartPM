@@ -44,13 +44,13 @@ export class AiService {
     await this._readStream(response.body.getReader(), onChunk);
   }
 
-  // ── Project Simulation (Ollama) ───────────────────────────────
+  // ── Project Simulation (Cloud AI) ───────────────────────────────
   async simulateProject(
     projectId: string,
     scenario: string,
     durationWeeks: number,
     onChunk: (text: string) => void,
-    modelName = 'llama3'
+    modelName = 'gemini'
   ): Promise<void> {
     const response = await fetch(`${this.chatUrl}/simulate`, {
       method: 'POST',
@@ -64,11 +64,6 @@ export class AiService {
     });
     if (!response.body) throw new Error('No response body');
     await this._readStream(response.body.getReader(), onChunk);
-  }
-
-  // ── Get available Ollama models ───────────────────────────────
-  getOllamaModels(): Observable<any> {
-    return this.http.get(`${this.chatUrl}/simulate/models`);
   }
 
   // ── Legacy NestJS endpoints ───────────────────────────────────

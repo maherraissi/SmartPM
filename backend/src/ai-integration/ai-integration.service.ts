@@ -11,8 +11,6 @@ import { Task, TaskDocument, TaskStatus } from '../task/schemas/task.schema';
 export class AiIntegrationService {
  private readonly logger = new Logger(AiIntegrationService.name);
  private genAI: GoogleGenerativeAI;
- private ollamaUrl: string;
- private ollamaModel: string;
 
  constructor(
   private configService: ConfigService,
@@ -21,46 +19,68 @@ export class AiIntegrationService {
  ) {
   const apiKey = this.configService.get<string>('GEMINI_API_KEY') || '';
   this.genAI = new GoogleGenerativeAI(apiKey);
-  this.ollamaUrl = this.configService.get<string>('OLLAMA_URL') || 'http://localhost:11434';
-  this.ollamaModel = this.configService.get<string>('OLLAMA_MODEL') || 'llama3';
  }
 
- // ── GEMINI CHATBOT ────────────────────────────────────────────────
+ // ── CHATBOT (GEMINI -> GROQ -> OPENROUTER -> OPENAI FALLBACK) ────────────────
  async chat(message: string, history: { role: string; content: string }[] = []): Promise<string> {
-  this.logger.log(`[GEMINI] Chat request: "${message.substring(0, 60)}..."`);
+  this.logger.log(`[CHAT] Request: "${message.substring(0, 60)}..."`);
 
-  try {
-   const model = this.genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-
-   const systemPrompt = `Tu es SmartPM AI, assistant expert en gestion de projets aéronautiques .
+  const systemPrompt = `Tu es SmartPM AI, assistant expert en gestion de projets aéronautiques.
 Règles ABSOLUES:
 - Réponds en 2-4 phrases maximum, toujours en français
 - Sois direct, précis, actionnable
 - Utilise des bullet points si nécessaire
-- Jamais de longues introductions ni de conclusion
-- Format: réponse immédiate + action concrète`;
+- Jamais de longues introductions ni de conclusion`;
 
-   // Build conversation history
+  const messages = [
+   { role: 'system', content: systemPrompt },
+   ...history.map(h => ({ role: h.role, content: h.content })),
+   { role: 'user', content: message },
+  ];
+
+  // 1. Try Gemini
+  try {
+   const model = this.genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
    const chatHistory = history.map(h => ({
     role: h.role === 'user' ? 'user' : 'model',
     parts: [{ text: h.content }],
    }));
-
    const chat = model.startChat({
     history: [
      { role: 'user', parts: [{ text: systemPrompt }] },
-     { role: 'model', parts: [{ text: 'Compris ! Je suis SmartPM AI, prêt à vous assister dans la gestion de vos projets aéronautiques .' }] },
+     { role: 'model', parts: [{ text: 'Compris ! Je suis SmartPM AI.' }] },
      ...chatHistory,
     ],
    });
-
    const result = await chat.sendMessage(message);
-   const response = result.response.text();
-   this.logger.log(`[GEMINI] Response generated (${response.length} chars)`);
-   return response;
-  } catch (error) {
-   this.logger.error(`[GEMINI] Error: ${error.message}`);
-   throw new Error(`Gemini API Error: ${error.message}`);
+   return result.response.text();
+  } catch (geminiError) {
+   this.logger.warn(`[CHAT] Gemini failed, falling back to Groq...`);
+   try {
+    const groqKey = this.configService.get<string>('GROQ_API_KEY');
+    if (!groqKey) throw new Error('Groq key missing');
+    const resp = await axios.post(
+     'https://api.groq.com/openai/v1/chat/completions',
+     { model: 'llama-3.1-8b-instant', messages, temperature: 0.3, max_tokens: 600 },
+     { headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' }, timeout: 30000 }
+    );
+    return resp.data.choices[0].message.content;
+   } catch (groqError) {
+    this.logger.warn(`[CHAT] Groq failed, falling back to OpenRouter...`);
+    try {
+     const orKey = this.configService.get<string>('OPENROUTER_API_KEY');
+     if (!orKey) throw new Error('OpenRouter key missing');
+     const resp = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      { model: 'meta-llama/llama-3-8b-instruct:free', messages, temperature: 0.3 },
+      { headers: { 'Authorization': `Bearer ${orKey}`, 'Content-Type': 'application/json' }, timeout: 30000 }
+     );
+     return resp.data.choices[0].message.content;
+    } catch (orError) {
+     this.logger.error(`[CHAT] All AI APIs failed`);
+     throw new Error(`Service IA indisponible. Veuillez réessayer plus tard.`);
+    }
+   }
   }
  }
 
@@ -112,25 +132,104 @@ MEMBRES ÉQUIPE: ${(project.teamMembers || []).length} personnes assignées
   `.trim();
  }
 
- // ── OLLAMA CALL ───────────────────────────────────────────────────
- private async callOllama(prompt: string): Promise<string> {
-  this.logger.log(`[OLLAMA] Sending request to ${this.ollamaUrl}`);
+ // ── AI CALL (GEMINI -> GROQ -> OPENROUTER -> OPENAI FALLBACK) ───────────────────────────
+ private async callAI(prompt: string): Promise<string> {
+  // 1. Try Gemini
   try {
-   const response = await axios.post(
-    `${this.ollamaUrl}/api/generate`,
-    {
-     model: this.ollamaModel,
-     prompt,
-     stream: false,
-     options: { temperature: 0.3, num_predict: 1500 },
-    },
-    { timeout: 120000 },
-   );
-   this.logger.log(`[OLLAMA] Response received`);
-   return response.data.response;
-  } catch (error) {
-   this.logger.error(`[OLLAMA] Error: ${error.message}`);
-   throw new Error(`Ollama inaccessible: ${error.message}. Vérifiez qu'Ollama tourne sur :11434`);
+   this.logger.log(`[AI] Attempting Gemini (gemini-2.0-flash)...`);
+   const model = this.genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+   const result = await model.generateContent(prompt);
+   return result.response.text();
+  } catch (geminiError) {
+   this.logger.warn(`[AI] Gemini failed: ${geminiError.message}. Falling back to Groq...`);
+   
+   // 2. Try Groq (Llama 3)
+   try {
+    const groqKey = this.configService.get<string>('GROQ_API_KEY');
+    if (!groqKey) throw new Error('Clé API Groq introuvable');
+    
+    this.logger.log(`[AI] Attempting Groq (llama-3.1-8b-instant)...`);
+    const response = await axios.post(
+     'https://api.groq.com/openai/v1/chat/completions',
+     {
+      model: 'llama-3.1-8b-instant',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.3,
+      max_tokens: 800
+     },
+     {
+      headers: {
+       'Authorization': `Bearer ${groqKey}`,
+       'Content-Type': 'application/json'
+      },
+      timeout: 30000
+     }
+    );
+    this.logger.log(`[AI] Response received from Groq`);
+    return response.data.choices[0].message.content;
+   } catch (groqError) {
+    this.logger.warn(`[AI] Groq failed: ${groqError.message}. Falling back to OpenRouter...`);
+    
+    // 3. Try OpenRouter
+    try {
+     const openRouterKey = this.configService.get<string>('OPENROUTER_API_KEY');
+     if (!openRouterKey) throw new Error('Clé API OpenRouter introuvable');
+     
+     this.logger.log(`[AI] Attempting OpenRouter (mistralai/mistral-7b-instruct:free)...`);
+     const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+       model: 'mistralai/mistral-7b-instruct:free',
+       messages: [{ role: 'user', content: prompt }],
+       temperature: 0.3
+      },
+      {
+       headers: {
+        'Authorization': `Bearer ${openRouterKey}`,
+        'Content-Type': 'application/json'
+       },
+       timeout: 30000
+      }
+     );
+     this.logger.log(`[AI] Response received from OpenRouter`);
+     return response.data.choices[0].message.content;
+    } catch (openRouterError) {
+     this.logger.warn(`[AI] OpenRouter failed: ${openRouterError.message}. Falling back to OpenAI...`);
+
+     // 4. Fallback to OpenAI
+     try {
+      let openAiKey = this.configService.get<string>('OPENAI_API_KEY') || '';
+      openAiKey = openAiKey.replace(/\s+/g, ''); // Fix potentially spaced out key
+      
+      if (!openAiKey || !openAiKey.startsWith('sk-')) {
+       throw new Error('Clé API OpenAI introuvable ou invalide');
+      }
+      
+      this.logger.log(`[AI] Attempting OpenAI (gpt-4o-mini)...`);
+      const response = await axios.post(
+       'https://api.openai.com/v1/chat/completions',
+       {
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.3,
+        max_tokens: 800
+       },
+       {
+        headers: {
+         'Authorization': `Bearer ${openAiKey}`,
+         'Content-Type': 'application/json'
+        },
+        timeout: 30000
+       }
+      );
+      this.logger.log(`[AI] Response received from OpenAI`);
+      return response.data.choices[0].message.content;
+     } catch (openAiError) {
+      this.logger.error(`[AI] All APIs failed!`);
+      throw new Error(`Erreur API critique. Gemini: ${geminiError.message} | Groq: ${groqError.message} | OpenRouter: ${openRouterError.message} | OpenAI: ${openAiError.message}`);
+     }
+    }
+   }
   }
  }
 
@@ -147,14 +246,16 @@ Réponds UNIQUEMENT avec un JSON valide (sans markdown, sans backticks) dans ce 
 {
  "riskScore": <0-100>,
  "riskLevel": "<FAIBLE|MOYEN|ÉLEVÉ|CRITIQUE>",
+ "confidenceScore": <0-100>,
  "predictedCompletion": "<date ISO ou 'Dans X jours'>",
  "onTime": <true|false>,
  "recommendations": ["<conseil 1>", "<conseil 2>", "<conseil 3>"],
  "criticalPath": ["<tâche critique 1>", "<tâche critique 2>"],
  "summary": "<résumé de 2-3 phrases>"
-}`;
+}
+IMPORTANT: Calcule un indice de confiance (confidenceScore) basé sur la complétude des données du projet.`;
 
-  const raw = await this.callOllama(prompt);
+  const raw = await this.callAI(prompt);
 
   try {
    // Extract JSON from response
@@ -201,7 +302,7 @@ Réponds UNIQUEMENT avec un JSON valide (sans markdown) dans ce format:
  "generatedAt": "<date actuelle>"
 }`;
 
-  const raw = await this.callOllama(prompt);
+  const raw = await this.callAI(prompt);
 
   try {
    const jsonMatch = raw.match(/\{[\s\S]*\}/);
@@ -245,7 +346,7 @@ Analyse et génère UNIQUEMENT un JSON valide (sans markdown) avec les alertes:
 
 Génère entre 2 et 6 alertes pertinentes basées sur les données réelles du projet.`;
 
-  const raw = await this.callOllama(prompt);
+  const raw = await this.callAI(prompt);
 
   try {
    const jsonMatch = raw.match(/\{[\s\S]*\}/);
@@ -259,20 +360,10 @@ Génère entre 2 et 6 alertes pertinentes basées sur les données réelles du p
      type: 'INFO',
      title: 'Analyse IA',
      message: raw.substring(0, 200),
-     action: 'Vérifier les logs Ollama',
+     action: 'Vérifier les logs du service IA',
     },
    ];
   }
  }
 
- // ── CHECK OLLAMA STATUS ───────────────────────────────────────────
- async checkOllamaStatus(): Promise<{ online: boolean; models: string[] }> {
-  try {
-   const response = await axios.get(`${this.ollamaUrl}/api/tags`, { timeout: 5000 });
-   const models = (response.data.models || []).map((m: any) => m.name);
-   return { online: true, models };
-  } catch {
-   return { online: false, models: [] };
-  }
- }
 }

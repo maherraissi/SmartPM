@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AiService } from '../../services/ai';
 
@@ -30,7 +30,7 @@ export class AiToolsPanelComponent implements OnInit {
  alertsError = '';
  alertsLoaded = false;
 
- constructor(private aiService: AiService) {}
+ constructor(private aiService: AiService, private cdr: ChangeDetectorRef) {}
 
  ngOnInit() {}
 
@@ -46,8 +46,16 @@ export class AiToolsPanelComponent implements OnInit {
   this.simResult = null;
   this.simError = '';
   this.aiService.simulate(this.projectId).subscribe({
-   next: (data) => { this.simResult = data.simulation; this.isSimulating = false; },
-   error: (err) => { this.simError = 'Ollama inaccessible. Vérifiez qu\'Ollama tourne sur localhost:11434'; this.isSimulating = false; }
+   next: (data) => {
+    this.simResult = data.simulation;
+    this.isSimulating = false;
+    this.cdr.detectChanges();
+   },
+   error: (err) => {
+    this.simError = 'Le service IA est actuellement inaccessible. Veuillez réessayer plus tard.';
+    this.isSimulating = false;
+    this.cdr.detectChanges();
+   }
   });
  }
 
@@ -58,8 +66,16 @@ export class AiToolsPanelComponent implements OnInit {
   this.reportResult = null;
   this.reportError = '';
   this.aiService.generateReport(this.projectId).subscribe({
-   next: (data) => { this.reportResult = data.report; this.isReporting = false; },
-   error: () => { this.reportError = 'Erreur lors de la génération du rapport.'; this.isReporting = false; }
+   next: (data) => {
+    this.reportResult = data.report;
+    this.isReporting = false;
+    this.cdr.detectChanges();
+   },
+   error: () => {
+    this.reportError = 'Erreur lors de la génération du rapport.';
+    this.isReporting = false;
+    this.cdr.detectChanges();
+   }
   });
  }
 
@@ -70,12 +86,17 @@ export class AiToolsPanelComponent implements OnInit {
   this.alertsResult = [];
   this.alertsError = '';
   this.aiService.getAlerts(this.projectId).subscribe({
-   next: (data) => {
-    this.alertsResult = data.alerts || [];
-    this.isAlerting = false;
-    this.alertsLoaded = true;
-   },
-   error: () => { this.alertsError = 'Erreur Ollama pour les alertes.'; this.isAlerting = false; }
+    next: (data) => {
+     this.alertsResult = data.alerts || [];
+     this.isAlerting = false;
+     this.alertsLoaded = true;
+     this.cdr.detectChanges();
+    },
+    error: () => {
+     this.alertsError = 'Erreur du service IA pour les alertes.';
+     this.isAlerting = false;
+     this.cdr.detectChanges();
+    }
   });
  }
 

@@ -2,7 +2,7 @@
 <div class="ai-fab" (click)="toggleChat()" [class.open]="isOpen" title="SmartPM AI Assistant">
  <div class="fab-icon">{{ isOpen ? '✕' : '🤖' }}</div>
  <div class="fab-pulse" *ngIf="!isOpen"></div>
- <div class="status-dot" [class.online]="ollamaStatus === 'online'" [class.offline]="ollamaStatus === 'offline'"></div>
+ <div class="status-dot" [class.online]="aiStatus === 'online'" [class.offline]="aiStatus === 'offline'"></div>
 </div>
 
 <!-- 💬 AI Panel -->
@@ -15,11 +15,9 @@
    <div>
     <div class="ai-title">SmartPM AI</div>
     <div class="ai-subtitle">
-     <span class="status-badge" [class.online]="ollamaStatus === 'online'" [class.offline]="ollamaStatus === 'offline'">
-      {{ ollamaStatus === 'online' ? '● Ollama actif' : '● Ollama hors ligne' }}
+     <span class="status-badge" [class.online]="aiStatus === 'online'" [class.offline]="aiStatus === 'offline'">
+      {{ aiStatus === 'online' ? '● AI Cloud actif' : '● AI en démarrage' }}
      </span>
-     &nbsp;·&nbsp;
-     <span class="status-badge online">● Gemini actif</span>
     </div>
    </div>
   </div>
@@ -88,7 +86,7 @@
  <div class="panel-body" *ngIf="activePanel === 'simulator'">
   <div class="panel-intro">
    <div class="panel-icon">🔬</div>
-   <h3>Simulateur IA (Ollama)</h3>
+   <h3>Simulateur IA Cloud</h3>
    <p>Analyse complète du projet avec prédiction d'avancement et évaluation des risques.</p>
    <div class="no-project-warn" *ngIf="!projectId">
     ⚠️ Naviguez vers un projet pour activer le simulateur.

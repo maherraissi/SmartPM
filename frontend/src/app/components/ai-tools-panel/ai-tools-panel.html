@@ -5,10 +5,10 @@
    <span class="atp-icon">🔬</span>
    <div>
     <h2>SmartPM AI Tools</h2>
-    <p>Propulsé par Ollama · Analyse locale et confidentielle</p>
+    <p>Propulsé par Gemini & OpenAI · Analyse Rapide Cloud</p>
    </div>
   </div>
-  <div class="ollama-badge">● Ollama Local</div>
+  <div class="ollama-badge" style="background:#0066cc; color:white;">● AI Cloud</div>
  </div>
 
  <!-- Tabs -->
@@ -39,7 +39,7 @@
   <!-- Loading -->
   <div class="loading-state" *ngIf="isSimulating">
    <div class="ai-spinner">⚙️</div>
-   <p>Analyse en cours via Ollama...<br><small>Cela peut prendre 30-60 secondes</small></p>
+   <p>Analyse en cours via l'IA...<br><small>Cela peut prendre quelques secondes</small></p>
   </div>
 
   <!-- Results -->
@@ -103,7 +103,7 @@
 
   <div class="loading-state" *ngIf="isReporting">
    <div class="ai-spinner">📝</div>
-   <p>Rédaction du rapport en cours...<br><small>Ollama analyse et structure les données</small></p>
+   <p>Rédaction du rapport en cours...<br><small>L'IA analyse et structure les données</small></p>
   </div>
 
   <div class="report-view" *ngIf="reportResult && !isReporting">
@@ -149,7 +149,7 @@
  <div class="atp-body" *ngIf="activeTab === 'alerts'">
   <div class="loading-state" *ngIf="isAlerting">
    <div class="ai-spinner">🔍</div>
-   <p>Analyse des risques en cours...<br><small>Ollama inspecte le projet</small></p>
+   <p>Analyse des risques en cours...<br><small>L'IA inspecte le projet</small></p>
   </div>
 
   <div class="alerts-empty" *ngIf="!isAlerting && alertsResult.length === 0 && !alertsError">
