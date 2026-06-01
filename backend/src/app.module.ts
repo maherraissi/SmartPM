@@ -20,9 +20,11 @@ import { AdminModule } from './admin/admin.module';
 import { NotificationModule } from './notification/notification.module';
 import { CommentModule } from './comment/comment.module';
 import { BackupReplicationService } from './backup-replication.service';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 
 @Module({
  imports: [
+  PrometheusModule.register(),
   ConfigModule.forRoot({ isGlobal: true }),
   // ENTERPRISE SECURITY: Network Rate Limiting against DDoS & Brute-Force
   ThrottlerModule.forRoot([{

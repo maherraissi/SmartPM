@@ -67,6 +67,9 @@ import ollama
 app = FastAPI(title="SmartPM AI Service", version="2.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
+from prometheus_fastapi_instrumentator import Instrumentator
+Instrumentator().instrument(app).expose(app)
+
 # ── MODELS ───────────────────────────────────────────────────────
 class ChatMessage(BaseModel):
     role: str
