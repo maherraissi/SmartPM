@@ -325,67 +325,118 @@ async def simulate_project(request: SimulationRequest):
     status_str  = json.dumps(task_stats.get("by_status",{}), ensure_ascii=False)
     warning_str = f"\n[AVERTISSEMENT BD]: {db_error}" if db_error else ""
 
-    prompt = f"""Tu es SmartPM Simulator — moteur expert d'analyse predictive pour projets logiciels critiques.{warning_str}
+    prompt = f"""Tu es SmartPM Simulator — expert senior en gestion de projets critiques (avionique, spatial, automobile, défense).{warning_str}
 
 =================================================================
-DONNEES REELLES DU PROJET (Base MongoDB SmartPM)
+📊 DONNÉES RÉELLES DU PROJET — SmartPM MongoDB Live
 =================================================================
-Projet         : {project_info['name']}
-Description    : {project_info['description']}
-Statut actuel  : {project_info['status']}
-Avancement     : {project_info['progress']}%
-Date debut     : {project_info['startDate']}
-Date fin prev. : {project_info['endDate']}
+**Projet**         : {project_info['name']}
+**Description**    : {project_info['description']}
+**Statut actuel**  : {project_info['status']}
+**Avancement**     : {project_info['progress']}%
+**Date début**     : {project_info['startDate']}
+**Date fin prév.** : {project_info['endDate']}
 
-Equipe ({len(team_info)} membres) :
+**Équipe ({len(team_info)} membres) :**
 {team_str}
 
-Statistiques Taches ({task_stats['total']} taches) :
-  Par statut         : {status_str}
-  Taches en retard   : {overdue_str}
-  Heures estimees    : {task_stats.get('total_estimated_hours',0)}h
-  Heures reelles     : {task_stats.get('total_actual_hours',0)}h
-  Ratio efficacite   : {task_stats.get('efficiency_ratio',1.0)}
+**Statistiques Tâches ({task_stats['total']} tâches) :**
+  - Par statut           : {status_str}
+  - Tâches en retard     : {overdue_str}
+  - Heures estimées      : {task_stats.get('total_estimated_hours',0)}h
+  - Heures réelles       : {task_stats.get('total_actual_hours',0)}h
+  - Ratio d'efficacité   : {task_stats.get('efficiency_ratio',1.0)}
 
-Phases & Activites :
+**Phases & Activités :**
 {act_str}
 
 =================================================================
-INSTRUCTION / SCENARIO DE L'UTILISATEUR
+🎯 DEMANDE UTILISATEUR
 =================================================================
-Scenario / Demande : {request.scenario}
-Horizon d'analyse  : {request.duration_weeks} semaines
-Variables supp.    : {json.dumps(request.variables or {}, ensure_ascii=False)}
+Scénario     : {request.scenario}
+Horizon      : {request.duration_weeks} semaines
+Variables    : {json.dumps(request.variables or {}, ensure_ascii=False)}
 
-DIRECTIVES IMPORTANTES :
-1. Reponds **DIRECTEMENT** et **PRECISEMMENT** a la demande de l'utilisateur ci-dessus.
-2. N'utilise PAS un format de rapport standard fixe. Adapte ta reponse (tableaux, listes, bullet points) pour repondre exactement au besoin exprime dans le "Scenario / Demande".
-3. Utilise les donnees reelles du projet fournies plus haut pour justifier ton analyse (Ressources, Taches en retard, etc.).
-4. Si l'utilisateur demande un tableau, fournis un tableau MarkDown. S'il demande un planning, fournis un planning détaillé.
-5. Sois concis et va droit au but. Evite le blabla inutile pour que la reponse soit rapide a generer.
+=================================================================
+📋 FORMAT DE RAPPORT ATTENDU (OBLIGATOIRE)
+=================================================================
+Génère un rapport complet et professionnel en Markdown structuré.
+Le rapport DOIT impérativement contenir ces sections dans cet ordre :
+
+# 🔍 Rapport d'Analyse Prédictive — [Nom du projet]
+
+## 1. 📊 Tableau de Bord Exécutif
+Génère un tableau Markdown avec les KPIs clés :
+| Indicateur | Valeur | Tendance | Statut |
+(Score de risque /100, Probabilité de livraison à temps %, Indice de confiance %, Tâches critiques, etc.)
+
+## 2. ⚠️ Analyse des Risques Identifiés
+Liste détaillée de 4 à 6 risques majeurs. Pour chaque risque :
+- **Risque** : [description précise]
+- **Probabilité** : [Faible/Moyen/Élevé/Critique]
+- **Impact** : [description de l'impact]
+- **Mitigation** : [action concrète recommandée]
+
+## 3. ⚡ Chemin Critique et Goulots d'Étranglement
+Analyse du chemin critique avec les tâches/phases bloquantes.
+Indique les dépendances et les délais associés.
+
+## 4. 👥 Analyse de la Charge d'Équipe
+Évalue l'utilisation des ressources pour chaque membre de l'équipe.
+Identifie les surcharges et sous-utilisations.
+
+## 5. 💡 Recommandations Prioritaires
+Minimum 5 recommandations concrètes et actionnables, triées par priorité :
+1. **[Priorité CRITIQUE]** — Description détaillée de l'action
+2. **[Priorité HAUTE]** — ...
+...
+
+## 6. 📅 Plan d'Action sur {request.duration_weeks} Semaines
+Tableau de bord hebdomadaire avec les jalons et livrables :
+| Semaine | Objectif | Responsable | Critère de succès |
+
+## 7. 🔮 Prévisions et Scénarios
+- **Scénario Optimiste** : conditions + date de livraison prévue
+- **Scénario Nominal** : conditions + date de livraison prévue
+- **Scénario Pessimiste** : conditions + date de livraison prévue
+
+## 8. ✅ Conclusion et Score Final
+Score de risque global et recommandation de décision (GO / NO-GO / CONDITIONNEL).
+
+---
+*Rapport généré par SmartPM AI Simulator · Gemini 2.5 Flash · Données MongoDB Live*
 """
 
     model_name = request.model_name or "llama3"
 
     if model_name == "agent_2" or model_name.lower().startswith("gemini"):
         async def gemini_stream():
-            try:
-                system_instruction = (
-                    "Tu es un expert senior en gestion de projets logiciels critiques (avionique, spatial, automobile). "
-                    "Tu parles exclusivement francais. Tes rapports sont structures, precis et directement actionnables. "
-                    "Tu utilises les donnees reelles du projet pour personaliser chaque section de ton analyse."
-                )
-                full_prompt = system_instruction + "\n\n" + prompt
-                
-                generation_config = genai.types.GenerationConfig(temperature=0.25)
-                # stream=True with Gemini
-                response = await gemini_model.generate_content_async(full_prompt, generation_config=generation_config, stream=True)
-                async for chunk in response:
-                    if chunk.text:
-                        yield chunk.text
-            except Exception as e:
-                yield f"\nErreur Gemini Simulation: {str(e)}"
-        
+            import asyncio
+            max_retries = 3
+            system_instruction = (
+                "Tu es un expert senior en gestion de projets logiciels critiques (avionique, spatial, automobile). "
+                "Tu parles exclusivement francais. Tes rapports sont structures, precis et directement actionnables. "
+                "Tu utilises les donnees reelles du projet pour personaliser chaque section de ton analyse."
+            )
+            full_prompt = system_instruction + "\n\n" + prompt
+            generation_config = genai.types.GenerationConfig(temperature=0.25)
+            
+            for attempt in range(max_retries):
+                try:
+                    response = await gemini_model.generate_content_async(full_prompt, generation_config=generation_config, stream=True)
+                    async for chunk in response:
+                        if chunk.text:
+                            yield chunk.text
+                    return # Success, exit stream
+                except Exception as e:
+                    if "503" in str(e) and attempt < max_retries - 1:
+                        yield f"\n*Gemini est très sollicité. Nouvelle tentative ({attempt+1}/{max_retries})...*\n\n"
+                        await asyncio.sleep(2) # Wait 2 seconds before retry
+                        continue
+                    else:
+                        yield f"\n\n**Erreur Gemini Simulation** : {str(e)}\n\n_Le service IA Google est actuellement surchargé (High Demand). Veuillez réessayer dans quelques instants._"
+                        return
+
         return StreamingResponse(gemini_stream(), media_type="text/plain")
 
     else:

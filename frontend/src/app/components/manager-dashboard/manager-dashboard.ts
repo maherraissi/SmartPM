@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy, NgZone, ApplicationRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,6 +7,7 @@ import { AiService } from '../../services/ai';
 import { NotificationService } from '../../services/notification';
 import { AiChatbotComponent } from '../ai-chatbot/ai-chatbot';
 import { Subscription } from 'rxjs';
+import { marked } from 'marked';
 
 @Component({
   selector: 'app-manager-dashboard',
@@ -22,10 +23,15 @@ export class ManagerDashboard implements OnInit, OnDestroy {
   // Simulator state
   isSimulating = false;
   simulationData: any = null;
+  simulationStreamText = '';       // raw streamed markdown
+  simulationRenderedHtml = '';     // parsed HTML for display
   simulationError = '';
   simulationProject = '';
+  simulationScenario = 'Analyse complète : risques, retards, recommandations prioritaires et chemin critique';
+  simulationDurationWeeks = 4;
   simulationDuration = 0;
   simulationDone = false;
+  simulationWordCount = 0;
 
   // Dashboard KPIs
   activeProjects = 0;
@@ -70,8 +76,7 @@ export class ManagerDashboard implements OnInit, OnDestroy {
     private aiService: AiService,
     private notificationService: NotificationService,
     private cdr: ChangeDetectorRef,
-    private zone: NgZone,
-    private appRef: ApplicationRef
+    private zone: NgZone
   ) {}
 
   ngOnInit() {
@@ -252,34 +257,57 @@ export class ManagerDashboard implements OnInit, OnDestroy {
     this.isSimulating = true;
     this.simulationDone = false;
     this.simulationData = null;
+    this.simulationStreamText = '';
+    this.simulationRenderedHtml = '';
     this.simulationError = '';
     this.simulationDuration = 0;
+    this.simulationWordCount = 0;
     const t0 = Date.now();
 
-    this.aiService.simulate(this.simulationProject).subscribe({
-      next: (res: any) => {
-        this.zone.run(() => {
-          this.simulationData = res.simulation;
-          this.simulationDuration = Math.round((Date.now() - t0) / 1000);
-          this.isSimulating = false;
-          this.simulationDone = true;
-          
-          // Force multiple detection cycles to be sure
-          this.cdr.detectChanges();
-          setTimeout(() => {
+    try {
+      await this.aiService.simulateProject(
+        this.simulationProject,
+        this.simulationScenario,
+        this.simulationDurationWeeks,
+        (chunk: string) => {
+          this.zone.run(() => {
+            this.simulationStreamText += chunk;
+            this.simulationRenderedHtml = this._renderMarkdown(this.simulationStreamText);
+            this.simulationWordCount = this.simulationStreamText.split(/\s+/).filter(Boolean).length;
             this.cdr.detectChanges();
-            this.appRef.tick();
-          }, 0);
-        });
-      },
-      error: () => {
-        this.zone.run(() => {
-          this.simulationError = '❌ Tous les services IA sont indisponibles. Vérifiez vos clés API.';
-          this.isSimulating = false;
-          this.cdr.detectChanges();
-        });
-      }
-    });
+          });
+        },
+        'agent_2' // Gemini 2.5 Flash
+      );
+      this.zone.run(() => {
+        this.simulationDuration = Math.round((Date.now() - t0) / 1000);
+        this.isSimulating = false;
+        this.simulationDone = true;
+        this.simulationData = { _raw: this.simulationStreamText }; // mark as done
+        this.cdr.detectChanges();
+      });
+    } catch (e: any) {
+      this.zone.run(() => {
+        this.simulationError = '❌ Le service IA est indisponible. Vérifiez que FastAPI tourne sur le port 8000.';
+        this.isSimulating = false;
+        this.cdr.detectChanges();
+      });
+    }
+  }
+
+  /** Minimal markdown → HTML renderer (no external lib needed) */
+  private _renderMarkdown(md: string): string {
+    // We use marked for robust parsing of tables, lists, etc.
+    try {
+      marked.setOptions({
+        gfm: true,
+        breaks: true
+      });
+      return marked.parse(md) as string;
+    } catch (e) {
+      console.error("Marked parsing error:", e);
+      return md;
+    }
   }
 
   getRiskColor(level: string): string {
@@ -295,10 +323,20 @@ export class ManagerDashboard implements OnInit, OnDestroy {
   }
 
   copyResults() {
-    if (!this.simulationData) return;
-    const text = JSON.stringify(this.simulationData, null, 2);
+    const text = this.simulationStreamText || JSON.stringify(this.simulationData, null, 2);
+    if (!text) return;
     navigator.clipboard?.writeText(text)
-      .then(() => this.showAlert('✅ Copié', 'Rapport copié dans le presse-papier.'));
+      .then(() => this.showAlert('✅ Copié', 'Rapport Markdown copié dans le presse-papier.'));
+  }
+
+  resetSimulationFull() {
+    this.simulationData = null;
+    this.simulationStreamText = '';
+    this.simulationRenderedHtml = '';
+    this.simulationDone = false;
+    this.simulationError = '';
+    this.simulationDuration = 0;
+    this.simulationWordCount = 0;
   }
 
   logout() {

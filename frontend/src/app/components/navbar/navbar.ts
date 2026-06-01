@@ -20,7 +20,9 @@ export class Navbar implements OnInit {
   const token = localStorage.getItem('token');
   if (token) {
    try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    let b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+   b64 = b64.padEnd(b64.length + (4 - b64.length % 4) % 4, '=');
+   const payload = JSON.parse(atob(b64));
     this.userRole = payload.role || '';
     // Extract name from email if no firstName in token
     const emailUser = payload.email?.split('@')[0] || 'Utilisateur';

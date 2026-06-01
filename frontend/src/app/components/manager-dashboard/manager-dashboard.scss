@@ -840,3 +840,128 @@ $purple:       #8b5cf6;
   50%       { box-shadow: 0 0 0 6px rgba($primary,.22); }
 }
 
+// ── Duration Picker ───────────────────────────────────────────────
+.duration-picker {
+  display: flex; gap: 8px;
+  .dur-btn {
+    flex: 1; padding: 9px 6px; border-radius: 10px; font-size: .82rem;
+    font-weight: 800; font-family: 'Outfit', sans-serif;
+    background: #f8fafc; border: 1.5px solid $border; color: $muted;
+    cursor: pointer; transition: .2s;
+    &:hover:not(:disabled) { background: #eff6ff; border-color: $blue; color: $blue; }
+    &.active { background: rgba($blue,.12); border-color: $blue; color: $blue; }
+    &:disabled { opacity: .5; cursor: not-allowed; }
+  }
+}
+
+// ── Sim Stats Bar ─────────────────────────────────────────────────
+.sim-stats-bar {
+  display: flex; gap: 0; border: 1px solid $border; border-radius: 14px; overflow: hidden;
+  margin-top: 4px;
+  .ss-item {
+    flex: 1; padding: 10px 8px; text-align: center; background: #f8fafc;
+    border-right: 1px solid $border;
+    &:last-child { border-right: none; }
+    .ss-val { display: block; font-size: 1rem; font-weight: 900; color: $primary-dark; }
+    .ss-lbl { display: block; font-size: .65rem; font-weight: 800; color: $muted; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+  }
+}
+
+// ── Streaming Markdown Container ──────────────────────────────────
+.sim-stream-container {
+  display: flex; flex-direction: column; min-height: 600px; animation: fadeInUp .3s ease;
+
+  .sim-stream-topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 22px; border-bottom: 1px solid $border;
+    background: rgba(248,250,252,.9); flex-shrink: 0;
+
+    .sst-left { display: flex; align-items: center; gap: 10px; }
+    .sst-status {
+      display: flex; align-items: center; gap: 8px;
+      font-size: .85rem; font-weight: 700; color: $muted;
+      &.streaming { color: $blue; }
+    }
+    .sst-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+      &.blink { background: $blue; animation: pulse 1s infinite; }
+      &.done  { background: $primary; }
+    }
+    .sst-actions { display: flex; gap: 8px; }
+    .sst-btn {
+      background: rgba($primary,.1); color: $primary-dark; border: 1px solid rgba($primary,.2);
+      padding: 6px 14px; border-radius: 9px; font-size: .78rem; font-weight: 800;
+      cursor: pointer; font-family: 'Outfit', sans-serif; transition: .2s;
+      &:hover { background: $primary; color: #fff; }
+    }
+  }
+
+  .sim-markdown-body {
+    flex: 1; padding: 28px 32px; overflow-y: auto; line-height: 1.8;
+    font-size: .95rem; color: $text; font-family: 'Outfit', sans-serif;
+
+    // Standard Markdown styles via ::ng-deep to apply to injected innerHTML
+    ::ng-deep {
+      h1 { font-size: 1.7rem; font-weight: 900; color: $primary-dark; margin: 24px 0 12px; padding-bottom: 10px; border-bottom: 2px solid $primary-light; }
+      h2 { font-size: 1.3rem; font-weight: 800; color: $primary-dark; margin: 20px 0 10px; padding-left: 12px; border-left: 4px solid $primary; }
+      h3 { font-size: 1.1rem; font-weight: 800; color: $text; margin: 16px 0 8px; }
+      p  { margin: 8px 0; line-height: 1.8; }
+      hr { border: none; border-top: 2px solid $border; margin: 20px 0; }
+      ul { padding-left: 20px; margin: 8px 0; list-style: none;
+        li { position: relative; padding-left: 16px; margin-bottom: 6px;
+          &::before { content: '▸'; position: absolute; left: 0; color: $primary; font-weight: 800; }
+        }
+      }
+      ol { padding-left: 20px; margin: 8px 0; font-weight: 600; }
+      
+      table {
+        width: 100%; border-collapse: collapse; margin: 16px 0; border-radius: 12px; overflow: hidden;
+        // Make the table look like a bordered rounded box
+        border-style: hidden; box-shadow: 0 0 0 1px $border;
+        th, td { padding: 10px 14px; border: 1px solid $border; font-size: .88rem; text-align: left; }
+        th { font-weight: 800; background: linear-gradient(90deg, $primary-dark, #063c2c); color: #fff; }
+        tbody tr:hover td { background: #f0fdf4; }
+        tbody tr td:first-child { font-weight: 700; background: #f8fafc; }
+      }
+
+      pre {
+        background: #0f172a; color: #e2e8f0; padding: 16px 20px; border-radius: 12px;
+        font-size: .85rem; overflow-x: auto; margin: 12px 0; line-height: 1.6;
+        font-family: 'Fira Code', 'Courier New', monospace;
+        code { background: transparent; padding: 0; color: inherit; }
+      }
+      code {
+        background: rgba($primary,.1); color: $primary-dark; padding: 2px 6px;
+        border-radius: 5px; font-size: .88em; font-weight: 700;
+        font-family: 'Fira Code', 'Courier New', monospace;
+      }
+      blockquote {
+        margin: 16px 0; padding: 10px 20px; border-left: 4px solid $primary; background: rgba($primary,.05); border-radius: 0 8px 8px 0; font-style: italic; color: $muted;
+      }
+    }
+  }
+
+  .sim-cursor {
+    display: inline-block; font-size: 1.2rem; color: $blue;
+    animation: blink .7s step-end infinite;
+    padding-left: 28px;
+  }
+}
+
+// ── Empty sim fix (used outside results-body too) ─────────────────
+.empty-sim {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 450px; text-align: center; color: $muted; padding: 40px;
+  .empty-sim-icon { font-size: 4rem; margin-bottom: 20px; opacity: .6; }
+  h3 { font-size: 1.3rem; font-weight: 900; color: $text; margin-bottom: 10px; }
+  p  { font-size: .95rem; max-width: 380px; margin-bottom: 28px; }
+  .empty-hints {
+    display: flex; flex-direction: column; gap: 10px; text-align: left; width: 100%; max-width: 360px;
+    .hint-item {
+      background: #f8fafc; border: 1px solid $border; border-radius: 11px;
+      padding: 11px 16px; font-size: .85rem; font-weight: 700; color: $text;
+    }
+  }
+}
+
+

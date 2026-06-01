@@ -487,7 +487,9 @@ body{font-family:'Inter',sans-serif;background:#f0fdf4;display:flex;align-items:
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        let b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+   b64 = b64.padEnd(b64.length + (4 - b64.length % 4) % 4, '=');
+   const payload = JSON.parse(atob(b64));
         const emailUser = payload.email?.split('@')[0] || 'Member';
         this.userName = emailUser.charAt(0).toUpperCase() + emailUser.slice(1);
       } catch {}

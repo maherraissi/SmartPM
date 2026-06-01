@@ -9,7 +9,7 @@ import { filter } from 'rxjs/operators';
  selector: 'app-root',
  imports: [RouterOutlet, Navbar, Sidebar, CommonModule],
  templateUrl: './app.html',
- styleUrl: './app.scss'
+ styleUrls: ['./app.scss']
 })
 export class App {
  protected readonly title = signal('SmartPM');
@@ -34,39 +34,6 @@ export class App {
     document.body.classList.remove('no-shell');
    }
 
-   // CAPTURE TOKEN FROM URL (FOR OAUTH REDIRECTS)
-   // STRATEGIC OAUTH TOKEN CAPTURE
-   const currentUrl = window.location.origin + event.urlAfterRedirects;
-   const searchUrl = new URL(currentUrl);
-   const token = searchUrl.searchParams.get('token');
-
-   if (token) {
-    console.log('✅ OAuth Token detected, authorizing search path...');
-    localStorage.setItem('token', token);
-
-    try {
-     // Robust Base64 Decoding for JWT
-     const base64Url = token.split('.')[1];
-     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-     const jsonPayload = decodeURIComponent(atob(base64).split('').map((c) => {
-       return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-     }).join(''));
-
-     const payload = JSON.parse(jsonPayload);
-     const roleRoutes: Record<string, string> = { 
-      ADMIN: '/admin', 
-      MANAGER: '/manager', 
-      MEMBER: '/member' 
-     };
-
-     const target = roleRoutes[payload.role] || '/member';
-     console.log('🎯 Redirecting to:', target);
-     this.router.navigateByUrl(target, { replaceUrl: true });
-    } catch (e) {
-     console.error('❌ Token decoding error:', e);
-     this.router.navigate(['/login']);
-    }
-   }
   });
  }
 }

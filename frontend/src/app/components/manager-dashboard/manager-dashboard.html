@@ -295,11 +295,11 @@
             <div class="sim-hero-icon">🧪</div>
             <div>
               <h2 class="sim-hero-title">SmartPM AI Simulator</h2>
-              <p class="sim-hero-sub">Analyse prédictive via <strong>Cloud AI Multi-Engine</strong> · Données réelles MongoDB</p>
+              <p class="sim-hero-sub">Analyse prédictive via <strong>Gemini 2.5 Flash</strong> · Données réelles MongoDB en temps réel</p>
             </div>
           </div>
           <div class="sim-hero-badges">
-            <span class="sim-badge-pill blue">✨ Gemini 2.0</span>
+            <span class="sim-badge-pill blue">✨ Gemini 2.5</span>
             <span class="sim-badge-pill purple">⚡ Groq Llama 3</span>
             <span class="sim-badge-pill green">📡 DB Live</span>
           </div>
@@ -324,23 +324,39 @@
               </div>
             </div>
 
-            <!-- Project Preview Card (New) -->
+            <!-- Scenario Input -->
+            <div class="field-group">
+              <label>Scénario d'analyse</label>
+              <textarea
+                class="sim-textarea"
+                [(ngModel)]="simulationScenario"
+                [disabled]="isSimulating"
+                rows="4"
+                placeholder="Ex: Analyse complète des risques, chemin critique, recommandations...">
+              </textarea>
+            </div>
+
+            <!-- Duration -->
+            <div class="field-group">
+              <label>Horizon d'analyse</label>
+              <div class="duration-picker">
+                <button *ngFor="let w of [2, 4, 8, 12]"
+                  class="dur-btn"
+                  [class.active]="simulationDurationWeeks === w"
+                  [disabled]="isSimulating"
+                  (click)="simulationDurationWeeks = w">
+                  {{ w }}S
+                </button>
+              </div>
+            </div>
+
+            <!-- Project Preview Card -->
             <div class="sim-project-preview" *ngIf="simulationProject && !isSimulating">
               <div class="preview-header">
                 <span class="preview-icon">📂</span>
                 <div class="preview-info">
                   <div class="preview-name">{{ getProjectName(simulationProject) }}</div>
-                  <div class="preview-meta">Données opérationnelles prêtes</div>
-                </div>
-              </div>
-              <div class="preview-stats">
-                <div class="ps-item">
-                  <span class="ps-label">Statut</span>
-                  <span class="ps-val badge">Actif</span>
-                </div>
-                <div class="ps-item">
-                  <span class="ps-label">Intégrité</span>
-                  <span class="ps-val" style="color: #10b981;">100%</span>
+                  <div class="preview-meta">Données opérationnelles prêtes · {{ simulationDurationWeeks }} semaines</div>
                 </div>
               </div>
             </div>
@@ -349,27 +365,34 @@
             <button class="btn-simulate" (click)="startSimulation()" [disabled]="isSimulating || !simulationProject">
               <span *ngIf="!isSimulating">🚀 Lancer la Simulation</span>
               <span *ngIf="isSimulating" class="btn-loading">
-                <span class="spinner"></span> Analyse IA en cours...
+                <span class="spinner"></span> Gemini analyse...
               </span>
             </button>
-            <button class="btn-reset" *ngIf="simulationDone || simulationData" (click)="resetSimulation()">
+            <button class="btn-reset" *ngIf="simulationDone || simulationStreamText" (click)="resetSimulationFull()">
               🔄 Réinitialiser
             </button>
+
+            <!-- Stats bar when done -->
+            <div class="sim-stats-bar" *ngIf="simulationDone">
+              <div class="ss-item"><span class="ss-val">{{ simulationDuration }}s</span><span class="ss-lbl">Durée</span></div>
+              <div class="ss-item"><span class="ss-val">{{ simulationWordCount }}</span><span class="ss-lbl">Mots</span></div>
+              <div class="ss-item"><span class="ss-val">Gemini</span><span class="ss-lbl">Moteur</span></div>
+            </div>
           </div>
 
           <!-- ── RESULTS PANEL ── -->
           <div class="sim-results-panel">
 
-            <!-- Loading State -->
-            <div class="sim-loading-state" *ngIf="isSimulating">
+            <!-- Loading State with streaming preview -->
+            <div class="sim-loading-state" *ngIf="isSimulating && !simulationStreamText">
               <div class="sim-ai-pulse">
                 <div class="pulse-ring"></div>
                 <div class="pulse-core">🤖</div>
               </div>
               <h3>Analyse en cours...</h3>
-              <p>Les moteurs IA analysent votre projet en temps réel</p>
+              <p>Gemini 2.5 Flash analyse votre projet en temps réel</p>
               <div class="engine-chain">
-                <span class="engine-pill active">Gemini 2.0</span>
+                <span class="engine-pill active">Gemini 2.5</span>
                 <span class="chain-arrow">→</span>
                 <span class="engine-pill">Groq</span>
                 <span class="chain-arrow">→</span>
@@ -385,78 +408,40 @@
             </div>
 
             <!-- Empty State -->
-            <div class="empty-sim" *ngIf="!simulationData && !isSimulating && !simulationError">
+            <div class="empty-sim" *ngIf="!simulationStreamText && !isSimulating && !simulationError">
               <div class="empty-sim-icon">🔬</div>
               <h3>Prêt pour la simulation</h3>
               <p>Sélectionnez un projet, configurez votre scénario et lancez l'analyse prédictive.</p>
               <div class="empty-hints">
-                <div class="hint-item">✨ Gemini 2.0 Flash · Groq Llama 3 · OpenRouter Mistral</div>
+                <div class="hint-item">✨ Gemini 2.5 Flash · Groq Llama 3 · OpenRouter Mistral</div>
                 <div class="hint-item">📡 Accès direct à la base de données MongoDB</div>
-                <div class="hint-item">📊 Rapport structuré avec Score de Risque</div>
+                <div class="hint-item">📊 Rapport Markdown structuré et professionnel</div>
                 <div class="hint-item">💡 Recommandations actionnables immédiates</div>
               </div>
             </div>
 
-            <!-- ── PROFESSIONAL RESULTS CARDS ── -->
-            <div class="sim-pro-results" *ngIf="simulationData && !isSimulating">
+            <!-- ── STREAMING MARKDOWN REPORT ── -->
+            <div class="sim-stream-container" *ngIf="simulationStreamText">
 
-              <!-- Done banner -->
-              <div class="done-banner-pro">
-                <div class="db-left">
-                  <span class="db-check">✅</span>
-                  <span>Analyse terminée en {{ simulationDuration }}s · <strong>Cloud AI Multi-Engine</strong></span>
+              <!-- Top bar -->
+              <div class="sim-stream-topbar">
+                <div class="sst-left">
+                  <span class="sst-status" [class.streaming]="isSimulating">
+                    <span *ngIf="isSimulating" class="sst-dot blink"></span>
+                    <span *ngIf="!isSimulating" class="sst-dot done"></span>
+                    {{ isSimulating ? 'Génération en cours...' : ('✅ Rapport complet · ' + simulationDuration + 's · ' + simulationWordCount + ' mots') }}
+                  </span>
                 </div>
-                <button class="rsb-btn" (click)="copyResults()">📋 Copier JSON</button>
-              </div>
-
-              <!-- Row 1: Risk Score + Confidence Index -->
-              <div class="result-top-row">
-                <!-- Risk Score Card -->
-                <div class="risk-score-card" [style.border-color]="getRiskColor(simulationData.riskLevel)">
-                  <div class="rsc-label">Score de Risque</div>
-                  <div class="rsc-value" [style.color]="getRiskColor(simulationData.riskLevel)">
-                    {{ simulationData.riskScore }}<small>/100</small>
-                  </div>
-                  <div class="rsc-badge"
-                    [style.background]="getRiskColor(simulationData.riskLevel) + '20'"
-                    [style.color]="getRiskColor(simulationData.riskLevel)"
-                    [style.border-color]="getRiskColor(simulationData.riskLevel)">
-                    {{ simulationData.riskLevel }}
-                  </div>
-                </div>
-
-                <!-- Confidence Index Card -->
-                <div class="delivery-card">
-                  <div class="dc-icon">🎯</div>
-                  <div class="dc-label">Indice de Confiance</div>
-                  <div class="dc-value">{{ simulationData.confidenceScore || 95 }}%</div>
-                  <div class="dc-status">Analyse Multi-Engine</div>
+                <div class="sst-actions">
+                  <button class="sst-btn" (click)="copyResults()">📋 Copier Markdown</button>
                 </div>
               </div>
 
-              <!-- Summary -->
-              <div class="result-summary-box">
-                <div class="rsb-label">📋 Résumé Exécutif IA</div>
-                <p class="rsb-text">{{ simulationData.summary }}</p>
-              </div>
+              <!-- Markdown rendered content -->
+              <div class="sim-markdown-body" [innerHTML]="simulationRenderedHtml"></div>
 
-              <!-- Recommendations -->
-              <div class="result-list-section" *ngIf="simulationData.recommendations?.length">
-                <div class="rls-title">💡 Recommandations Prioritaires</div>
-                <div class="rls-item rec" *ngFor="let r of simulationData.recommendations; let i = index">
-                  <span class="rls-num">{{ i + 1 }}</span>
-                  <span>{{ r }}</span>
-                </div>
-              </div>
-
-              <!-- Critical Path -->
-              <div class="result-list-section" *ngIf="simulationData.criticalPath?.length">
-                <div class="rls-title">⚡ Chemin Critique</div>
-                <div class="rls-item crit" *ngFor="let c of simulationData.criticalPath">
-                  <span class="rls-dot">→</span>
-                  <span>{{ c }}</span>
-                </div>
-              </div>
+              <!-- Cursor blink while streaming -->
+              <span class="sim-cursor" *ngIf="isSimulating">▌</span>
             </div>
 
           </div>

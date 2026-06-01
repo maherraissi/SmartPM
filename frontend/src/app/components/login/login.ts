@@ -1,7 +1,7 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 
 @Component({
  selector: 'app-login',
@@ -10,14 +10,43 @@ import { Router, RouterModule } from '@angular/router';
  templateUrl: './login.html',
  styleUrls: ['./login.scss']
 })
-export class Login {
+export class Login implements OnInit {
  loginData = { email: '', password: '' };
  isLoading = false;
  errorMessage = '';
  showPassword = false;
  showForgot = false;
 
- constructor(private router: Router, private cdr: ChangeDetectorRef) {}
+ constructor(private router: Router, private route: ActivatedRoute, private cdr: ChangeDetectorRef) {}
+
+ ngOnInit() {
+  this.route.queryParams.subscribe(params => {
+   const token = params['token'];
+   if (token) {
+    this.processTokenAndRedirect(token);
+   }
+  });
+ }
+
+ private processTokenAndRedirect(token: string) {
+  try {
+   localStorage.setItem('token', token);
+   let b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+   b64 = b64.padEnd(b64.length + (4 - b64.length % 4) % 4, '=');
+   const payload = JSON.parse(atob(b64));
+   const role: string = payload.role || 'MEMBER';
+   const routes: Record<string, string> = {
+    ADMIN: '/admin',
+    MANAGER: '/manager',
+    MEMBER: '/member'
+   };
+   this.router.navigate([routes[role.toUpperCase()] || '/member']);
+  } catch (err) {
+   console.error("Token parse error:", err);
+   this.errorMessage = '❌ Erreur de connexion (Token invalide).';
+   this.cdr.detectChanges();
+  }
+ }
 
  async onSubmit() {
   this.isLoading = true;
@@ -36,15 +65,7 @@ export class Login {
 
    const data = await res.json();
    if (data.access_token) {
-    localStorage.setItem('token', data.access_token);
-    const payload = JSON.parse(atob(data.access_token.split('.')[1]));
-    const role: string = payload.role || 'MEMBER';
-    const routes: Record<string, string> = {
-     ADMIN: '/admin',
-     MANAGER: '/manager',
-     MEMBER: '/member'
-    };
-    this.router.navigate([routes[role] || '/member']);
+    this.processTokenAndRedirect(data.access_token);
    } else {
     this.errorMessage = '❌ Email ou mot de passe incorrect. Vérifiez vos identifiants.';
     this.cdr.detectChanges();
