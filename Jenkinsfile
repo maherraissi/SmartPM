@@ -7,17 +7,22 @@ pipeline {
             spec:
               containers:
               - name: docker
-                image: docker:dind
-                securityContext:
-                  privileged: true
-                env:
-                - name: DOCKER_TLS_CERTDIR
-                  value: ""
+                image: docker:latest
+                command:
+                - cat
+                tty: true
+                volumeMounts:
+                - mountPath: /var/run/docker.sock
+                  name: docker-sock
               - name: kubectl
                 image: bitnami/kubectl:latest
                 command:
                 - cat
                 tty: true
+              volumes:
+              - name: docker-sock
+                hostPath:
+                  path: /var/run/docker.sock
             '''
         }
     }
