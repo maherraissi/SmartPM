@@ -15,7 +15,7 @@ pipeline {
                 - mountPath: /var/run/docker.sock
                   name: docker-sock
               - name: kubectl
-                image: roffe/kubectl:v1.31.0
+                image: dtzar/helm-kubectl:3.16.2
                 command:
                 - cat
                 tty: true
