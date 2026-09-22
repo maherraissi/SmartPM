@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserService, User } from '../../services/user';
+import { environment } from '../../../environments/environment';
 import { ProjectService } from '../../services/project';
 
 @Component({
@@ -262,7 +263,7 @@ export class ProjectWizard implements OnInit {
 
   console.log('[DEPLOY] Payload envoyé:', JSON.stringify(payload, null, 2));
 
-  const endpoint = this.isEditMode ? `http://localhost:3000/projects/${this.editingProjectId}` : 'http://localhost:3000/projects/deploy';
+  const endpoint = this.isEditMode ? `${environment.apiUrl}/projects/${this.editingProjectId}` : `${environment.apiUrl}/projects/deploy`;
   const method = this.isEditMode ? 'POST' : 'POST'; // Backend controller has @Post(':id') for update too
 
   try {

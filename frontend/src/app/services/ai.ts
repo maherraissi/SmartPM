@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { timeout } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -11,8 +12,8 @@ export interface ChatMessage {
 
 @Injectable({ providedIn: 'root' })
 export class AiService {
-  private apiUrl  = 'http://localhost:3000/ai';  // NestJS backend
-  private chatUrl = 'http://localhost:8000';      // FastAPI AI service
+  private apiUrl  = `${environment.apiUrl}/ai`;  // NestJS backend
+  private chatUrl = environment.aiUrl;            // FastAPI AI service
 
   constructor(private http: HttpClient) {}
 
@@ -35,13 +36,37 @@ export class AiService {
     context = '',
     onChunk: (text: string) => void
   ): Promise<void> {
-    const response = await fetch(`${this.chatUrl}/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, history, context })
-    });
-    if (!response.body) return;
-    await this._readStream(response.body.getReader(), onChunk);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout
+
+    try {
+      const response = await fetch(`${this.chatUrl}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, history, context }),
+        signal: controller.signal
+      });
+
+      if (!response.ok) {
+        throw new Error(`Serveur AI a retourné une erreur: ${response.status} ${response.statusText}`);
+      }
+
+      if (!response.body) {
+        throw new Error('Pas de réponse du serveur AI.');
+      }
+
+      await this._readStream(response.body.getReader(), onChunk);
+    } catch (err: any) {
+      if (err?.name === 'AbortError') {
+        throw new Error('Timeout - La requête AI a pris trop de temps.');
+      }
+      if (err?.message?.includes('fetch') || err?.message?.includes('Failed to fetch') || err?.message?.includes('NetworkError')) {
+        throw new Error('Connexion refusée - Vérifiez que le service AI tourne sur le port 8000.');
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
 
   // ── Project Simulation (Cloud AI) ───────────────────────────────
@@ -52,18 +77,36 @@ export class AiService {
     onChunk: (text: string) => void,
     modelName = 'gemini'
   ): Promise<void> {
-    const response = await fetch(`${this.chatUrl}/simulate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        project_id:     projectId,
-        scenario:       scenario,
-        duration_weeks: durationWeeks,
-        model_name:     modelName
-      })
-    });
-    if (!response.body) throw new Error('No response body');
-    await this._readStream(response.body.getReader(), onChunk);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 min timeout for simulation
+
+    try {
+      const response = await fetch(`${this.chatUrl}/simulate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          project_id:     projectId,
+          scenario:       scenario,
+          duration_weeks: durationWeeks,
+          model_name:     modelName
+        }),
+        signal: controller.signal
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur serveur AI: ${response.status} ${response.statusText}`);
+      }
+
+      if (!response.body) throw new Error('No response body');
+      await this._readStream(response.body.getReader(), onChunk);
+    } catch (err: any) {
+      if (err?.name === 'AbortError') {
+        throw new Error('Timeout - La simulation a pris trop de temps (>2 min).');
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
 
   // ── Legacy NestJS endpoints ───────────────────────────────────

@@ -26,8 +26,40 @@ spec:
         env:
         - name: MONGODB_URI
           value: "mongodb://smartpm-mongo:27017/smartpm"
+        - name: PORT
+          value: "3000"
+        - name: DB_ENV
+          value: "local"
+        - name: MONGODB_LOCAL_URI
+          value: "mongodb://smartpm-mongo:27017/smartpm"
+        - name: MONGODB_CLOUD_URI
+          value: "mongodb+srv://raissimaher:melek@cluster0.ihmh6wl.mongodb.net/smartpm?retryWrites=true&w=majority"
         - name: JWT_SECRET
-          value: "votre_super_secret_jwt"
+          valueFrom:
+            secretKeyRef:
+              name: smartpm-secrets
+              key: JWT_SECRET
+        - name: FRONTEND_URL
+          value: "http://localhost:30080"
+        - name: GOOGLE_CALLBACK_URL
+          value: "http://localhost:30000/auth/google/callback"
+        - name: GITHUB_CALLBACK_URL
+          value: "http://localhost:30000/auth/github/callback"
+        - name: GOOGLE_CLIENT_ID
+          value: "1025289153544-l582adrtndvpqopn48mrf642i42gkml1.apps.googleusercontent.com"
+        - name: GOOGLE_CLIENT_SECRET
+          value: "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"
+        - name: GITHUB_CLIENT_ID
+          value: "Ov23lifS8DEmF8XZz77g"
+        - name: GITHUB_CLIENT_SECRET
+          value: "cd309f996b67f7c75d87eeeee6c0b81e69f755ca"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
 ---
 apiVersion: v1
 kind: Service

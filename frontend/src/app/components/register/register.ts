@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
  selector: 'app-register',
@@ -19,7 +20,7 @@ export class Register {
  async onSubmit() {
   this.isLoading = true;
   try {
-   const res = await fetch('http://localhost:3000/auth/register', {
+   const res = await fetch(`${environment.apiUrl}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ...this.registerData, role: 'MEMBER' })
@@ -39,10 +40,10 @@ export class Register {
  }
 
  registerWithGoogle() {
-  window.location.href = 'http://localhost:3000/auth/google';
+  window.location.href = `${environment.apiUrl}/auth/google`;
  }
 
  registerWithGithub() {
-  window.location.href = 'http://localhost:3000/auth/github';
+  window.location.href = `${environment.apiUrl}/auth/github`;
  }
 }

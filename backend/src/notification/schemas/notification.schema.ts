@@ -3,25 +3,35 @@ import { Document, Types } from 'mongoose';
 
 export type NotificationDocument = Notification & Document;
 
+/**
+ * Notification (Notif) — relation User (1) → Notif (*)
+ * Un User (Manager ou Membre) reçoit des notifications.
+ * Le Manager peut déclencher des notifications vers les Membres.
+ */
 @Schema({ timestamps: true })
 export class Notification {
- @Prop({ type: Types.ObjectId, ref: 'User', required: true })
- recipientId: Types.ObjectId | string;
+  // Destinataire de la notification
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  recipientId: Types.ObjectId | string;
 
- @Prop({ required: true })
- title: string;
+  // Expéditeur (Manager ou système — null = système automatique)
+  @Prop({ type: Types.ObjectId, ref: 'User', default: null })
+  senderId: Types.ObjectId | string | null;
 
- @Prop({ required: true })
- message: string;
+  @Prop({ required: true })
+  title: string;
 
- @Prop({ default: false })
- isRead: boolean;
+  @Prop({ required: true })
+  message: string;
 
- @Prop()
- type: string; // 'TASK_ASSIGNED', 'REVIEW_REQUIRED', 'TASK_CLOSED'
+  @Prop({ default: false })
+  isRead: boolean;
 
- @Prop()
- link?: string; // To jump to the specific page
+  @Prop()
+  type: string; // 'TASK_ASSIGNED', 'REVIEW_REQUIRED', 'TASK_CLOSED', 'DEMANDE_APPROUVEE'
+
+  @Prop()
+  link?: string; // Pour naviguer vers la page concernée
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification);

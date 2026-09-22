@@ -25,17 +25,35 @@ spec:
         - containerPort: 8000
         env:
         - name: GEMINI_API_KEY
-          value: "votre_cle_api_ici"
+          valueFrom:
+            secretKeyRef:
+              name: smartpm-secrets
+              key: GEMINI_API_KEY
         - name: MONGODB_URI
           value: "mongodb://smartpm-mongo:27017/smartpm"
+        - name: MONGODB_CLOUD_URI
+          value: "mongodb+srv://raissimaher:melek@cluster0.ihmh6wl.mongodb.net/smartpm?retryWrites=true&w=majority"
+        - name: GROQ_API_KEY
+          value: "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"
+        - name: OPENROUTER_API_KEY
+          value: "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"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "300m"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: smartpm-ai
 spec:
+  type: LoadBalancer
   ports:
   - port: 8000
     targetPort: 8000
+    nodePort: 30800
   selector:
     app: ai

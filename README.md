@@ -60,6 +60,63 @@ Dès le démarrage de cet éco-système, le Backend va interroger MongoDB Atlas 
 
 ---
 
+## 🐳 Déploiement avec Kubernetes (Minikube)
+
+Si vous souhaitez déployer l'application sur un cluster Kubernetes local (Minikube), exécutez ces commandes **une par une** dans votre terminal Powershell. Cela vous permettra de voir exactement où se trouve l'erreur (le cas échéant) :
+
+### 1. Démarrer Minikube
+Démarrez Minikube (en utilisant l'image de base pour éviter les blocages) :
+```powershell
+minikube start --base-image="gcr.io/k8s-minikube/kicbase:v0.0.45@sha256:41454ef774d0"
+```
+
+### 2. Connecter Docker à Minikube
+Configurez votre terminal pour que les images Docker soient construites **directement à l'intérieur** du cluster Minikube :
+```powershell
+& minikube -p minikube docker-env --shell powershell | Invoke-Expression
+```
+
+### 3. Construire les images Docker
+Construisez les images pour chaque service. *(Cette étape peut prendre du temps)* :
+```powershell
+docker build -t smartpm-backend ./backend
+docker build -t smartpm-ai ./ai
+docker build -t smartpm-frontend ./frontend
+```
+*(Note : Il n'est pas nécessaire de construire MongoDB, il sera téléchargé automatiquement).*
+
+### 4. Déployer les configurations Kubernetes
+Appliquez les fichiers `.yaml` pour créer l'infrastructure :
+```powershell
+kubectl apply -f k8s/secrets.yaml
+kubectl apply -f k8s/mongo.yaml
+kubectl apply -f k8s/backend.yaml
+kubectl apply -f k8s/ai.yaml
+kubectl apply -f k8s/frontend.yaml
+kubectl apply -f k8s/prometheus.yaml
+kubectl apply -f k8s/grafana.yaml
+```
+
+### 5. Vérifier et Ouvrir l'application
+Vérifiez que tous les pods sont en statut "Running" avec cette commande :
+```powershell
+kubectl get pods
+```
+
+Une fois que tout est prêt, lancez les interfaces dans votre navigateur :
+```powershell
+# Ouvrir le Frontend (Application Principale)
+minikube service smartpm-frontend
+
+# Ouvrir Prometheus (Monitoring)
+minikube service prometheus
+
+# Ouvrir Grafana (Dashboards)
+minikube service grafana
+```
+
+---
+
 ## 🧠 L'Écosystème Intelligence Artificielle (RAG + Agents)
 Le dossier `/ai` contient un service local FastAPI muni de **ChromaDB**.
 L'avantage de cette Vector Database embarquée est d'offrir une sécurisation totale (Data Privacy) très prisée dans le milieu Aéronautique. ChromaDB ingère vos manuels et guidelines internes. Ensuite, les 3 Agents collaborent :

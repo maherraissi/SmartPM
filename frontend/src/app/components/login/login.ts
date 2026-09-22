@@ -2,6 +2,7 @@ import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
  selector: 'app-login',
@@ -31,6 +32,7 @@ export class Login implements OnInit {
  private processTokenAndRedirect(token: string) {
   try {
    localStorage.setItem('token', token);
+   localStorage.removeItem('smartpm_admin_tab'); // Force default tab on fresh login
    let b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
    b64 = b64.padEnd(b64.length + (4 - b64.length % 4) % 4, '=');
    const payload = JSON.parse(atob(b64));
@@ -55,7 +57,7 @@ export class Login implements OnInit {
    const controller = new AbortController();
    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
 
-   const res = await fetch('http://localhost:3000/auth/login', {
+   const res = await fetch(`${environment.apiUrl}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(this.loginData),
@@ -84,10 +86,10 @@ export class Login implements OnInit {
  }
 
  loginWithGoogle() {
-  window.location.href = 'http://localhost:3000/auth/google';
+  window.location.href = `${environment.apiUrl}/auth/google`;
  }
 
  loginWithGithub() {
-  window.location.href = 'http://localhost:3000/auth/github';
+  window.location.href = `${environment.apiUrl}/auth/github`;
  }
 }

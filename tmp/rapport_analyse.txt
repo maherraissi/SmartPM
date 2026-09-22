@@ -1,0 +1,1293 @@
+﻿=== PAGE 1 ===
+RÚpublique Tunisienne
+MinistÞre de lÆEnseignement SupÚrieur
+et de la Recherche Scientifique
+╔cole SupÚrieur PrivÚe dÆingÚnierie et de technologie
+TEK-UP
+Rapport de Projet de Fin DÆÚtudes
+PrÚsentÚ en vue de lÆobtention du
+Dipl¶me National dÆIngÚnieur en Sciences AppliquÚes et Technologiques
+SpÚcialitÚ : GÚnie Logiciel et SystÞmes dÆInformation
+RÚalisÚ par
+BEN SIDHOM Nesrine
+Conception et dÚveloppement dÆune
+plateforme web ½RÚfÚrentiel dÆExpertise
+Contradictoire Fibre╗
+Encadrant acadÚmique : Monsieur Wissem ElJAOUED Ma¯tre Assistant
+Encadrant professionnel : Monsieur Jamel HAFFAR Chef de Pole DEVRAP
+AnnÚe Universitaire 2024 - 2025
+
+=== PAGE 2 ===
+
+
+=== PAGE 3 ===
+AnnÚe Universitaire 2024 - 2025
+JÆautorise lÆÚtudiant Ó faire le dÚp¶t de son rapport de stage en vue dÆune soutenance.
+Encadrant professionnel, M. Jamel HAFFAR
+Signature et cachet
+JÆautorise lÆÚtudiant Ó faire le dÚp¶t de son rapport de stage en vue dÆune soutenance.
+Encadrant acadÚmique, M. Wissem ELJAOUED
+Signature
+
+=== PAGE 4 ===
+DÚdicace
+└ mes chers parents, ½ Med Jalel Ben Sidhom ╗ et ½ Wassila Belhadj Amor ╗,
+Vous qui mÆavez offert lÆamour, la force et la confiance nÚcessaires pour avancer,
+Vous qui avez toujours cru en moi, mÛme dans le silence,
+Recevez ici lÆexpression de ma reconnaissance infinie.
+└ mon frÞre, Ó ma s£ur, Ó son Úpoux,
+Que la vie vous comble de santÚ, de rÚussite et de bonheur.
+Une pensÚe toute particuliÞre Ó mes chÞres niÞces :
+Puisse le destin me permettre dÆÛtre prÚsent le jour o¨ vous obtiendrez votre dipl¶me,
+afin de partager avec vous la fiertÚ et la joie de ce moment.
+└ mes ami(e)s, compagnons de rires et de partages,
+└ mes collÞgues, partenaires de route et de dÚfis,
+Merci pour votre bienveillance, votre soutien et ces instants qui enrichissent le quotidien.
+└ tous ceux qui mÆont tendu la main dans les moments dÆombre,
+└ ceux qui ont su mÆapporter un sourire lorsque la tristesse pesait,
+└ ceux qui mÆaiment, et Ó ceux que jÆaime,
+Je vous dÚdie humblement ces mots, empreintes de gratitude et dÆÚmotion.
+ii
+
+=== PAGE 5 ===
+Remerciements
+Avant toute chose, je souhaite exprimer ma profonde gratitude Ó toutes les personnes qui, de prÞs ou
+de loin, ont contribuÚ Ó la rÚussite de ce projet. Leur soutien, leurs conseils et leur bienveillance ont
+ÚtÚ dÆune aide prÚcieuse tout au long de ce parcours.
+Je tiens Ó remercier M. Jamel Haffar pour la confiance quÆil mÆa accordÚe en mÆoffrant
+lÆopportunitÚ de rÚaliser ce projet de fin dÆÚtudes au sein de lÆÚquipe DevRap. Bien que je fasse dÚjÓ
+partie de Sofrecom, cette expÚrience a reprÚsentÚ pour moi une nouvelle Útape enrichissante,
+marquÚe par de nouveaux dÚfis et dÆopportunitÚs dÆapprentissage.
+Je souhaite Úgalement remercier mes collÞgues de projet, Mohsen Ghanmi et Dhouha Ouji, pour
+leur collaboration, leur esprit dÆÚquipe et les efforts partagÚs durant la rÚalisation de ce PFE. Leur
+engagement et leur bonne humeur ont rendu cette expÚrience encore plus agrÚable et stimulante.
+JÆadresse mes remerciements les plus sincÞres Ó mon encadrant acadÚmique, M. Wissem Eljaoud,
+que jÆai eu le plaisir de choisir dÞs les premiÞres sÚances de cours auxquelles jÆai assistÚ avec lui, en
+reconnaissance de la qualitÚ de son enseignement, de sa pÚdagogie inspirante et de ses compÚtences
+remarquables.
+Je souhaite Úgalement remercier les membres du jury pour le temps quÆils ont bien voulu consacrer Ó
+lÆÚvaluation de mon travail, ainsi que pour leurs remarques constructives.
+Enfin, un grand merci Ó lÆensemble des enseignants pour leur dÚvouement, leur soutien et les
+connaissances quÆils nous ont transmises tout au long de notre parcours universitaire.
+Merci du fond du c£ur.
+iii
+
+=== PAGE 6 ===
+Table des matiÞres
+Introduction gÚnÚrale 1
+1 Etude prÚliminaire 3
+1.1 PrÚsentation de lÆorganisme dÆaccueil . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+1.2 Cadre du projet . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+1.2.1 Contexte du Projet . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+1.2.2 Objectif du Projet . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+1.2.3 ProblÚmatique . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+1.3 Etude et Critique de lÆexistant . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+1.3.1 ╔tude de lÆexistant . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+1.3.2 Critique de lÆexistant . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+1.3.3 Solution proposÚe . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+1.4 MÚthodologie et approche de gestion de projet . . . . . . . . . . . . . . . . . . . . . . . 13
+1.4.1 MÚthodes agiles . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+1.4.2 PrÚsentation de la mÚthodologie Scrum. . . . . . . . . . . . . . . . . . . . . . . 15
+1.4.3 MÚthodologie de conception adoptÚe . . . . . . . . . . . . . . . . . . . . . . . . 17
+2 Analyse et spÚcification des besoins 18
+2.1 SpÚcification des besoins . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+2.1.1 Identification des acteurs. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+2.1.2 Identification des besoins fonctionnels . . . . . . . . . . . . . . . . . . . . . . . 21
+2.1.3 Identification des besoins non fonctionnels . . . . . . . . . . . . . . . . . . . . . 21
+2.2 Analyse globale . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+2.2.1 Diagramme de cas dÆutilisation global . . . . . . . . . . . . . . . . . . . . . . . 23
+2.2.2 Diagramme de classes dÆanalyse global . . . . . . . . . . . . . . . . . . . . . . . 24
+2.3 Elaboration du Backlog produit . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+2.4 Planification du travail . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+2.4.1 RÚpartition des sprints . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+2.4.2 Planification des sprints . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+2.5 Architecture de la solution . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+2.5.1 Architecture physique . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+iv
+
+=== PAGE 7 ===
+2.5.2 Architecture logicielle du socle REFI . . . . . . . . . . . . . . . . . . . . . . . . 28
+2.5.3 Architecture RAG . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+2.6 Choix techniques . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+2.6.1 Outils de dÚveloppement . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+2.6.2 Langage de programmation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+2.6.3 Bases de donnÚes et stockage . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+2.6.4 Composants IA . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+2.7 Mise en place de la solution DevOps . . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+2.7.1 Pipeline DevOps . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+2.7.2 Architecture DevOps avec les outils intÚgrÚs . . . . . . . . . . . . . . . . . . . . 32
+3 Release 1 : Mise en place du socle fonctionnel de REFI 35
+3.1 Sprint 1 : Authentification & Administration des donnÚes de rÚfÚrence REFI . . . . . . 36
+3.1.1 Objectifs du sprint 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 36
+3.1.2 Backlog du sprint 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 37
+3.1.3 SpÚcification des besoins fonctionnels . . . . . . . . . . . . . . . . . . . . . . . . 38
+3.1.4 Diagramme de classes du sprint 1 . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+3.1.5 Diagrammes dynamiques du sprint 1 . . . . . . . . . . . . . . . . . . . . . . . . 41
+3.1.6 RÚalisation du sprint 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+3.2 Sprint 2 : RÚcupÚration, Synchronisation & CorrÚlation des Plans de Charge OC/OI . 50
+3.2.1 Objectifs du sprint 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+3.2.2 Backlog du sprint 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+3.2.3 SpÚcification des besoins fonctionnels . . . . . . . . . . . . . . . . . . . . . . . . 52
+3.2.4 Diagrammes dynamiques du Sprint 2 . . . . . . . . . . . . . . . . . . . . . . . . 53
+3.2.5 RÚalisation du sprint 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 57
+3.3 Sprint 3 : Workflow de gestion des expertises contradictoires . . . . . . . . . . . . . . 58
+3.3.1 Objectifs du sprint 3 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+3.3.2 Backlog du sprint 3 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 59
+3.3.3 SpÚcification des besoins fonctionnels . . . . . . . . . . . . . . . . . . . . . . . . 60
+3.3.4 Diagramme de classes du sprint 3 . . . . . . . . . . . . . . . . . . . . . . . . . . 60
+3.3.5 Diagrammes dynamiques du sprint 3 . . . . . . . . . . . . . . . . . . . . . . . . 62
+3.3.6 RÚalisation du sprint 3 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 69
+v
+
+=== PAGE 8 ===
+4 Release 2 : Automatisation du traitement des retours & Monitoring 73
+4.1 Sprint 4 : Automatisation du traitement des retours OI via le moteur RAG . . . . . . 74
+4.1.1 Objectifs du Sprint 4 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 74
+4.1.2 Backlog du sprint 4 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 74
+4.1.3 SpÚcification des besoins fonctionnels . . . . . . . . . . . . . . . . . . . . . . . . 76
+4.1.4 Diagrammes dynamiques du sprint 4 . . . . . . . . . . . . . . . . . . . . . . . . 79
+4.1.5 RÚalisation du sprint 4 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 83
+4.2 Sprint 5 : Module de monitoring . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 85
+4.2.1 Objectifs du sprint 5 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 85
+4.2.2 Backlog du sprint 5 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 85
+4.2.3 SpÚcification des besoins fonctionnels . . . . . . . . . . . . . . . . . . . . . . . . 86
+4.2.4 Diagrammes dynamiques du sprint 5 . . . . . . . . . . . . . . . . . . . . . . . . 87
+4.2.5 RÚalisation du sprint 5 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 88
+Conclusion gÚnÚrale 91
+Webographie 92
+vi
+
+=== PAGE 9 ===
+Table des figures
+1.1 Logo de lÆentreprise Sofrecom Tunisie . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+1.2 Organigramme de la phase 1 û Signalement et Úchec de lÆintervention initiale . . . . . . 8
+1.3 Organigramme de la phase 2 û Coordination manuelle et lÆenvoi de la demande vers
+lÆopÚrateur dÆinfrastructure . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+1.4 DiagrammedefluxùProcessusdetraitementdesrÚponsesdelÆopÚrateurdÆinfrastructure 11
+1.5 Cycle de vie de la mÚthodologie Scrum . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+2.1 Diagramme de cas dÆutilisation global . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+2.2 Diagramme de classes global . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+2.3 Planification globale des sprints . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+2.4 Architecture physique 3-tiers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+2.5 Architecture MVC . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+2.6 Architecture RAG . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+2.7 Pipeline DevOps . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
+2.8 Architecture DevOps avec les outils intÚgrÚs dans lÆapplication . . . . . . . . . . . . . . 33
+3.1 Diagramme de cas dÆutilisation - Authentification & Gestion des DonnÚes de RÚfÚrence
+REFI. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+3.2 Diagramme de classes - Authentification & Gestion des DonnÚes de RÚfÚrence REFI . 40
+3.3 Exemple de demande dÆaccÞs Ó REFI via le portail 100% pratique dÆOrange . . . . . . 41
+3.4 Diagramme de flux - Authentification SSO dÆOrange . . . . . . . . . . . . . . . . . . . 43
+3.5 Diagramme de sÚquence - Consulter profil . . . . . . . . . . . . . . . . . . . . . . . . . 44
+3.6 Diagramme de sÚquence - Ajouter un technicien . . . . . . . . . . . . . . . . . . . . . . 45
+3.7 Interface dÆauthentification via le portail "Orange Connect" . . . . . . . . . . . . . . . 46
+3.8 Interface REFI - Consulter le profil . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 46
+3.9 Interface REFI - Modifier un code INSEE . . . . . . . . . . . . . . . . . . . . . . . . . 47
+3.10 Interface REFI - CrÚer une unitÚ clientÞle et industrielle . . . . . . . . . . . . . . . . . 47
+3.11 Interface REFI - Liste des dÚpartements . . . . . . . . . . . . . . . . . . . . . . . . . . 48
+3.12 Interface REFI - CrÚer un dÚpartement . . . . . . . . . . . . . . . . . . . . . . . . . . . 49
+3.13 Interface REFI - Modifier une commune . . . . . . . . . . . . . . . . . . . . . . . . . . 49
+3.14 Interface REFI - Modifier un technicien . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+vii
+
+=== PAGE 10 ===
+3.15 Diagramme de cas dÆutilisation ù RÚcupÚration, Synchronisation et CorrÚlation des
+Plans de Charge OC/OI . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 52
+3.16 Architecture fonctionnelle des flux de communication avec REFI . . . . . . . . . . . . 53
+3.17 Diagramme de sÚquence ù Sous-flux de rÚcupÚration du plan de charge des opÚrateurs
+dÆinfrastructure . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 55
+3.18 Diagramme de sÚquence ù RÚcupÚration des crÚneaux disponibles OC/OI . . . . . . . 56
+3.19 Interface REFI - Recherche des crÚneaux communs . . . . . . . . . . . . . . . . . . . . 57
+3.20 Interface REFI - Affichage des crÚneaux communs OC/OI . . . . . . . . . . . . . . . . 58
+3.21 Diagramme de cas dÆutilisation - RÚservation & Gestion des Expertises contradictoires 60
+3.22 Diagramme de classes - RÚservation & Gestion des Expertises contradictoires . . . . . 61
+3.23 Diagramme de sÚquence ù CrÚer une intervention . . . . . . . . . . . . . . . . . . . . 63
+3.24 Diagramme dÆactivitÚ ù Processus de rÚcupÚration des retours des OI . . . . . . . . . 64
+3.25 Diagramme de sÚquence ù Approuver une intervention . . . . . . . . . . . . . . . . . . 66
+3.26 Diagramme de sÚquence ù Annuler une intervention . . . . . . . . . . . . . . . . . . . 68
+3.27 Diagramme dÆÚtat dÆune intervention . . . . . . . . . . . . . . . . . . . . . . . . . . . . 69
+3.28 Interface REFI ù Liste des interventions. . . . . . . . . . . . . . . . . . . . . . . . . . 70
+3.29 Interface REFI ù Filtre des interventions . . . . . . . . . . . . . . . . . . . . . . . . . 70
+3.30 Interface REFI ù DÚtails dÆune intervention . . . . . . . . . . . . . . . . . . . . . . . . 71
+3.31 Interface REFI ù Pop-up de confirmation dÆannulation . . . . . . . . . . . . . . . . . 72
+4.1 Diagramme de cas dÆutilisation ù Automatisation du traitement des retours OI via le
+moteur RAG . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 76
+4.2 Architecture du systÞme IA de REFI . . . . . . . . . . . . . . . . . . . . . . . . . . . . 78
+4.3 Organigramme de crÚation de la base de connaissances . . . . . . . . . . . . . . . . . . 79
+4.4 Diagramme de flux ù Automatisation du traitement des retours OI avec le moteur RAG 82
+4.5 Exemples de retours OI bruts enregistrÚs dans la table feedbackOI . . . . . . . . . . . 83
+4.6 Journaux dÆexÚcution du processus dÆanalyse automatique dÆun retour OI . . . . . . . 84
+4.7 Retours OI traitÚs et enrichis dans la table feedbackOI. . . . . . . . . . . . . . . . . . 84
+4.8 Historique dÆune intervention aprÞs traitement automatique par le moteur RAG . . . . 85
+4.9 DiagrammedecasdÆutilisationùSurveillerlesindicateursdeperformanceduprocessus
+global . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 86
+4.10 Diagramme de sÚquence ù Visualiser les indicateurs de performance du processus . . . 88
+4.11 Interface REFI - Dashboard de supervision du processus global . . . . . . . . . . . . . 89
+viii
+
+=== PAGE 11 ===
+Table des figures
+4.12 Interface REFI - Dashboard de supervision des logs applicatifs . . . . . . . . . . . . . . 90
+ix
+
+=== PAGE 12 ===
+Liste des tableaux
+2.1 Le Backlog produit global . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+2.2 Planification des Sprints par Release . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+3.1 Backlog du Sprint 1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 38
+3.2 Backlog du Sprint 2 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+3.3 Backlog du Sprint 3 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 59
+4.1 Backlog du Sprint 4 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 75
+4.2 Backlog du sprint 5 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 86
+x
+
+=== PAGE 13 ===
+Liste des abrÚviations
+ù AI = Intelligence Artificielle
+ù API = Application Programming Interface
+ù ARCEP= AutoritÚ de RÚgulation des Communications ╔lectroniques des Postes
+ù CAGP = Conduite dÆActivitÚ Grand Public
+ù EXF = EXpertise Fibre
+ù FTTH = Fiber to the Home (Fibre jusquÆau domicile)
+ù IAM = Identity and Access Management (Gestion des IdentitÚs et des AccÞs)
+ù IAR = Identifiant dÆAccÞs Client
+ù KPI = Key Performance Indicator (ou indicateur clÚ de performance)
+ù LLM = Large Language Model
+ù MVC = Model-View-Controller
+ù MVP = Minimum Viable Product
+ù ND = NumÚro de DÚsignation du client
+ù OC = OpÚrateur Commercial
+ù OI = OpÚrateur dÆInfrastructure
+ù PERF = Pilotage Exploitation RÚseau Fibre
+ù PTO = Point de Terminaison Optique
+ù PTO = Point de Terminaison Optique
+ù PaaS = Platform as a Service (Plateforme en tant que service)
+ù RAG = Retrieval-Augmented Generation
+ù REFI = RÚfÚrentiel dÆExpertise Contradictoire Fibre
+ù ROI = Raison dÆIntervention
+ù SAV = Service AprÞs-Vente
+ù SI = SystÞme dÆInformation
+ù SSO = Single Sign-On
+ù TSO = TraþabilitÚ Service OpÚrateur Infrastructure
+ù UCI = UnitÚs ClientÞles et Industrielles
+ù UML = Unified Modeling Language
+ù USC = UnitÚ de Service Client
+xi
+
+=== PAGE 14 ===
+Introduction gÚnÚrale
+Ces derniÞres annÚes, le dÚploiement de la fibre optique en France a profondÚment transformÚ le
+secteurdestÚlÚcommunications.Avecunecouverturenationaleenfortecroissance,lesclientsattendent
+dÚsormaisdesconnexionsplusrapidesetunserviceaprÞs-venteplusrÚactif.Cependant,cetteÚvolution
+sÆaccompagne dÆune complexitÚ accrue dans la gestion des interventions sur le terrain.
+Eneffet,selonleszones,lafibredÆunclientpeutÛtredÚployÚeparunopÚrateurdÆinfrastructure
+diffÚrent de son opÚrateur commercial. Dans ce contexte, un client Orange France peut Ûtre raccordÚ
+sur le rÚseau dÆun autre opÚrateur, dÚtenteur de lÆinfrastructure. LorsquÆun incident survient, les deux
+acteurs doivent alors collaborer pour identifier la cause du problÞme et le rÚsoudre efficacement.
+Cette collaboration, appelÚe expertise contradictoire, consiste Ó organiser une intervention
+commune entre les deux opÚrateurs afin de dÚterminer la responsabilitÚ de la panne. Cependant, la
+planification de ces expertises reste aujourdÆhui largement manuelle. Le manque de coordination, la
+multiplicitÚ des outils et la faible visibilitÚ sur les disponibilitÚs des opÚrateurs tiers entra¯nent des
+dÚlais importants et compliquent le suivi des dossiers, au dÚtriment de la satisfaction client.
+CÆest dans ce contexte quÆa ÚtÚ initiÚ le projet REFI (RÚfÚrentiel dÆExpertise Contradictoire
+Fibre). Il a pour objectif de simplifier la planification des expertises contradictoires entre Orange
+France et les opÚrateurs tiers. En centralisant les Úchanges et en sÆintÚgrant aux systÞmes existants,
+REFI offre une vision unifiÚe des disponibilitÚs, facilite la recherche de crÚneaux compatibles en temps
+rÚel et automatise la mise Ó jour des interventions selon les retours des opÚrateurs tiers.
+Afin de mener Ó bien ce travail, nous avons structurÚ ce rapport de la maniÞre suivante :
+ù Le premier chapitre prÚsente lÆentreprise dÆaccueil, le cadre gÚnÚral du projet et le contexte
+opÚrationnel du Service AprÞs-Vente Fibre. Il met en Úvidence les limites des processus
+existants et introduit la solution REFI comme rÚponse Ó ces problÚmatiques.
+ù Le deuxiÞme chapitre est consacrÚ Ó lÆanalyse des besoins et Ó la dÚfinition des exigences
+fonctionnelles du projet. Il prÚsente Úgalement lÆÚtablissement du backlog produit et la
+planification des sprints.
+ù Le troisiÞme chapitre dÚcrit la premiÞre release du projet, consacrÚe Ó la mise en place
+du socle fonctionnel de REFI. └ travers trois sprints successifs, il dÚtaille les Útapes de
+dÚveloppement autour de lÆauthentification, de lÆadministration des donnÚes de rÚfÚrence, de
+lasynchronisationdesplansdechargeetdelagestionduworkflowdÆexpertisecontradictoire.
+ù Le quatriÞme chapitre traite de la deuxiÞme release du projet, axÚe sur lÆautomatisation du
+1
+
+=== PAGE 15 ===
+Introduction gÚnÚrale
+traitement des retours des opÚrateurs tiers et sur la supervision du systÞme. Il prÚsente la
+conception et la rÚalisation des sprints 4 et 5, marquant une Útape clÚ dans lÆÚvolution de la
+plateforme.
+Enfin, ce rapport se conclut par une conclusion gÚnÚrale qui dresse le bilan du travail rÚalisÚ au
+cours de ces derniers mois et ouvre des perspectives pour les Úvolutions futures du projet.
+2
+
+=== PAGE 16 ===
+Chapitre 1
+Etude prÚliminaire
+Plan
+1 PrÚsentation de lÆorganisme dÆaccueil . . . . . . . . . . . . . . . . . . . . . . 4
+2 Cadre du projet . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+3 Etude et Critique de lÆexistant . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+4 MÚthodologie et approche de gestion de projet . . . . . . . . . . . . . . . . 13
+3
+
+=== PAGE 17 ===
+Chapitre 1. Etude prÚliminaire
+Introduction
+Dans ce chapitre, on prÚsente le contexte gÚnÚral dans lequel le projet a ÚtÚ conþu et rÚalisÚ.
+On commence par la prÚsentation de lÆorganisme dÆaccueil, puis on dÚfinit les objectifs poursuivis,
+les enjeux associÚs ainsi que le pÚrimÞtre du travail. On procÞde ensuite Ó une analyse critique de la
+solution existante afin dÆen identifier les insuffisances et de mettre en Úvidence la valeur ajoutÚe de
+la solution proposÚe. Enfin, on dÚcrit la mÚthodologie de travail et lÆapproche de gestion de projet
+adoptÚes, permettant dÆassurer la bonne conduite des diffÚrentes Útapes et lÆatteinte des objectifs fixÚs.
+1.1 PrÚsentation de lÆorganisme dÆaccueil
+SOFRECOM TUNISIE est une sociÚtÚ de services numÚriques et de conseil, filiale du Groupe
+Orange, spÚcialisÚe dans lÆaccompagnement des entreprises et des institutions dans leur transformation
+digitale. ImplantÚe en Tunisie depuis 2014, elle sÆappuie sur lÆexpertise internationale de Sofrecom
+(prÚsente depuis plus de 50 ans) et sur un rÚseau dÆingÚnieurs qualifiÚs pour concevoir et dÚployer des
+solutions innovantes.
+SOFRECOM TUNISIE contribue activement Ó des projets stratÚgiques dans les domaines
+des tÚlÚcommunications, des systÞmes dÆinformation et des services digitaux. Elle accompagne ses
+partenaires et clients dans la dÚfinition de leurs stratÚgies IT, lÆindustrialisation de leurs processus,
+ainsi que lÆintÚgration de solutions innovantes Ó forte valeur ajoutÚe.
+La sociÚtÚ met en place des dispositifs technologiques et organisationnels pour simplifier et
+automatiser les processus mÚtiers complexes, notamment dans les secteurs des tÚlÚcoms, de la banque,
+de lÆassurance et des services publics. Ses expertises couvrent un large spectre de solutions, allant des
+plateformesdigitalesauxarchitecturescloud,enpassantparlÆintelligenceartificielleetlacybersÚcuritÚ.
+SOFRECOMTUNISIEdÚveloppeÚgalementdesactivitÚsenoffshore,permettantauxentreprises
+debÚnÚficierderessourceshumaineshautementqualifiÚesdanslesdomainesduconseil,dudÚveloppement
+logiciel et de lÆintÚgration de systÞmes. Elle sÆengage Ó fournir des solutions innovantes et durables, en
+accompagnant ses clients dans toutes les Útapes de leurs projets[1].
+ù Transformation digitale et conseil en stratÚgie IT
+ù DÚveloppement et intÚgration de solutions logicielles
+ù Cloud et infrastructures IT
+4
+
+=== PAGE 18 ===
+Chapitre 1. Etude prÚliminaire
+ù Data, analytics et intelligence artificielle
+ù CybersÚcuritÚ et gestion des risques
+ù Services de support et maintenance applicative
+Figure 1.1 : Logo de lÆentreprise Sofrecom Tunisie
+1.2 Cadre du projet
+1.2.1 Contexte du Projet
+EnFrance,ledÚploiementdelafibreoptiqueaconnuuneaccÚlÚrationsignificativecesderniÞres
+annÚes.SelonlÆAutoritÚderÚgulationdescommunicationsÚlectroniques,despostesetdeladistribution
+delapresse(ARCEP),plusde58%desfoyersdisposentaujourdÆhuidÆunabonnementÓlafibreoptique
+Ó domicile, confirmant lÆimportance croissante de cette technologie dans lÆaccÞs Ó Internet haut dÚbit.
+Sur ce marchÚ, Orange France occupe une position dominante avec environ 40 % de part de marchÚ,
+tandis que le reste est partagÚ entre dÆautres opÚrateurs majeurs tels que SFR, Bouygues Telecom ou
+Free [2].
+Cette croissance rapide entra¯ne mÚcaniquement une hausse significative des demandes liÚes au
+Service AprÞs-Vente (SAV) Fibre, dont la gestion est rendue critique par ce modÞle de mutualisation
+des rÚseaux, principalement pour deux raisons :
+ò Demande commerciale : Orange doit rÚpondre Ó un fort volume de souscriptions Ó
+ses offres et services sur lÆensemble du territoire, consolidant ainsi sa position dÆopÚrateur
+commercial.
+ò InterdÚpendance logistique : Dans de nombreuses zones, lÆinfrastructure physique du
+rÚseau fibre appartient Ó des opÚrateurs dÆinfrastructure concurrents.
+Dans ce contexte, lorsquÆun client Orange signale une panne ou un dysfonctionnement, le
+traitementdecelle-cidÚpenddelacapacitÚdÆOrangeÓcoordonnersesactionsaveccellesdelÆopÚrateur
+dÆinfrastructure concernÚ. Cette obligation de coordination est au c£ur du processus dÆexpertise
+contradictoire,etcÆestpourrÚpondreauxdÚfisliÚsÓcetteinterdÚpendancequenotreprojet½RÚfÚrentiel
+dÆExpertise Contradictoire Fibre (REFI) ╗ a ÚtÚ dÚveloppÚ.
+5
+
+=== PAGE 19 ===
+Chapitre 1. Etude prÚliminaire
+1.2.2 Objectif du Projet
+LÆenjeu principal du projet ½ RÚfÚrentiel dÆExpertise Contradictoire Fibre (REFI) ╗ est de
+transformer le SAV Fibre dÆOrange en automatisant la planification des expertises contradictoires. Son
+objectifestdedÚvelopperuneplateformeunifiÚepermettantÓlÆOpÚrateurCommercial(OC)dÆOrange
+dÆassurer une coordination optimisÚe et automatisÚe avec les OpÚrateurs dÆInfrastructure (OI).
+ConcrÞtement,REFImetÓdispositionuneinterfacepermettantlaconsultationetlarÚservation
+synchronisÚe des crÚneaux communs. Cette solution rÚduit les dÚlais de rÚsolution des pannes et allÞge
+la charge des Úquipes de pilotage en automatisant les tÔches de relance et de nÚgociation. Ainsi, elle
+contribue Ó amÚliorer la qualitÚ de service perþue par les clients.
+1.2.3 ProblÚmatique
+LeServiceAprÞs-VenteFibrefaitfaceÓunecomplexitÚcroissantedanslagestiondesexpertises
+contradictoires, cÆest-Ó-dire lorsque lÆOpÚrateur Commercial (OC) et lÆOpÚrateur dÆInfrastructure (OI)
+ne dÚpendent pas du mÛme fournisseur et doivent collaborer pour Útablir un diagnostic sur le rÚseau
+fibre. La planification de ces interventions repose encore en grande partie sur des Úchanges manuels, ce
+qui rÚduit la rÚactivitÚ dÆOrange France face Ó lÆaugmentation des volumes de pannes et Ó la diversitÚ
+des OI tiers impliquÚs.
+Cette organisation entra¯ne trois difficultÚs majeures :
+ò DÚlais prolongÚs : LÆabsence de visibilitÚ en temps rÚel sur les disponibilitÚs de ces
+opÚrateurs dÆinfrastructure concurrents retarde la prise de rendez-vous et allonge la durÚe
+des incidents.
+ò SurchargeopÚrationnelle:LanÚcessitÚdemultiplesrelancesetdevÚrificationsmanuelles
+pour chaque ticket crÚe une surcharge importante pour les pilotes.
+ò Insatisfaction client : Les dÚlais excessifs de rÚtablissement dÚgradent la perception de la
+qualitÚ de service.
+Cette situation soulÞve la problÚmatique centrale du projet :
+Comment concevoir et dÚployer une solution capable de fournir une visibilitÚ en temps rÚel
+sur les plans de charge des OpÚrateurs dÆInfrastructure et de fluidifier la coordination des expertises
+contradictoires avec Orange, afin de garantir une amÚlioration mesurable de la performance et de la
+qualitÚ de service aprÞs-vente Fibre dÆOrange France?
+6
+
+=== PAGE 20 ===
+Chapitre 1. Etude prÚliminaire
+1.3 Etude et Critique de lÆexistant
+Cette section ne porte pas sur un outil applicatif, mais sur le processus manuel dÆexpertise
+contradictoire actuellement en place au sein du Service AprÞs-Vente Fibre dÆOrange.
+1.3.1 ╔tude de lÆexistant
+Le processus dÆexpertise contradictoire est dÚclenchÚ lorsquÆune panne client signalÚe nÆa pu
+Ûtre rÚsolue aprÞs la premiÞre intervention de lÆOpÚrateur Commercial (OC) Orange, indiquant que la
+cause est probablement liÚe Ó lÆinfrastructure dÆun tiers.
+- Phase 1 : Signalement et Úchec de lÆintervention initiale
+1. Signalement client et diagnostic (TÚlÚperformance/USC) :
+Le client signale sa panne Ó lÆUnitÚ de Service Client (USC). TÚlÚperformance
+(ou le service client) prend contact avec lui pour recueillir les dÚtails et procÞde Ó
+un diagnostic initial Ó distance (vÚrification des Úquipements tels que la Box, les
+voyants, et le Terminal Optique). Si la connexion est confirmÚe en Úchec (KO),
+lÆÚquipefixeunpremierrendez-vousetcrÚeformellementlaRaisondÆIntervention
+(ROI). Cette demande est documentÚe dans OC╔ANE, le systÞme dÆinformation
+centraldÆOrange,quisertderÚfÚrentieluniquepourtracertouslestypesdÆincident.
+2. PremiÞre intervention terrain (Technicien dÆIntervention Orange) :
+Un technicien dÆintervention dÆOrange se rend sur place et tente de rÚsoudre le
+problÞme en agissant uniquement sur le pÚrimÞtre de responsabilitÚ dÆOrange, ce
+pÚrimÞtre inclut notamment : le cÔblage interne au domicile, la soudure de la
+Prise Terminale Optique (PTO), le contr¶le du signal...
+3. Transfert de ResponsabilitÚ (TSO) :
+Si le dÚfaut persiste aprÞs lÆÚpuisement des moyens de dÚpannage, le technicien
+cl¶ture son intervention avec le code TSO (Transfert Service extÚrieur Optique),
+indiquantqueleproblÞmerÚsidetrÞsprobablementau-delÓdupÚrimÞtredÆOrange,
+mais plut¶t sur lÆinfrastructure de lÆopÚrateur tiers. Le ticket OC╔ANE est alors
+transfÚrÚ Ó lÆÚquipe centrale de coordination et de pilotage dÆOrange, appelÚe CA
+GP (Conduite dÆActivitÚ Grand Public) Fibre.
+La figure 1.2 illustre le dÚroulement de cette premiÞre phase.
+7
+
+=== PAGE 21 ===
+Chapitre 1. Etude prÚliminaire
+Figure 1.2 : Organigramme de la phase 1 û Signalement et Úchec de lÆintervention initiale
+- Phase 2 : La coordination manuelle et lÆenvoi de la demande
+Cette phase marque le dÚbut du cycle de nÚgociation :
+1. Proposition manuelle des crÚneaux dÆexpertise :
+DÞs rÚception du ticket OC╔ANE, la CA GP initie la coordination. En lÆabsence
+de visibilitÚ sur le plan de charge des OpÚrateurs dÆInfrastructure (OI), elle
+consultedÆabordlesdisponibilitÚsdestechniciensOrangevialÆapplicationinterne
+KYAKU, qui gÞre les plannings en temps rÚel des OpÚrateurs Commerciaux.
+└ partir de ces donnÚes, la CA GP sÚlectionne trois crÚneaux potentiels pour
+lÆexpertisecontradictoireconjointeetlessaisitmanuellementdansleticketOC╔ANE
+sousformedÆuncommentairechartÚ(texteformatÚselonunmodÞlestandardisÚ).
+2. Formalisation et routage (OC╔ANE/AGIR/IPSITE) :
+AGIR, un automate de transmission interne dÆOC╔ANE, dÚtecte ce commentaire
+chartÚ, extrait les informations de la demande dÆexpertise (dont les trois crÚneaux
+proposÚs) et les transmet ÓlÆAPI IPSITE.
+IPSITEestunepasserelleinter-opÚrateursquisertdestandarddecommunication
+uniformisÚ pour lÆensemble du marchÚ franþais de la fibre, tel que dÚfini par
+lÆARCEPafindegarantirlafluiditÚdesÚchangesdanslecadredelamutualisation
+des rÚseaux.
+EllerelaielademandeversleSystÞmedÆInformation(SI)delÆopÚrateurdÆinfrastructure
+8
+
+=== PAGE 22 ===
+Chapitre 1. Etude prÚliminaire
+concernÚ, o¨ un nouveau ticket dÆintervention est crÚÚ.
+Ce processus constitue la seule mÚthode dÆescalade existante, mais il ne garantit
+pasencorelaconfirmationdeladate,puisquÆilsÆagituniquementdÆuneproposition
+initiale.
+La figure 1.3 prÚsente lÆorganigramme de la phase de coordination manuelle et de
+lÆenvoi de la demande vers lÆopÚrateur dÆinfrastructure.
+Figure 1.3 : Organigramme de la phase 2 û Coordination manuelle et lÆenvoi de la demande vers
+lÆopÚrateur dÆinfrastructure
+- Phase 3 : Les boucles de nÚgociation et la surcharge opÚrationnelle
+Une fois la demande transmise Ó lÆOI, la CA GP doit activement surveiller le ticket dans
+OC╔ANE et gÚrer les rÚponses reþues. Ces derniÞres arrivent sous forme de commentaires
+textelibres,intÚgrÚsautomatiquementparlefluxIPSITE/AGIR.NÆayantaucunevisibilitÚ
+directe sur le plan de charge de lÆOI, la CA GP est alors confrontÚe Ó quatre scÚnarios
+principaux :
+9
+
+=== PAGE 23 ===
+Chapitre 1. Etude prÚliminaire
+1. Validation et confirmation du crÚneau :
+Si lÆOI valide lÆun des crÚneaux proposÚs, la CA GP finalise manuellement le
+processus. Elle confirme la date retenue dans KYAKU et libÞre les deux autres
+crÚneaux prÚ-rÚservÚs. Une fois cette Útape rÚalisÚe, le client est contactÚ afin de
+valider avec lui ce rendez-vous commun.
+2. Relance en cas de non-rÚponse :
+En lÆabsence de rÚponse de lÆOI Ó lÆapproche du dÚlai critique (souvent Ó J-2 du
+1er rdv proposÚ), la CA GP relance le processus. Elle vÚrifie la disponibilitÚ des
+techniciens dans KYAKU, identifie de nouveaux crÚneaux si nÚcessaire, effectue
+leur prÚ-rÚservation, puis saisit un nouveau commentaire chartÚ dans OC╔ANE
+pour relancer la demande via AGIR/IPSITE. Ce cycle peut se rÚpÚter plusieurs
+fois jusquÆÓ obtention dÆune rÚponse.
+3. Contre-propositions de lÆOI :
+LÆOI peut rÚpondre en proposant dÆautres dates, parfois incompatibles avec le
+planning dÆOrange. Sa rÚponse, transmise sous forme de commentaire texte libre,
+estintÚgrÚedansOC╔ANE.LaCAGPanalysealorsmanuellementcettecontre-proposition
+et vÚrifie dans KYAKU la disponibilitÚ des techniciens Orange sur le crÚneau
+proposÚ.
+ù Si le crÚneau est disponible, la CA GP peut le valider directement.
+ù SilecrÚneaunÆestpasdisponible,ellecontactelesresponsablesdestechniciens
+commerciauxafindÆÚvaluerlapossibilitÚdedÚcalerunautrerendez-vouspour
+confirmer celui proposÚ par lÆOI.
+ù Si aucun ajustement nÆest possible, la CA GP procÞde Ó la prÚ-rÚservation
+manuelle de trois nouveaux crÚneaux dans KYAKU, puis saisit un nouveau
+commentaire chartÚ dans OC╔ANE contenant ces propositions. Cette action
+relance automatiquement le cycle AGIR/IPSITE et la boucle de nÚgociation
+manuelle se rÚpÞte jusquÆÓ obtention dÆun accord entre lÆOI et Orange.
+4. Annulation de lÆexpertise :
+Si lÆOI refuse la demande,gÚnÚralement a cause de la rÚpartion de la panne avant
+la date prÚvue ou sÆil annule Ó la derniÞre minute, la CA GP doit mettre Ó jour le
+ticketOC╔ANEetlibÚrerlecrÚneaudutechnicienOCdansKYAKUafindÆÚviter
+un dÚplacement inutile.
+La figure 1.4 prÚsente lÆorganigramme de la troisiÞme phase, correspondant au processus de
+10
+
+=== PAGE 24 ===
+Chapitre 1. Etude prÚliminaire
+traitement des rÚponses de lÆopÚrateur dÆinfrastructure.
+Figure 1.4 : Diagramme de flux ù Processus de traitement des rÚponses de lÆopÚrateur
+dÆinfrastructure
+1.3.2 Critique de lÆexistant
+LÆanalyse du processus actuel met en Úvidence plusieurs limites et dysfonctionnements majeurs
+du processus existant de gestion des expertises contradictoires :
+11
+
+=== PAGE 25 ===
+Chapitre 1. Etude prÚliminaire
+- Absence de visibilitÚ sur le plan de charge des opÚrateurs dÆinfrastructure :
+LÆÚquipe CA GP dÆOrange doit proposer des dates dÆintervention Ó lÆaveugle car elle
+nÆa aucun accÞs aux disponibilitÚs rÚelles des techniciens de lÆOpÚrateur dÆInfrastructure
+(OI). Cette asymÚtrie dÆinformation lÆoblige Ó fonctionner par propositions successives et
+rÚpÚtÚes, entra¯nant une multiplication des allers-retours inutiles.
+- FortedÚpendanceauxÚchangesmanuelsetrisquedÆerreur:LasaisiedescrÚneaux
+dans OC╔ANE, la vÚrification et la prÚ-rÚservation dans KYAKU, ainsi que la gestion des
+relances ou contre-propositions reposent entiÞrement sur des interventions manuelles de la
+CA GP, augmentant par consÚquent le risque dÆerreurs humaines.
+- ProlongationdesdÚlaisderÚsolution:ChaqueabsencederÚponseoucontre-proposition
+delÆOIentra¯neunereprisecomplÞteduprocessusdenÚgociation,cequirallongesignificativement
+le temps nÚcessaire pour obtenir un accord sur une date commune. Ces retards impactent
+directement la rapiditÚ de rÚsolution des incidents, par consÚquent la satisfaction client.
+- Surcharge opÚrationnelle pour Orange : Les pilotes CA GP doivent superviser
+chaque Útape du processus de bout en bout, sans automatisation suffisante ce qui alourdit
+considÚrablement leur charge de travail et rÚduit leur capacitÚ Ó gÚrer efficacement le
+volume croissant des demandes.
+Deplus,lÆobligationdeproposeretprÚrÚservertemporairementtroiscrÚneauxdansKYAKU
+pour un seul incident entra¯ne une surcharge inutile du plan de charge des opÚrateurs
+commerciaux dÆOrange.
+- Co¹ts opÚrationnels ÚlevÚs : Le grand volume de tÔches manuelles affecte un nombre
+important de pilotes au sein de la CA GP, ce qui se traduit par des co¹ts de gestion
+significatifs.
+1.3.3 Solution proposÚe
+Pour rÚpondre aux inefficacitÚs et aux dysfonctionnements majeurs identifiÚs dans la gestion
+manuelledelÆexpertisecontradictoire,nousproposonsleprojet½RÚfÚrentieldÆExpertiseContradictoire
+Fibre╗.
+REFI est une solution optimisÚe visant Ó automatiser et fluidifier les Úchanges entre lÆopÚrateur
+commercial Orange et les opÚrateurs dÆinfrastructure tiers, elle se distingue par son intÚgration directe
+avec les outils existants (OC╔ANE, KYAKU et IPSITE) et son objectif est de rÚduire la complexitÚ
+opÚrationnelle pour amÚliorer la rapiditÚ de rÚsolution des incidents.
+Les fonctionnalitÚs clÚs de REFI incluent :
+12
+
+=== PAGE 26 ===
+Chapitre 1. Etude prÚliminaire
+ò VisibilitÚ agrÚgÚe des plans de charge : REFI interconnecte simultanÚment lÆAPI
+interne KYAKU (disponibilitÚs OC) et lÆAPI inter-opÚrateurs IPSITE (disponibilitÚs OI).
+CettevisionconsolidÚepermetdÆidentifierentempsrÚellescrÚneauxrÚellementcompatibles
+entre les deux parties.
+ò RÚservation garantie en temps rÚel : Contrairement au processus actuel qui impose
+la proposition et la prÚ-rÚservation de trois crÚneaux, REFI prÚsente un crÚneau unique et
+validÚ.UnefoissÚlectionnÚparlepilote,lecrÚneauestrÚservÚinstantanÚment,supprimant
+ainsi les boucles de nÚgociation manuelles.
+ò Automatisation des mises Ó jour : La confirmation du rendez-vous et la mise Ó jour
+des systÞmes internes (KYAKU et OC╔ANE) sont rÚalisÚes automatiquement, Úliminant
+la saisie manuelle des commentaires chartÚs et la gestion des prÚ-rÚservations multiples.
+ò Interface unifiÚe et ergonomique : Les Úquipes CA GP disposent dÆun outil centralisÚ
+intÚgrant toutes les informations nÚcessaires, simplifiant le suivi, la supervision et la
+coordination.
+ò Optimisation de la charge de travail :GrÔceÓlÆautomatisation,ler¶ledespilotesCA
+GP Úvolue de ½ nÚgociateurs manuels ╗ Ó ½ validateurs et superviseurs ╗, leur permettant
+de gÚrer un volume dÆincidents plus important avec une meilleure efficacitÚ.
+EnrÚsumÚ,REFIpermetderÚduirelesdÚlaisdetraitement,desimplifierlagestionopÚrationnelle
+et dÆamÚliorer la satisfaction client en offrant un processus plus rapide, fiable et transparent.
+1.4 MÚthodologie et approche de gestion de projet
+La rÚussite dÆun projet complexe repose en grande partie sur lÆadoption dÆune mÚthodologie
+de gestion adaptÚe. En effet, une mÚthodologie de gestion de projet fournit un cadre structurÚ, des
+processus clairs, ainsi que des lignes directrices permettant de coordonner efficacement les ressources
+humaines, les tÔches et les objectifs Ó atteindre.
+IlexisteaujourdÆhuiplusieursapprochesdegestiondeprojet,chacuneprÚsentantsesspÚcificitÚs
+et ses domaines dÆapplication. MalgrÚ leurs diffÚrences, ces mÚthodologies poursuivent toutes un mÛme
+objectif : assurer le bon dÚroulement du projet et garantir sa rÚussite dans les meilleures conditions.
+Danslecadredenotreprojet,nousavonschoisidÆadopteruneapproche agile,quimetlÆaccent
+sur la valeur mÚtier du livrable, lÆamÚlioration continue de la qualitÚ, et la capacitÚ Ó sÆadapter aux
+13
+
+=== PAGE 27 ===
+Chapitre 1. Etude prÚliminaire
+changements. Ainsi, nous prÚsentons dans un premier temps un aperþu gÚnÚral des mÚthodes agiles,
+avant de nous concentrer plus particuliÞrement sur la mÚthodologie Scrum, qui a ÚtÚ appliquÚe tout au
+long de ce projet.
+1.4.1 MÚthodes agiles
+DansuneÚquipededÚveloppementlogiciel,notammentlorsdeprojetsinternes,lesbesoinssont
+souventamenÚsÓÚvolueraufildutemps.Ainsi,lÆÚquipepeutseretrouverÓdÚvelopperuneapplication
+Ó partir de spÚcifications initiales incomplÞtes ou imprÚcises, ce qui peut entra¯ner des retards dans la
+livraison du produit final. Ces constats ont conduit les ingÚnieurs Ó repenser les approches classiques
+de gestion de projet et de conception logicielle, en introduisant ce que lÆon appelle aujourdÆhui les
+mÚthodes agiles.
+UnemÚthodeagileestuneapprocheitÚrativeetincrÚmentalemenÚedansunespritcollaboratif,
+avec un formalisme rÚduit au strict nÚcessaire. Elle vise Ó produire un logiciel de haute qualitÚ tout en
+sÆadaptant continuellement Ó lÆÚvolution des besoins des utilisateurs et du client. LÆobjectif principal
+des mÚthodes agiles est de maximiser la valeur livrÚe Ó chaque itÚration, en favorisant la rÚactivitÚ, la
+collaboration et la satisfaction de lÆÚquipe, tout en Úvitant lÆ½ effet tunnel ╗ souvent constatÚ dans les
+mÚthodes traditionnelles [3].
+Les principales diffÚrences entre les mÚthodes agiles et les approches classiques rÚsident dans le
+fait que les mÚthodes agiles :
+ò privilÚgient les individus et leurs interactions plut¶t que les processus et les outils;
+ò valorisent un logiciel opÚrationnel et testÚ plut¶t quÆune documentation exhaustive;
+ò encouragent la collaboration continue avec le client plut¶t que la simple nÚgociation
+contractuelle;
+ò favorisent lÆadaptation au changement plut¶t que le suivi strict dÆun plan initial.
+Plusieurs mÚthodologies respectent les principes du Manifeste Agile, chacune adaptÚe Ó un type
+de projet selon sa taille, la composition de lÆÚquipe de dÚveloppement ou encore la criticitÚ du systÞme.
+Dans le cadre de notre projet, il a ÚtÚ dÚcidÚ dÆadopter la mÚthodologie Scrum, particuliÞrement
+adaptÚe aux environnements dynamiques et Úvolutifs.
+14
+
+=== PAGE 28 ===
+Chapitre 1. Etude prÚliminaire
+1.4.2 PrÚsentation de la mÚthodologie Scrum
+ScrumestunemÚthodologieagileitÚrativeetincrÚmentalefondÚesurdescyclesdedÚveloppement
+courts, appelÚs Sprints, dÆune durÚe gÚnÚralement comprise entre 2 et 4 semaines.
+AucoursdechaqueSprint,lÆÚquiperÚaliseunepartiefonctionnelleduproduitappelÚeincrÚment,
+en sÆappuyant sur les ÚlÚments dÚveloppÚs lors des itÚrations prÚcÚdentes. └ la fin du Sprint, cet
+incrÚment est livrÚ, testÚ et potentiellement dÚployable [4].
+Scrum prÚsente plusieurs avantages notables :
+ò IlhÚritedesatoutsdesmÚthodesagiles:itÚration,adaptabilitÚ,travaildÆÚquipeetflexibilitÚ.
+ò Lesr¶lessontclairementdÚfinis(ScrumMaster,ProductOwner,╔quipededÚveloppement),
+favorisant la transparence et la responsabilitÚ.
+ò LÆÚquipe est autonome et auto-organisÚe, ce qui renforce la confiance et lÆefficacitÚ.
+ò Le cadre de travail encourage une communication continue et un esprit dÆÚquipe soudÚ.
+Il existe diffÚrents r¶les impliquÚs dans la mise en £uvre dÆun projet selon la logique de la
+mÚthodologie Scrum :
+ò Product Owner : Bertrand ANSEL
+Il porte la vision du produit Ó dÚvelopper et reprÚsente les besoins des utilisateurs ou du
+mÚtier.IltravailleencollaborationdirecteaveclÆÚquipededÚveloppementetestresponsable
+delagestionduProductBacklog,cÆest-Ó-diredelalistedesfonctionnalitÚsÓrÚaliser,enfixant
+leur ordre de prioritÚ selon la valeur mÚtier.
+ò Scrum Master : Ramzi IGHIL
+Membre Ó part entiÞre de lÆÚquipe projet, il veille Ó la bonne application des principes et
+pratiques de Scrum. Il joue un r¶le de facilitateur, aide lÆÚquipe Ó surmonter les obstacles et
+sÆassure que le cadre mÚthodologique est respectÚ.
+ò ╔quipededÚveloppement:EricMARIADASSOU(DevOps),MohsenGHANMI(RÚfÚrent
+Technique), Dhouha OUJI (Business Analyste), Nesrine BEN SIDHOM (DÚveloppeur)
+Il sÆagit dÆune Úquipe multi-compÚtente et auto-organisÚe, chargÚe de la rÚalisation des
+besoins dÚfinis par le Product Owner en fonctionnalitÚs utilisables et responsable de la
+qualitÚ du livrable.
+Les artÚfacts Scrum servent Ó assurer la transparence et le suivi de lÆavancement du projet.
+Ils se divisent principalement en deux catÚgories :
+15
+
+=== PAGE 29 ===
+Chapitre 1. Etude prÚliminaire
+ò Product Backlog : Il sÆagit de la liste ordonnÚe de toutes les fonctionnalitÚs, amÚliorations
+et corrections potentielles du produit. CÆest la seule source officielle des besoins Ó mettre en
+£uvre, et il est sous la responsabilitÚ du Product Owner.
+ò Sprint Backlog : Il est dÚrivÚ du Product Backlog et contient les ÚlÚments sÚlectionnÚs
+pour un sprint donnÚ. LÆÚquipe de dÚveloppement choisit ces ÚlÚments lors de la rÚunion de
+planification du sprint et en assure la gestion tout au long de lÆitÚration.
+Scrum dÚfinit Úgalement un ensemble de cÚrÚmonies (ou rÚunions) destinÚes Ó assurer la
+coordination, la planification et lÆamÚlioration continue :
+ò MÛlÚe quotidienne (Daily Scrum) : BrÞve rÚunion de synchronisation (souvent debout)
+quipermetÓlÆÚquipedefairelepointsurlÆavancement,lesobstaclesrencontrÚsetlesactions
+du jour.
+ò Planification du sprint (Sprint Planning) : RÚunion au cours de laquelle le Product
+Owner et lÆÚquipe de dÚveloppement dÚfinissent les objectifs et sÚlectionnent les ÚlÚments
+du Product Backlog Ó inclure dans le Sprint Backlog.
+ò Revuedusprint(SprintReview):RÚuniondeprÚsentationetdÆÚvaluationdelÆincrÚment
+rÚalisÚ pendant le sprint, afin de recueillir les retours des parties prenantes et dÆajuster le
+backlog si nÚcessaire.
+ò RÚtrospective du sprint (Sprint Retrospective) : SÚance dÆamÚlioration continue qui
+suit la revue du sprint. LÆÚquipe y analyse son fonctionnement interne et identifie les points
+Ó amÚliorer pour les prochains sprints.
+Lafigure1.5illustrelesdiffÚrentsr¶les,artÚfactsetcÚrÚmoniesdeScrum,ainsiqueledÚroulement
+global du processus.
+Figure 1.5 : Cycle de vie de la mÚthodologie Scrum
+16
+
+=== PAGE 30 ===
+Chapitre 1. Etude prÚliminaire
+1.4.3 MÚthodologie de conception adoptÚe
+Le choix dÆun langage de modÚlisation adaptÚ constitue une Útape essentielle dans la phase de
+conception dÆun projet logiciel. Pour notre projet, nous avons optÚ pour le langage UML (Unified
+Modeling Language), qui sÆimpose comme un standard de modÚlisation universel, formel et normalisÚ.
+Ce langage permet de structurer lÆanalyse, de faciliter la comprÚhension de systÞmes complexes et de
+reprÚsenter de maniÞre cohÚrente les diffÚrentes vues dÆun mÛme systÞme. GrÔce Ó sa polyvalence et Ó
+sa souplesse, UML offre uncadre mÚthodologique clair,favorisant la communicationentreles diffÚrents
+acteurs du projet [5].
+Afin dÆallÚger le contenu de ce rapport et dÆÚviter de surcharger la prÚsentation par des dÚtails
+trop techniques, seuls les diagrammes les plus pertinents Ó la comprÚhension du projet sont prÚsentÚs.
+Parmi ceux-ci, nous distinguons :
+ò DiagrammedecasdÆutilisation:IlpermetderecenseretdereprÚsenterlesfonctionnalitÚs
+principales du systÞme du point de vue des utilisateurs (ou acteurs).
+ò Diagramme de classes : Il fournit une reprÚsentation statique du systÞme, mettant en
+Úvidencelesclasses,leursattributs,leursmÚthodesainsiquelesrelationsexistantentreelles.
+ò Diagramme de sÚquence : Il dÚcrit le dÚroulement temporel des interactions entre les
+objets du systÞme et illustre le comportement dynamique du logiciel.
+ò Diagramme dÆactivitÚs : Il modÚlise les diffÚrents encha¯nements de traitements et met
+en Úvidence les flux de contr¶le et de donnÚes au sein du processus.
+Conclusion
+Ce chapitre a permis de situer le projet dans son contexte gÚnÚral en prÚsentant lÆorganisme
+dÆaccueil, en mettant en Úvidence les besoins de lÆentreprise et en exposant la valeur ajoutÚe de la
+solution proposÚe. Il a Úgalement dÚcrit la mÚthodologie de travail adoptÚe pour structurer et affiner
+notre Útude.
+Le chapitre suivant sera consacrÚ Ó lÆanalyse des besoins du projet, rÚalisÚe selon la mÚthodologie
+Scrum.
+17
+
+=== PAGE 31 ===
+Chapitre 2
+Analyse et spÚcification des besoins
+Plan
+1 SpÚcification des besoins . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+2 Analyse globale. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+3 Elaboration du Backlog produit . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+4 Planification du travail . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+5 Architecture de la solution . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+6 Choix techniques . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30
+7 Mise en place de la solution DevOps . . . . . . . . . . . . . . . . . . . . . . . 31
+18
+
+=== PAGE 32 ===
+Chapitre 2. Analyse et spÚcification des besoins
+Introduction
+Ce chapitre a pour objectif de prÚsenter lÆensemble des acteurs impliquÚs dans lÆapplication
+ainsi que les besoins fonctionnels associÚs. Cette premiÞre Útape permettra de structurer le backlog
+produit et de garantir une comprÚhension prÚcise et partagÚe des exigences du projet.
+Dans un second temps, une analyse globale sera rÚalisÚe afin de dÚcrire lÆarchitecture Ó adopter
+par la solution proposÚe. Enfin, le chapitre se conclura par la planification des sprints, illustrant
+lÆorganisation et le dÚroulement du dÚveloppement du projet.
+2.1 SpÚcification des besoins
+Dans cette section, nous allons identifier les acteurs ainsi que les besoins fonctionnels et non
+fonctionnels.
+2.1.1 Identification des acteurs
+Afin de bien comprendre le pÚrimÞtre et les interactions de lÆapplication, nous allons dÚfinir
+dans cette partie les diffÚrents acteurs. Ces acteurs se divisent en deux groupes principaux : les acteurs
+internes (les utilisateurs de REFI) et les acteurs externes (les systÞmes dÆinformation partenaires avec
+lesquels REFI communique pour Úchanger des donnÚes).
+2.1.1.1 Identification des acteurs internes
+Notre application REFI comporte trois r¶les dÆutilisateurs internes principaux qui sont :
+ò Administrateur :
+LÆadministrateur est chargÚ de paramÚtrer et de superviser le bon fonctionnement global de
+REFI. Il assure la cohÚrence des donnÚes mÚtiers en gÚrant les modules de configuration des
+rÚfÚrentiels essentiels.
+ò Pilote dÆActivitÚ GP (Grand Public) :
+CÆest lÆutilisateur principal de REFI. Son r¶le est de coordonner et suivre les expertises
+contradictoires sur sa zone gÚographique attribuÚe. Il utilise lÆinterface pour consulter les
+crÚneauxdisponiblesetplanifierlerendez-vousdÆexpertiseuniqueentreOrangeetlÆopÚrateur
+dÆinfrastructure dÚdiÚ.
+ò Pilote Gestionnaire PERF :
+19
+
+=== PAGE 33 ===
+Chapitre 2. Analyse et spÚcification des besoins
+Bien quÆil nÆintervienne pas directement dans la planification, le pilote PERF consulte et
+exploite les donnÚes de statut et dÆhistorique issues de REFI Ó des fins de reporting et
+dÆanalyse de la qualitÚ. Il suit les indicateurs de performance (taux de succÞs, dÚlais moyens
+de rÚservation) afin dÆÚvaluer la qualitÚ du processus et dÆidentifier les axes dÆamÚlioration
+technique.
+2.1.1.2 Identification des acteurs externes
+Les acteurs externes sont principalement des systÞmes tiers interne Ó Orange avec lesquels
+REFI interagit pour Úchanger des informations techniques, planifier des interventions ou synchroniser
+les statuts mÚtiers :
+ò OC╔ANE :
+CÆest le systÞme central dÆOrange. Il sert de rÚfÚrentiel unique pour crÚer et tracer tous les
+types des tickets dÆincident clients.
+ò KYAKU :
+LÆinterface qui gÞre le plan de charge des OC, cÆest-Ó-dire les disponibilitÚs en temps rÚel
+des techniciens commerciaux dÆOrange.
+ò IPSITE :
+Il sÆagit de lÆAPI dÆÚchange normalisÚe et uniformisÚe dÚfinie par lÆARCEP, utilisÚe pour la
+transmission des demandes de tickets entre opÚrateurs dans le cadre de la mutualisation des
+rÚseaux en France. Elle assure le routage des informations vers lÆOI concernÚ, garantissant
+un standard de communication commun malgrÚ lÆhÚtÚrogÚnÚitÚ des systÞmes dÆinformation
+propres Ó chaque opÚrateur dÆinfrastructure.
+ò ZBUS (SystÞme de Messagerie) :
+LeZBUSestlÆinterfacedecommunicationquigÞrelesÚchangesdemessagesetdenotifications
+avec le systÞme OC╔ANE. Dans ce contexte prÚcis, son r¶le est dÆassurer la distribution des
+messages liÚs aux tickets OC╔ANE pour lesquels une intervention dans REFI est en cours,
+donc les retours dÆinformation associÚs Ó lÆavancement de ces interventions.
+ò IPON :
+CÆest un systÞme dÆinventaire technique et cartographique qui fournit des informations
+dÚtaillÚes sur lÆinfrastructure. Il est interrogÚ via son API spÚcifiquement pour obtenir les
+rÚfÚrences des points de raccordement physiques tels que le PTO (Point de Terminaison
+Optique) en se basant sur lÆidentifiant dÆaccÞs client.
+20
+
+=== PAGE 34 ===
+Chapitre 2. Analyse et spÚcification des besoins
+2.1.2 Identification des besoins fonctionnels
+Notre projet se base sur la mise en place de la plateforme REFI (RÚferentiel dÆExpertise
+contraductoire Fibre). Cette application a pour objectif de faciliter la gestion, la planification et le
+suivi des expertises contradictoires entre Orange et les opÚrateurs dÆinfrastructure tiers.
+Pour cela nous avons 3 acteurs qui interagissent avec notre systÞme :
+LÆadministrateur doit pouvoir :
+ù GÚrer lÆensemble des rÚfÚrentiels gÚographiques et organisationnels :
+Inclut les codes INSEE, les communes, les dÚpartements concernÚs, et les unitÚs
+clientÞles et industrielles (UCI).
+ù GÚrerlesressourcestechniques:GÚrerlesfichesdestechniciensOC(OpÚrateur
+Commercial) Úligibles aux interventions.
+ù Superviser et maintenir le systÞme : Consulter les journaux dÆerreurs et les
+logs des Úchanges API pour assurer le bon fonctionnement du systÞme.
+Le pilote GP doit pouvoir :
+ù Consulter la liste des expertises contradictoires de sa zone gÚographique.
+ù CrÚer et planifier un rendez-vous dÆexpertise.
+ù Annuler, reporter et valider un rendez-vous planifiÚ.
+ù AjouteretconsulterlescommentairesÚchangÚsaveclesopÚrateursinfrastructure.
+ù Suivre lÆÚtat dÆavancement des interventions dans son pÚrimÞtre.
+Le pilote Gestionnaire PERF doit pouvoir :
+ù Consulter les indicateurs de performance qualitÚ : Visualiser le tableau de
+bord des indicateurs (taux de rÚussite, dÚlais moyens de rÚservation) pour Úvaluer
+lÆefficacitÚ du processus.
+ù AccÚderauxdonnÚesdÆhistorique:ConsulterlesdonnÚesglobalesdesinterventions
+Ó des fins dÆanalyse de la qualitÚ du diagnostic initial.
+2.1.3 Identification des besoins non fonctionnels
+LÆefficacitÚdelaplateformeREFIreposenonseulementsursesaspectsfonctionnelsdeplanification,
+mais Úgalement sur des aspects non fonctionnels qui garantissent une expÚrience utilisateur optimale
+pour les pilotes dÆactivitÚ GP et la fiabilitÚ des Úchanges inter-opÚrateurs.
+21
+
+=== PAGE 35 ===
+Chapitre 2. Analyse et spÚcification des besoins
+ò SÚcuritÚ : La plateforme doit garantir la confidentialitÚ et lÆintÚgritÚ des donnÚes sensibles,
+en assurant lÆaccÞs uniquement aux utilisateurs internes autorisÚs.
+Exigences clÚs :
+- Authentification : Mise en £uvre de lÆauthentification unique (SSO) via les systÞmes
+internes dÆOrange pour gÚrer lÆaccÞs des utilisateurs (pas de stockage des mots de
+passe au niveau de REFI).
+- Protection : Chiffrement systÚmatique des Úchanges via HTTPS.
+- DÚfense:ProtectioncontrelesvulnÚrabilitÚscourantes(intÚgrationdÆunjetonanti-CSRF
+aux formulaires).
+ò Ergonomie et ExpÚrience Utilisateur :LÆapplicationdoitÛtreintuitive,facileÓprendre
+en main et offrir des interfaces conviviales pour minimiser la charge cognitive des pilotes
+GP.
+Exigences clÚs :
+- Design:InterfacesclairesconformesÓlachartegraphiqueetauxstandardsdÆOrange.
+- CompatibilitÚ : Design responsive pour une utilisation efficace sur diffÚrents supports
+(PC, tablette).
+- AccessibilitÚ : CompatibilitÚ assurÚe avec les principaux navigateurs web utilisÚs par
+lÆentreprise (Chrome, Edge, Firefox).
+ò FiabilitÚetDisponibilitÚ:LesystÞmedoitgarantirunehautedisponibilitÚetlacontinuitÚ
+du service, compte tenu du r¶le critique de la plateforme dans le SAV Fibre.
+Exigences clÚs :
+- DisponibilitÚ : Architecture permettant un dÚploiement multi-sites avec rÚpartition
+de charge (load balancing).
+- RÚsilience : CapacitÚ Ó garantir la reprise sur un autre n£ud en cas de dÚfaillance
+matÚrielle ou logicielle.
+- StabilitÚ : Mise en place de tests de non-rÚgression automatisÚs pour valider chaque
+mise Ó jour.
+ò MaintenabilitÚ et ScalabilitÚ : La plateforme doit pouvoir Úvoluer facilement pour
+intÚgrerdenouvellesfonctionnalitÚsoudesopÚrateursdÆinfrastructuresupplÚmentairessans
+impact majeur sur le service existant.
+Exigences clÚs :
+- Architecture : Conception selon une architecture modulaire et dÚcouplÚe.
+- ╔volutivitÚ : Application rigoureuse des bonnes pratiques de dÚveloppement et dÆune
+22
+
+=== PAGE 36 ===
+Chapitre 2. Analyse et spÚcification des besoins
+gestion de versioning claire pour faciliter les Úvolutions et les montÚes en charge.
+2.2 Analyse globale
+Dans cette section, nous prÚsenterons le diagramme de cas dÆutilisation global ainsi que le
+diagramme de classes, offrant une vue dÆensemble sur le fonctionnement du systÞme et la structure de
+ses principales entitÚs.
+2.2.1 Diagramme de cas dÆutilisation global
+La Figure 2.1 montre le diagramme de cas dÆutilisation global de notre projet REFI.
+Figure 2.1 : Diagramme de cas dÆutilisation global
+23
+
+=== PAGE 37 ===
+Chapitre 2. Analyse et spÚcification des besoins
+2.2.2 Diagramme de classes dÆanalyse global
+La Figure 2.2 montre le diagramme de classes dÆanalyse global de notre solution.
+Figure 2.2 : Diagramme de classes global
+2.3 Elaboration du Backlog produit
+Dans Scrum, le Backlog produit a pour objectif dÆassurer le bon dÚroulement du projet en
+regroupant lÆensemble des exigences liÚes au produit. Ces exigences sont ensuite transformÚes en une
+liste de fonctionnalitÚs permettant de dÚfinir clairement le produit final.
+Pour notre projet, nous allons dÚcouper son Backlog produit par "Sprint" o¨ chaque "Sprint"
+24
+
+=== PAGE 38 ===
+Chapitre 2. Analyse et spÚcification des besoins
+possÞde des "User Story" qui lui sont spÚcifiques. Notre tableau 2.1 est caractÚrisÚ par les champs
+suivants :
+ù ID : Identifiant unique auto-incrÚmentÚ.
+ù User Story : ScÚnario dÚcrivant la valeur ajoutÚe du travail, Úgalement appelÚ ½ Business
+Value ╗. Les utilisateurs concernÚs peuvent inclure aussi bien les clients que les membres de
+lÆÚquipe de rÚalisation du projet.
+ù PrioritÚ : Valeur numÚrique attribuÚe par le Product Owner Ó chaque User Story pour en
+dÚterminer lÆimportance relative.
+ù Charge : Estimation du nombre de jours nÚcessaires Ó la rÚalisation de la tÔche.
+ID PrioritÚ User Story Charge
+User Story 1 1 En tant que Pilote GP, je peux mÆauthentifier. 4
+User Story 2 7 En tant que Pilote GP, je peux consulter mon profil. 1
+User Story 3 2 En tant quÆadministrateur, je peux gÚrer (crÚer, 2.5
+modifier, supprimer) les codes INSEE.
+User Story 4 3 En tant quÆadministrateur, je peux gÚrer (crÚer, 2.5
+modifier, supprimer) les unitÚs clientÞles et
+industrielles.
+User Story 5 4 En tant quÆadministrateur, je peux gÚrer (crÚer, 2.5
+modifier, supprimer) les dÚpartements.
+User Story 6 5 En tant quÆadministrateur, je peux gÚrer (crÚer, 2.5
+modifier, supprimer) les communes.
+User Story 7 6 En tant quÆadministrateur, jÆai la possibilitÚ de gÚrer 2.5
+(crÚer,modifier,supprimer)lalistedestechniciensOC.
+User Story 8 8 En tant que Pilote GP, je dois pouvoir rechercher 20
+et consulter les crÚneaux disponibles des opÚrateurs
+(OC/OI), qui sont rÚcupÚrÚs depuis les systÞmes
+externes KYAKU et IPSITE, dans le cadre du
+processus dÆexpertise contradictoire.
+25
+
+=== PAGE 39 ===
+Chapitre 2. Analyse et spÚcification des besoins
+User Story 9 9 En tant que Pilote GP, je dois pouvoir gÚrer 20
+les interventions (planification, consultation,
+modification, suppression) et valider, annuler ou
+reporter les rendez-vous dÆinterventions planifiÚes, en
+fonction des retours des opÚrateurs dÆinfrastructure
+qui sont automatiquement rÚcupÚrÚs depuis OC╔ANE
+via lÆÚcoute du flux ZBUS.
+User Story 10 10 En tant que pilote GP, je dois pouvoir suivre lÆanalyse 20
+automatique des retours OI effectuÚe par le moteur
+RAG du systÞme REFI, afin que lÆintention dÚtectÚe
+dÚclencheautomatiquementlamiseÓjourdustatutde
+lÆintervention ainsi que lÆaction mÚtier correspondante
+(annulation, replanification ou confirmation).
+User Story 11 11 En tant que Pilote Gestionnaire PERF, Je souhaite 20
+pouvoir monitorer les actions dÆautomatisation et les
+indicateurs clÚs de performance (KPI) afin dÆÚvaluer
+la qualitÚ du processus et dÆidentifier les axes
+dÆamÚlioration.
+Tableau 2.1 : Le Backlog produit global
+2.4 Planification du travail
+AprÞs avoir Útabli le Backlog produit et attribuÚ une estimation Ó chaque User Story, lÆÚquipe
+projet organise une rÚunion de planification des Sprints dans le but dÆorganiser et de sÚquencer le
+travail de dÚveloppement.
+2.4.1 RÚpartition des sprints
+LeplandelivraisonestdivisÚen2ReleasesmajeuressuivantunestratÚgiedelivraisonincrÚmentale.
+- La Release 1 dÚlivre un socle fonctionnel complet de REFI, immÚdiatement utilisable par
+les parties prenantes, couvrant lÆensemble du cycle de vie des interventions.
+- LaRelease2seconcentresurlÆamÚliorationduprocessusvialÆautomatisationdutraitement
+des retours et le monitoring.
+26
+
+=== PAGE 40 ===
+Chapitre 2. Analyse et spÚcification des besoins
+La rÚpartition dÚtaillÚe des Sprints est prÚsentÚe dans le tableau 2.2.
+Release Contenu des sprints
+- Sprint 1 : Authentification et administration des
+donnÚes de rÚfÚrence REFI.
+Release 1 : Mise en place du socle - Sprint 2 : RÚcupÚration, Synchronisation &
+fonctionnel de REFI CorrÚlation des Plans de Charge OC/OI.
+- Sprint 3 : Workflow de gestion des expertises
+contradictoires.
+- Sprint 4 : Automatisation du traitement des retours
+Release 2 : Automatisation du
+OI via moteur RAG.
+traitementdesretours&Monitoring
+- Sprint 5 : Module de Monitoring.
+Tableau 2.2 : Planification des Sprints par Release
+2.4.2 Planification des sprints
+La figure 2.3 reprÚsente le diagramme de Gantt illustrant la rÚpartition des "User Story" par
+Sprint tout au long de la pÚriode de stage.
+Figure 2.3 : Planification globale des sprints
+2.5 Architecture de la solution
+Danscettepartiedurapport,nousallonsprÚsenterenpremierlieulÆarchitectureglobaleadoptÚe
+par notre outil, cette prÚsentation permet de comprendre la structure technique sur laquelle repose la
+solution REFI.
+27
+
+=== PAGE 41 ===
+Chapitre 2. Analyse et spÚcification des besoins
+2.5.1 Architecture physique
+Pour notre application, nous avons choisi dÆadopter une architecture 3-tiers. Il sÆagit de diviser
+notre systÞme en trois couches comme le montre la figure 2.4, qui sont :
+ò Couche de prÚsentation : correspondantÓlÆaffichage,larestitutionsurlepostedetravail
+et le dialogue avec lÆutilisateur.
+ò Couche applicative : oucouchemÚtier,ellecorrespondautraitementmÚtierdesdonnÚes,
+Ó la mise en £uvre des rÞgles de gestion et de la logique applicative.
+ò CouchededonnÚes: dÚdiÚeÓlÆaccÞsauxdonnÚespersistantes,cÆest-Ó-direcellesdestinÚes
+Ó Ûtre conservÚes sur la durÚe, voire de maniÞre dÚfinitive [6].
+Figure 2.4 : Architecture physique 3-tiers
+2.5.2 Architecture logicielle du socle REFI
+LÆarchitecture logicielle dÚcrit lÆorganisation gÚnÚrale du systÞme ainsi que la maniÞre dont il
+est dÚcoupÚ en diffÚrents sous-systÞmes. La figure 2.5 prÚsente lÆarchitecture logicielle adoptÚe dans
+notre application REFI, conþue selon le modÞle Model-View-Controller (MVC). Ce modÞle favorise la
+flexibilitÚ de lÆapplication, facilite les Úvolutions et les opÚrations de maintenance futures, et encourage
+la rÚutilisation des composants [7].
+LÆarchitecture de notre application sÆarticule autour des ÚlÚments suivants :
+ò LacouchedeprÚsentation(View): EllecorrespondÓlÆinterfaceutilisateurdelÆapplication.
+Dans Symfony, cette couche est gÚrÚe par le moteur de templates Twig, qui se charge
+dÆafficherlesdonnÚesreþuesdepuislecontr¶leur.EllecontientlespagesHTML,lesformulaires
+et les ÚlÚments graphiques visibles par lÆutilisateur. Son r¶le est uniquement de prÚsenter
+lÆinformation sans contenir de logique mÚtier.
+ò La couche de contr¶le (Controller) : Elle assure la liaison entre la vue et le modÞle. Le
+28
+
+=== PAGE 42 ===
+Chapitre 2. Analyse et spÚcification des besoins
+contr¶leur reþoit les requÛtes HTTP envoyÚes par lÆutilisateur, exÚcute la logique nÚcessaire
+en faisant appel aux services ou aux managers, puis transmet les donnÚes appropriÚes Ó la
+vue. Dans Symfony, chaque contr¶leur hÚrite de la classe AbstractController et joue un
+r¶le central dans la gestion des routes et des rÚponses.
+ò La couche de modÞle (Model) : ElleregroupelalogiquemÚtieretlagestiondesdonnÚes.
+Le modÞle repose sur Doctrine ORM, qui permet de manipuler les entitÚs et dÆinteragir avec
+la base de donnÚes sans Úcrire directement des requÛtes SQL. Cette couche comprend :
+- les entitÚs, reprÚsentant les tables de la base de donnÚes;
+- les repositories, responsables des opÚrations de lecture et dÆÚcriture;
+- la logique mÚtier, implÚmentÚe dans des services ou managers dÚdiÚs.
+Figure 2.5 : Architecture MVC
+2.5.3 Architecture RAG
+LÆarchitecture RAG combine deux Útapes principales : la recherche sÚmantique dÆinformations
+pertinentesetlagÚnÚrationdetexteparungrandmodÞledelangage(LLM),commelemontrelafigure
+2.6. Elle permet Ó lÆapplication dÆenrichir les rÚponses produites par lÆIA grÔce Ó des donnÚes internes,
+garantissant une meilleure prÚcision et une mise Ó jour continue des connaissances [8].
+Elle comprend principalement :
+ò Framework dÆorchestration : le c£ur du systÞme, il coordonne les Úchanges entre les
+diffÚrentes composantes (recherche, gÚnÚration, post-traitement).
+ò Base de donnÚes vectorielle : stocke les reprÚsentations vectorielles des documents et
+permet la recherche sÚmantique du contenu le plus pertinent.
+29
+
+=== PAGE 43 ===
+Chapitre 2. Analyse et spÚcification des besoins
+ò LLM (Large Language Model) : modÞle de langage gÚnÚratif responsable de produire
+les rÚponses enrichies Ó partir des informations rÚcupÚrÚes.
+ò Module de post-traitement : assurelamiseenformeetlÆadaptationdelarÚponseavant
+son envoi Ó lÆutilisateur ou lÆexÚcution de lÆaction.
+Figure 2.6 : Architecture RAG
+2.6 Choix techniques
+Plusieurs outils, technologies et langages ont ÚtÚ mobilisÚs pour la rÚalisation de ce projet. Afin
+de faciliter leur prÚsentation et de mettre en Úvidence leur r¶le respectif, nous les avons regroupÚs et
+classÚs dans les catÚgories suivantes : outils de dÚveloppement, Stockage, Composants IA et Langages
+de programmation.
+2.6.1 Outils de dÚveloppement
+ò Visual Studio Code : est un Úditeur de code source lÚger mais puissant, disponible pour
+Windows, macOS et Linux. Il offre un support intÚgrÚ pour JavaScript, TypeScript et
+Node.js,ainsiquÆunricheÚcosystÞmedÆextensionspourdÆautreslangagesetenvironnements
+[9].
+2.6.2 Langage de programmation
+ò EPO (╔cosystÞme PHP dÆOrange) : est un framework interne Ó Orange, basÚ sur
+Symfony / PHP. Il intÞgre par dÚfaut la charte graphique Orange ainsi que plusieurs outils
+communs Ó lÆentreprise, tels que la gestion de la sÚcuritÚ, lÆauthentification (SSO) et le
+partage de composants rÚutilisables entre projets [10].
+ò Python : est un langage de programmation puissant et facile Ó apprendre. Il dispose
+30
+
+=== PAGE 44 ===
+Chapitre 2. Analyse et spÚcification des besoins
+de structures de donnÚes de haut niveau et permet une approche simple mais efficace de
+la programmation orientÚe objet. Parce que sa syntaxe est ÚlÚgante, que son typage est
+dynamique et quÆil est interprÚtÚ, Python est un langage idÚal pour lÆÚcriture de scripts et
+le dÚveloppement rapide dÆapplications dans de nombreux domaines et sur la plupart des
+plateformes [11].
+2.6.3 Bases de donnÚes et stockage
+ò MariaDB : est un outil logiciel open source de gestion de base de donnÚes relationnelle qui
+permet de stocker, gÚrer et interroger des donnÚes de maniÞre structurÚe. Il est utilisÚ pour
+alimenter des applications web, des logiciels internes et rÚaliser des analyses de donnÚes.
+Conþu Ó lÆorigine comme une alternative Ó MySQL, il offre des performances ÚlevÚes et de
+nombreuses fonctionnalitÚs avancÚes, comme une compatibilitÚ binaire avec MySQL et un
+large choix de moteurs de stockage [12].
+ò ChromaDB : est une base de donnÚes vectorielle open source conþue pour stocker et
+interrogerdes½embeddings╗(reprÚsentationsnumÚriquesdedonnÚes)pourlesapplications
+dÆintelligence artificielle, notamment les grands modÞles de langage (LLM). Son objectif
+principalestderendrelestockageetlarecherchededonnÚessimilairessimplesetperformants,
+comme le font les systÞmes de recommandation ou de recherche dÆimages [13].
+2.6.4 Composants IA
+ò Ollama :estunoutilopensourceetunframeworklÚgerpermettantdetÚlÚcharger,exÚcuter
+etgÚrerdegrandsmodÞlesdelangage(LLM)localementsurunordinateur,sansnÚcessiterde
+connexionInternetconstante.Contrairementauxservicescloud,iloffreplusdeconfidentialitÚ,
+destempsderÚponseplusrapidesetuncontr¶letotal,enseconcentrantsurlasimplification
+du dÚploiement et de lÆutilisation des modÞles dÆIA. Il fournit une API simple pour interagir
+avec ces modÞles, qui peuvent Ûtre exÚcutÚs sur plusieurs systÞmes dÆexploitation [14].
+2.7 Mise en place de la solution DevOps
+DevOps est un ensemble de pratiques visant Ó amÚliorer la collaboration entre les dÚveloppeurs
+et les Úquipes opÚrationnelles. Il automatise la livraison de logiciels, la gestion des infrastructures et les
+tests, afin dÆaccÚlÚrer le dÚploiement, de rÚduire les erreurs et de garantir la qualitÚ des applications.
+31
+
+=== PAGE 45 ===
+Chapitre 2. Analyse et spÚcification des besoins
+2.7.1 Pipeline DevOps
+Un pipeline DevOps est un ensemble de pratiques permettant aux Úquipes de dÚveloppement
+et dÆexploitation de crÚer, tester et dÚployer des logiciels rapidement, tout en maintenant un processus
+organisÚ et ma¯trisÚ [15].
+Le pipeline DevOps automatise le cycle de vie du dÚveloppement logiciel Ó travers six Útapes
+principales :
+- Plan : planification du travail et des sprints avant le dÚveloppement.
+- DÚvelopper : Úcriture du code et gestion via un systÞme de versioning.
+- Build : compilation et dÚtection prÚcoce des erreurs.
+- Test : exÚcution de tests manuels et automatisÚs (fonctionnels, sÚcuritÚ, performance).
+- Deploy : mise en production, souvent automatisÚe ou en prÚproduction selon lÆampleur des
+changements.
+- Monitor : surveillance continue des systÞmes et applications pour assurer la stabilitÚ et la
+performance.
+Cette structure comme le montre la figure 2.7 favorise lÆintÚgration et le dÚploiement continus,
+tout en renforþant la collaboration entre les Úquipes de dÚveloppement et dÆexploitation.
+Figure 2.7 : Pipeline DevOps
+2.7.2 Architecture DevOps avec les outils intÚgrÚs
+LÆarchitectureDevOpsmiseenplacedanslecadreduprojetREFIapourobjectifdÆautomatiser
+etdefiabiliserlÆensembleducyclededÚveloppement,delaconstructionducodejusquÆÓsondÚploiement.
+Elle repose sur lÆutilisation de GitLab CI/CD pour lÆorchestration des pipelines, associÚs Ó un runner
+local exÚcutant les diffÚrents jobs dans des conteneurs Docker, garantissant ainsi un environnement
+dÆexÚcution isolÚ et reproductible.
+LeprocessusestdÚclenchÚÓchaquepushdecodesurledÚp¶tGitLab.Lefichierdeconfiguration
+32
+
+=== PAGE 46 ===
+Chapitre 2. Analyse et spÚcification des besoins
+.gitlab-ci.yml dÚfinit les diffÚrentes Útapes de la pipeline : lÆanalyse de sÚcuritÚ avec Checkmarx,
+installation des dÚpendances, lÆexÚcution des tests, lÆanalyse de la qualitÚ du code avec SonarQube
+avant toute mise en production, et enfin le dÚploiement automatique sur Cloud Foundry. └ chaque
+Útape, des artefacts sont gÚnÚrÚs et transmis aux phases suivantes.
+Cette architecture illustrÚe dans la figure 2.8 permet de centraliser les flux de dÚveloppement,
+dÆamÚliorer la collaboration entre les Úquipes et de renforcer la fiabilitÚ du processus de livraison
+logicielle.
+Figure 2.8 : Architecture DevOps avec les outils intÚgrÚs dans lÆapplication
+2.7.2.1 Outils utilisÚs
+ò GitLab : est un outil de gestion de projet logiciel qui fonctionne comme une plateforme
+DevOps tout-en-un. Il sÆappuie sur le logiciel de gestion de versions Git pour permettre aux
+Úquipesdecollaborersurlecodesource,degÚrerlespipelinesdÆintÚgrationetdedÚploiement
+continus (CI/CD), et de suivre les projets de maniÞre centralisÚe. GitLab intÞgre des outils
+pour la planification, la sÚcuritÚ et le dÚploiement de logiciels, couvrant lÆensemble du cycle
+de vie du dÚveloppement [16].
+ò Docker : est un outil logiciel open source qui permet aux dÚveloppeurs de crÚer, dÚployer
+etgÚrerdesapplicationsenutilisantdesconteneurs.UnconteneurestuneunitÚstandardisÚe
+quiregroupeuneapplicationettoutessesdÚpendances(bibliothÞques,fichiersdeconfiguration,
+etc.)pourgarantirquÆellesÆexÚcutedemaniÞreidentiquedansnÆimportequelenvironnement.
+LÆoutil simplifie le dÚveloppement et le dÚploiement en encapsulant les applications et leurs
+environnements dans ces conteneurs isolÚs, amÚliorant ainsi la portabilitÚ et la cohÚrence
+33
+
+=== PAGE 47 ===
+Chapitre 2. Analyse et spÚcification des besoins
+[17].
+ò Checkmarx : est une plateforme dÆanalyse de sÚcuritÚ des applications logicielles qui
+aide Ó identifier et corriger les vulnÚrabilitÚs dans le code source, les bibliothÞques et les
+dÚpendances dÆun logiciel. Son objectif est dÆintÚgrer la sÚcuritÚ Ó toutes les Útapes du
+dÚveloppement, afin de crÚer des applications plus s¹res dÞs le dÚpart et dÆÚviter les failles
+avant leur mise en production [18].
+ò SonarQube:estunoutildÆanalysestatiqueopensourcequiaidelesÚquipesdedÚveloppement
+Ó amÚliorer la qualitÚ et la sÚcuritÚ de leur code source. Il dÚtecte les bugs, les vulnÚrabilitÚs,
+le code dupliquÚ et les ½ code smells ╗, et sÆintÞgre dans les pipelines CI/CD pour une
+intÚgration continue de la qualitÚ du code. Son objectif est de simplifier le processus de
+dÚveloppement et de permettre aux dÚveloppeurs de rÚsoudre les problÞmes le plus t¶t
+possible [19].
+ò Cloud Foundry : est une plateforme open source de type PaaS conþue pour simplifier
+le dÚveloppement, le dÚploiement et lÆexÚcution dÆapplications cloud natives. Elle permet
+aux dÚveloppeurs de se concentrer sur le code plut¶t que sur lÆinfrastructure sous-jacente,
+en automatisant le cycle de vie complet des applications. Cette plateforme prend en charge
+plusieurs langages et environnements, et son architecture multi-cloud Úvite le verrouillage
+par un fournisseur unique [20].
+Conclusion
+CechapitreapermisdÆidentifierlesacteurs,ainsiquelesbesoinsfonctionnelsetnonfonctionnels
+de la plateforme REFI, tout en prÚsentant lÆarchitecture technique et logicielle qui sera adoptÚe lors
+des phases de rÚalisation. Il a Úgalement prÚsentÚ la mise en place du pipeline DevOps, illustrant le
+processus dÆintÚgration et de dÚploiement continus, ainsi que les outils mis en £uvre pour garantir la
+qualitÚetlafiabilitÚduprojet.LÆÚlaborationdubacklogetlaplanificationdessprintsoffrentunevision
+claire du dÚroulement du projet et de ses prioritÚs. Enfin, les choix technologiques adoptÚs assurent
+une solution performante, Úvolutive et conforme aux standards internes dÆOrange. Cette base solide
+servira de fondation au dÚveloppement et Ó la mise en £uvre des fonctionnalitÚs du projet REFI.
+34
+
+=== PAGE 48 ===
+Chapitre 3
+Release 1 : Mise en place du socle
+fonctionnel de REFI
+Plan
+1 Sprint 1 : Authentification & Administration des donnÚes de rÚfÚrence
+REFI . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 36
+2 Sprint 2 : RÚcupÚration, Synchronisation & CorrÚlation des Plans de
+Charge OC/OI . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+3 Sprint 3 : Workflow de gestion des expertises contradictoires . . . . . . . 58
+35
+
+=== PAGE 49 ===
+Chapitre 3. Release 1 : Mise en place du socle fonctionnel de REFI Sprint 1
+Introduction
+Cette section prÚsente la premiÞre release du projet REFI, organisÚe autour de trois sprints
+successifsvisantÓÚtablirlesoclefonctionneldelaplateforme.LeSprint1seconcentresurlÆauthentification
+et lÆadministration des donnÚes de rÚfÚrence, alors que le Sprint 2 sÆoccupe de la rÚcupÚration, de la
+synchronisation et de la corrÚlation des plans de charge entre lÆopÚrateur commercial et lÆopÚrateur
+dÆinfrastructure. Enfin, le Sprint 3 met en place le workflow de gestion des expertises contradictoires,
+couvrant lÆensemble du cycle opÚrationnel des interventions.
+Pour chaque sprint, nous commencerons par prÚsenter les objectifs ainsi que le Sprint Backlog
+afin de dÚtailler les fonctionnalitÚs requises. Nous encha¯nerons ensuite avec la spÚcification des besoins
+et lÆÚlaboration des diagrammes dynamiques, puis nous conclurons par une prÚsentation des interfaces
+dÚveloppÚes au cours de ce sprint.
+3.1 Sprint 1 : Authentification & Administration des donnÚes
+de rÚfÚrence REFI
+Ce sprint se concentre sur la mise en place des modules dÆauthentification des utilisateurs ainsi
+que sur la gestion des donnÚes de rÚfÚrence administratives et organisationnelles. Ces fonctionnalitÚs
+constituent la base du systÞme.
+3.1.1 Objectifs du sprint 1
+LÆobjectif principal de ce sprint est de dÚvelopper les modules essentiels de configuration et de
+gestion des donnÚes de rÚfÚrence administratives et organisationnelles utilisÚes par le systÞme REFI.
+Plus prÚcisÚment, il sÆagit de :
+ù IntÚgrerlemoduledÆauthentificationdesutilisateurs(connexion,dÚconnexion,consultation
+du profil).
+ù DÚvelopper le module de gestion des codes INSEE (ajout, suppression, modification).
+ù DÚvelopperlemoduledegestiondesunitÚsclientÞleetindustrielles(crÚation,modification,
+suppression).
+ù AjouterunmodulepourgÚrerlalistedesdÚpartementsconcernÚs(crÚation,modification,
+suppression).
+ù DÚvelopperunmodulepourlagestiondescommunes(crÚation,modification,suppression).
+ù DÚvelopperlemoduledegestiondesinformationsdecontactdestechnicienscommerciaux
+(ajout, suppression, modification).
+36
+
+=== PAGE 50 ===
+Chapitre 3. Release 1 : Mise en place du socle fonctionnel de REFI Sprint 1
+3.1.2 Backlog du sprint 1
+Le tableau 3.1 reprÚsente le Backlog de notre premier Sprint.
+ID TÔche Estimation
+PrioritÚ
+User Story (Fonctionnelle / Technique) (Jours)
+User Story 1 En tant que Pilote GP, je peux mÆauthentifier. ╔levÚe 4
+En tant que Pilote GP, je peux consulter mon
+User Story 2 Basse 1
+profil.
+En tant quÆadministrateur, jÆai la possibilitÚ
+╔levÚe 1
+dÆajouter un code INSEE.
+User Story 3
+En tant quÆadministrateur, je souhaite modifier
+Moyenne 1
+un code INSEE.
+En tant quÆadministrateur, je souhaite
+Basse 1
+supprimer un code INSEE.
+En tant quÆadministrateur, jÆai la possibilitÚ de
+╔levÚe 1
+crÚer une unitÚ clientÞle et industrielle.
+User Story 4
+En tant quÆadministrateur, je souhaite modifier
+Moyenne 1
+une unitÚ clientÞle et industrielle.
+En tant quÆadministrateur, je souhaite
+Basse 1
+supprimer une unitÚ clientÞle et industrielle.
+En tant quÆadministrateur, jÆai la possibilitÚ
+╔levÚe 1
+dÆajouter un dÚpartement.
+User Story 5
+En tant quÆadministrateur, je souhaite modifier
+Moyenne 1
+un dÚpartement.
+En tant quÆadministrateur, je souhaite
+Basse 1
+supprimer un dÚpartement.
+En tant quÆadministrateur, jÆai la possibilitÚ
+╔levÚe 1
+dÆajouter une commune.
+User Story 6
+En tant quÆadministrateur, je souhaite modifier
+Moyenne 1
+les informations dÆune commune.
+En tant quÆadministrateur, je souhaite
+Basse 1
+supprimer une commune.
+37
+

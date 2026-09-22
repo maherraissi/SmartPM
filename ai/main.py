@@ -234,81 +234,77 @@ async def get_project_context(project_id: str) -> dict:
 @app.post("/chat")
 async def chat(request: ChatRequest):
     try:
-        projects = await db.projects.find({}, {"name":1,"status":1,"description":1,"progress":1}).to_list(100)
-        tasks    = await db.tasks.find({}, {"title":1,"status":1,"authorId":1,"estimatedDuration":1,"actualDuration":1}).to_list(200)
-        users    = await db.users.find({}, {"firstName":1,"lastName":1,"email":1,"role":1,"certifications":1}).to_list(100)
-        db_context_str = json.dumps({"projects": projects, "tasks": tasks, "users": users}, cls=JSONEncoder)
+        projects = await db.projects.find({}, {"name":1,"status":1,"progress":1}).to_list(10)
+        users    = await db.users.find({}, {"firstName":1,"lastName":1,"role":1}).to_list(15)
+        proj_str = ", ".join([f"{p.get('name','?')}({p.get('status','?')} {p.get('progress',0)}%)" for p in projects]) or "Aucun projet"
+        user_str = ", ".join([f"{u.get('firstName','')} {u.get('lastName','')}[{u.get('role','?')}]" for u in users]) or "Aucun"
+        db_context_str = f"Projets: {proj_str} | Equipe: {user_str}"
     except Exception as e:
-        db_context_str = f"Erreur BD: {str(e)}"
+        db_context_str = f"BD: {str(e)[:80]}"
 
     system = (
-        "Tu es SmartPM AI, assistant expert en gestion de projet sur la plateforme SmartPM.\n"
-        "Directives:\n"
-        "1. Sois direct, concis et naturel.\n"
-        "2. Utilise listes et **gras** pour les donnees de projets.\n\n"
-        f"[BASE DE DONNEES EN TEMPS REEL]:\n{db_context_str}\n\n"
-        "Utilise ces donnees pour repondre avec precision.\n"
+        "Tu es SmartPM AI, assistant concis en gestion de projet. "
+        "Reponds en 2-4 phrases max, sois direct et precis. "
+        f"Donnees live: {db_context_str}"
     )
     if request.context:
-        system += f"\n[CONTEXTE]: {request.context}"
+        system += f" | Contexte: {request.context[:200]}"
 
-    recent = (request.history or [])[-4:]
-    hist = "".join(f"\n{'User' if m.role=='user' else 'Assistant'}: {m.content}" for m in recent)
-    prompt = f"{system}{hist}\nUser: {request.message}\nAssistant:"
-
-    generation_config = genai.types.GenerationConfig(temperature=0.4, top_p=0.8)
+    recent = (request.history or [])[-3:]
+    messages = [{"role": "system", "content": system}]
+    for m in recent:
+        messages.append({"role": m.role, "content": m.content})
+    messages.append({"role": "user", "content": request.message})
 
     async def stream_generator():
+        yield " "  # Immediate first byte
+
+        # PRIMARY: Groq (fastest - ~300ms TTFT)
+        if groq_client:
+            try:
+                stream = await groq_client.chat.completions.create(
+                    model="llama3-8b-8192",
+                    messages=messages,
+                    stream=True,
+                    temperature=0.3,
+                    max_tokens=400
+                )
+                async for chunk in stream:
+                    content = chunk.choices[0].delta.content
+                    if content: yield content
+                return
+            except Exception as e_groq:
+                print(f"[CHAT] Groq error: {e_groq}")
+
+        # FALLBACK 1: Gemini Flash
         try:
+            prompt = f"{system}\nUser: {request.message}\nAssistant:"
+            generation_config = genai.types.GenerationConfig(temperature=0.3, top_p=0.8, max_output_tokens=400)
             response = await gemini_model.generate_content_async(prompt, generation_config=generation_config, stream=True)
             async for chunk in response:
                 if chunk.text: yield chunk.text
             return
         except Exception as e_gemini:
             print(f"[CHAT] Gemini error: {e_gemini}")
-            messages = [{"role":"system","content":system}]
-            for m in recent: messages.append({"role":m.role,"content":m.content})
-            messages.append({"role":"user","content":request.message})
-            
-            # Fallback 1: Groq
-            if groq_client:
-                print("[CHAT] Trying Groq fallback...")
-                try:
-                    stream = await groq_client.chat.completions.create(model="llama-3.1-8b-instant", messages=messages, stream=True, temperature=0.3)
-                    async for chunk_oa in stream:
-                        content = chunk_oa.choices[0].delta.content
-                        if content: yield content
-                    return
-                except Exception as e_groq:
-                    print(f"[CHAT] Groq error: {e_groq}")
-            
-            # Fallback 2: OpenRouter
-            if or_client:
-                print("[CHAT] Trying OpenRouter fallback...")
-                try:
-                    stream = await or_client.chat.completions.create(model="mistralai/mistral-7b-instruct:free", messages=messages, stream=True, temperature=0.3)
-                    async for chunk_oa in stream:
-                        content = chunk_oa.choices[0].delta.content
-                        if content: yield content
-                    return
-                except Exception as e_or:
-                    print(f"[CHAT] OpenRouter error: {e_or}")
 
-            # Fallback 3: OpenAI
-            if openai_client:
-                print("[CHAT] Trying OpenAI fallback...")
-                try:
-                    stream = await openai_client.chat.completions.create(model="gpt-4o-mini", messages=messages, stream=True, temperature=0.3)
-                    async for chunk_oa in stream:
-                        content = chunk_oa.choices[0].delta.content
-                        if content: yield content
-                    return
-                except Exception as e_oa:
-                    print(f"[CHAT] OpenAI error: {e_oa}")
-            
-            yield "⚠️ Désolé, les services IA sont actuellement surchargés (Quota atteint). Veuillez réessayer plus tard."
+        # FALLBACK 2: OpenRouter
+        if or_client:
+            try:
+                stream = await or_client.chat.completions.create(
+                    model="meta-llama/llama-3.1-8b-instruct:free",
+                    messages=messages, stream=True, temperature=0.3, max_tokens=400
+                )
+                async for chunk in stream:
+                    content = chunk.choices[0].delta.content
+                    if content: yield content
+                return
+            except Exception as e_or:
+                print(f"[CHAT] OpenRouter error: {e_or}")
+
+        yield "⚠️ Service IA temporairement indisponible. Reessayez."
 
     return StreamingResponse(stream_generator(), media_type="text/plain")
+
 
 
 # ── SIMULATE — Ollama with full DB context ────────────────────────
@@ -415,7 +411,6 @@ Score de risque global et recommandation de décision (GO / NO-GO / CONDITIONNEL
     if model_name == "agent_2" or model_name.lower().startswith("gemini"):
         async def gemini_stream():
             import asyncio
-            max_retries = 3
             system_instruction = (
                 "Tu es un expert senior en gestion de projets logiciels critiques (avionique, spatial, automobile). "
                 "Tu parles exclusivement francais. Tes rapports sont structures, precis et directement actionnables. "
@@ -423,22 +418,71 @@ Score de risque global et recommandation de décision (GO / NO-GO / CONDITIONNEL
             )
             full_prompt = system_instruction + "\n\n" + prompt
             generation_config = genai.types.GenerationConfig(temperature=0.25)
-            
-            for attempt in range(max_retries):
-                try:
-                    response = await gemini_model.generate_content_async(full_prompt, generation_config=generation_config, stream=True)
-                    async for chunk in response:
-                        if chunk.text:
-                            yield chunk.text
-                    return # Success, exit stream
-                except Exception as e:
-                    if "503" in str(e) and attempt < max_retries - 1:
-                        yield f"\n*Gemini est très sollicité. Nouvelle tentative ({attempt+1}/{max_retries})...*\n\n"
-                        await asyncio.sleep(2) # Wait 2 seconds before retry
-                        continue
-                    else:
-                        yield f"\n\n**Erreur Gemini Simulation** : {str(e)}\n\n_Le service IA Google est actuellement surchargé (High Demand). Veuillez réessayer dans quelques instants._"
+
+            # ── Try Gemini first ──────────────────────────────────
+            try:
+                response = await gemini_model.generate_content_async(
+                    full_prompt, generation_config=generation_config, stream=True
+                )
+                async for chunk in response:
+                    if chunk.text:
+                        yield chunk.text
+                return  # Success
+
+            except Exception as e_gemini:
+                err_str = str(e_gemini)
+                is_quota = "429" in err_str or "quota" in err_str.lower() or "RESOURCE_EXHAUSTED" in err_str
+
+                if is_quota and groq_client:
+                    # ── Auto-fallback to Groq ─────────────────────
+                    print(f"[SIMULATE] Gemini quota exceeded → switching to Groq")
+                    try:
+                        stream = await groq_client.chat.completions.create(
+                            model="llama-3.1-8b-instant",
+                            messages=[
+                                {"role": "system", "content": system_instruction},
+                                {"role": "user",   "content": prompt}
+                            ],
+                            stream=True,
+                            temperature=0.25,
+                            max_tokens=3000,
+                        )
+                        async for chunk in stream:
+                            content = chunk.choices[0].delta.content or ""
+                            if content:
+                                yield content
+                        return  # Success via Groq
+
+                    except Exception as e_groq:
+                        yield f"\n\n**Erreur Simulation** : Gemini quota dépassé et Groq indisponible.\n\nErreur Groq: {str(e_groq)}"
                         return
+
+                elif "503" in err_str and groq_client:
+                    # ── Gemini overloaded → Groq fallback ─────────
+                    print(f"[SIMULATE] Gemini 503 → switching to Groq")
+                    try:
+                        stream = await groq_client.chat.completions.create(
+                            model="llama-3.1-8b-instant",
+                            messages=[
+                                {"role": "system", "content": system_instruction},
+                                {"role": "user",   "content": prompt}
+                            ],
+                            stream=True,
+                            temperature=0.25,
+                            max_tokens=3000,
+                        )
+                        async for chunk in stream:
+                            content = chunk.choices[0].delta.content or ""
+                            if content:
+                                yield content
+                        return
+
+                    except Exception as e_groq2:
+                        yield f"\n\n**Erreur** : Gemini surchargé et Groq indisponible.\n\nErreur: {str(e_groq2)}"
+                        return
+                else:
+                    yield f"\n\n**Erreur Gemini Simulation** : {err_str}\n\n_Veuillez réessayer dans quelques instants._"
+                    return
 
         return StreamingResponse(gemini_stream(), media_type="text/plain")
 

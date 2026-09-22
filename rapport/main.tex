@@ -1,0 +1,180 @@
+% ============================================================
+%  SmartPM — Rapport PFE TEK-UP / Capgemini
+%  Compilez avec: pdflatex main.tex (x2) puis biber main
+% ============================================================
+\documentclass[12pt, a4paper, oneside]{report}
+
+% ── Packages ─────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+
+% Mise en page
+\usepackage[
+  top=2.5cm, bottom=2.5cm,
+  left=3cm,  right=2.5cm
+]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% Couleurs & graphiques
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{subcaption}
+\usepackage{tikz}
+
+% Tableaux
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{colortbl}
+
+% En-têtes et pieds de page
+\usepackage{fancyhdr}
+\usepackage{emptypage}
+
+% Liens hypertexte
+\usepackage[
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  urlcolor=blue!70!black,
+  citecolor=green!50!black
+]{hyperref}
+
+% Code source
+\usepackage{listings}
+\usepackage{minted}
+
+% Listes d'abréviations
+\usepackage[acronym, toc]{glossaries}
+
+% Bibliographie
+\usepackage[backend=biber, style=numeric, sorting=none]{biblatex}
+\addbibresource{bibliography.bib}
+
+% Divers
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{pifont}
+\usepackage{fontawesome5}
+\usepackage{mdframed}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+\usepackage{titlesec}
+\usepackage{titletoc}
+
+% ── Couleurs du projet ────────────────────────────────────
+\definecolor{primaryblue}{RGB}{0, 84, 166}      % Bleu TEK-UP / Capgemini
+\definecolor{accentgold}{RGB}{255, 193, 7}       % Or accent
+\definecolor{lightgray}{RGB}{245, 245, 245}
+\definecolor{darkgray}{RGB}{64, 64, 64}
+\definecolor{successgreen}{RGB}{40, 167, 69}
+\definecolor{tablehead}{RGB}{0, 84, 166}
+
+% ── Style des chapitres ───────────────────────────────────
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{primaryblue}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{primaryblue}}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{darkgray}}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{darkgray}}
+  {\thesubsubsection}{1em}{}
+
+% ── Style des en-têtes ────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{darkgray}\leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% ── Boîtes personnalisées ─────────────────────────────────
+\newtcolorbox{infobox}[1][]{
+  colback=blue!5!white, colframe=primaryblue,
+  title=#1, fonttitle=\bfseries\color{white},
+  colbacktitle=primaryblue, breakable
+}
+
+\newtcolorbox{notebox}{
+  colback=accentgold!10!white, colframe=accentgold!80!black,
+  leftrule=3pt, toprule=0pt, bottomrule=0pt, rightrule=0pt,
+  breakable
+}
+
+% ── Commandes utiles ──────────────────────────────────────
+\newcommand{\placeholder}[1]{%
+  \begin{center}
+    \begin{tcolorbox}[
+      colback=gray!10, colframe=gray!50,
+      width=0.9\textwidth, halign=center,
+      height=6cm, valign=center
+    ]
+      \Large\color{gray}\faImage\\[0.5em]
+      \normalsize\textit{#1}
+    \end{tcolorbox}
+  \end{center}
+}
+
+% ── Glossaire / Abréviations ──────────────────────────────
+\makeglossaries
+
+% ── Document ──────────────────────────────────────────────
+\begin{document}
+
+% Pages préliminaires (numérotation romaine)
+\pagenumbering{roman}
+\pagestyle{empty}
+
+\include{frontmatter/cover}
+\cleardoublepage
+\include{frontmatter/autorisation}
+\cleardoublepage
+\include{frontmatter/dedicace}
+\cleardoublepage
+\include{frontmatter/remerciements}
+\cleardoublepage
+
+% Tables des matières / figures / tableaux
+\pagestyle{plain}
+\tableofcontents
+\cleardoublepage
+\listoffigures
+\cleardoublepage
+\listoftables
+\cleardoublepage
+
+% Abréviations
+\include{frontmatter/abbreviations}
+\cleardoublepage
+
+% Corps du rapport (numérotation arabe)
+\pagenumbering{arabic}
+\pagestyle{fancy}
+
+\include{chapters/introduction}
+\include{chapters/chapter1}
+\include{chapters/chapter2}
+\include{chapters/chapter3}
+\include{chapters/chapter4}
+\include{chapters/conclusion}
+
+% Webographie
+\include{frontmatter/webographie}
+
+\include{frontmatter/backcover}
+
+\end{document}

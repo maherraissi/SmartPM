@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Figure 2.3 — Diagramme de classes global — SmartPM</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #e8e8e8; display: flex; flex-direction: column; align-items: center; padding: 30px; font-family: Arial, sans-serif; }
+    h1 { color: #333; font-size: 16px; margin-bottom: 16px; }
+    .svg-container { background: white; box-shadow: 0 4px 24px rgba(0,0,0,0.18); border: 1px solid #ccc; }
+    .legend { margin-top: 20px; display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 13px; color: #444; }
+    .legend-dot { width: 15px; height: 15px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+<h1>SmartPM — Diagramme de classes global (Figure 2.3)</h1>
+<div class="svg-container">
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1370 1285"
+     width="1370" height="1285"
+     font-family="Arial, Helvetica, sans-serif">
+<defs>
+  <marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0.5,0.5 L9,4 L0.5,7.5" fill="none" stroke="#222" stroke-width="1.6" stroke-linejoin="round"/>
+  </marker>
+  <marker id="arr-d" markerWidth="9" markerHeight="7" refX="8" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+    <path d="M0.5,0.5 L8,3.5 L0.5,6.5" fill="none" stroke="#888" stroke-width="1.3"/>
+  </marker>
+</defs>
+<rect width="1370" height="1285" fill="white"/>
+
+<!-- 1. RoleUtilisateur (enum) x=20, y=20, w=205, h=118 -->
+<g transform="translate(20,20)">
+  <rect width="205" height="118" fill="white" stroke="#333" stroke-width="1.5" rx="3"/>
+  <rect width="205" height="42" fill="#37474F" rx="3"/>
+  <rect y="34" width="205" height="8" fill="#37474F"/>
+  <text x="102" y="14" text-anchor="middle" fill="#b0bec5" font-size="10" font-style="italic">enumeration</text>
+  <text x="102" y="33" text-anchor="middle" fill="white" font-size="12" font-weight="bold">RoleUtilisateur</text>
+  <line x1="0" y1="42" x2="205" y2="42" stroke="#333" stroke-width="1"/>
+  <text x="102" y="63" text-anchor="middle" fill="#333" font-size="12">ADMIN</text>
+  <text x="102" y="83" text-anchor="middle" fill="#333" font-size="12">MANAGER</text>
+  <text x="102" y="103" text-anchor="middle" fill="#333" font-size="12">MEMBER</text>
+</g>
+
+<!-- 2. Utilisateur x=20, y=160, w=265, h=248 -->
+<g transform="translate(20,160)">
+  <rect width="265" height="248" fill="white" stroke="#333" stroke-width="1.5" rx="3"/>
+  <rect width="265" height="35" fill="#1D4ED8" rx="3"/>
+  <rect y="28" width="265" height="7" fill="#1D4ED8"/>
+  <text x="132" y="22" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Utilisateur</text>
+  <line x1="0" y1="35" x2="265" y2="35" stroke="#333" stroke-width="1"/>
+  <text x="8" y="55" fill="#222" font-size="11.5">- _id : ObjectId</text>
+  <text x="8" y="75" fill="#222" font-size="11.5">- firstName : String</text>
+  <text x="8" y="95" fill="#222" font-size="11.5">- lastName : String</text>
+  <text x="8" y="115" fill="#222" font-size="11.5">- email : String</text>
+  <text x="8" y="135" fill="#222" font-size="11.5">- role : RoleUtilisateur</text>
+  <text x="8" y="155" fill="#222" font-size="11.5">- isActive : Boolean</text>
+  <line x1="0" y1="168" x2="265" y2="168" stroke="#333" stroke-width="1"/>
+  <text x="8" y="188" fill="#222" font-size="11.5">+ login()</text>
+  <text x="8" y="208" fill="#222" font-size="11.5">+ updateRole()</text>
+  <text x="8" y="228" fill="#222" font-size="11.5">+ deactivate()</text>
+</g>
+
+<!-- 3. Formation x=20, y=440, w=245, h=188 -->
+<g transform="translate(20,440)">
+  <rect width="245" height="188" fill="white" stroke="#333" stroke-width="1.5" rx="3"/>
+  <rect width="245" height="35" fill="#5B21B6" rx="3"/>
+  <rect y="28" width="245" height="7" fill="#5B21B6"/>
+  <text x="122" y="22" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Formation</text>
+  <line x1="0" y1="35" x2="245" y2="35" stroke="#333" stroke-width="1"/>
+  <text x="8" y="55" fill="#222" font-size="11.5">- _id : ObjectId</text>
+  <text x="8" y="75" fill="#222" font-size="11.5">- title : String</text>
+  <text x="8" y="95" fill="#222" font-size="11.5">- phase : AeroPhase</text>
+  <text x="8" y="115" fill="#222" font-size="11.5">- materials : Material[]</text>
+  <line x1="0" y1="128" x2="245" y2="128" stroke="#333" stroke-width="1"/>
+  <text x="8" y="148" fill="#222" font-size="11.5">+ completeTraining()</text>
+  <text x="8" y="168" fill="#222" font-size="11.5">+ submitQuiz()</text>
+</g>
+
+<!-- 4. Projet x=720, y=20, w=265, h=248 -->
+<g transform="translate(720,20)">
+  <rect width="265" height="248" fill="white" stroke="#333" stroke-width="1.5" rx="3"/>
+  <rect width="265" height="35" fill="#065F46" rx="3"/>
+  <rect y="28" width="265" height="7" fill="#065F46"/>
+  <text x="132" y="22" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Projet</text>
+  <line x1="0" y1="35" x2="265" y2="35" stroke="#333" stroke-width="1"/>
+  <text x="8" y="55" fill="#222" font-size="11.5">- _id : ObjectId</text>
+  <text x="8" y="75" fill="#222" font-size="11.5">- name : String</text>
+  <text x="8" y="95" fill="#222" font-size="11.5">- description : String</text>
+  <text x="8" y="115" fill="#222" font-size="11.5">- managerId : ObjectId</text>
+  <text x="8" y="135" fill="#222" font-size="11.5">- status : StatutProjet</text>
+  <text x="8" y="155" fill="#222" font-size="11.5">- startDate : Date</text>
+  <line x1="0" y1="168" x2="265" y2="168" stroke="#333" stroke-width="1"/>
+  <text x="8" y="188" fill="#222" font-size="11.5">+ createProject()</text>
+  <text x="8" y="208" fill="#222" font-size="11.5">+ addMember()</text>
+  <text x="8" y="228" fill="#222" font-size="11.5">+ updateProject()</text>
+</g>
+
+<!-- 5. RapportIA x=1085, y=20, w=250, h=208 -->
+<g transform="translate(1085,20)">
+  <rect width="250" height="208" fill="white" stroke="#333" stroke-width="1.5" rx="3"/>
+  <rect width="250" height="35" fill="#6D28D9" rx="3"/>
+  <rect y="28" width="250" height="7" fill="#6D28D9"/>
+  <text x="125" y="22" text-anchor="middle" fill="white" font-size="13" font-weight="bold">RapportIA</text>
+  <line x1="0" y1="35" x2="250" y2="35" stroke="#333" stroke-width="1"/>
+  <text x="8" y="55" fill="#222" font-size="11.5">- _id : ObjectId</text>
+  <text x="8" y="75" fill="#222" font-size="11.5">- projectId : ObjectId</text>
+  <text x="8" y="95" fill="#222" font-size="11.5">- type : String</text>
+  <text x="8" y="115" fill="#222" font-size="11.5">- content : String</text>
+  <text x="8" y="135" fill="#222" font-size="11.5">- generatedAt : Date</text>
+  <line x1="0" y1="148" x2="250" y2="148" stroke="#333" stroke-width="1"/>
+  <text x="8" y="168" fill="#222" font-size="11.5">+ generateReport()</text>
+  <text x="8" y="188" fill="#222" font-size="11.5">+ simulateRisks()</text>
+</g>
+
+<!-- 6. StatutProjet (enum) x=1085, y=248, w=200, h=158 -->
+<g transform="translate(1085,248)">
+  <rect width="200" height="158" fill="white" stroke="#333" stroke-width="1.5" rx="3"/>
+  <rect width="200" height="42" fill="#37474F" rx="3"/>
+  <rect y="35" width="200" height="7" fill="#37474F"/>
+  <text x="100" y="14" text-anchor="middle" fill="#b0bec5" font-size="10" font-style="italic">enumeration</text>
+  <text x="100" y="33" text-anchor="middle" fill="white" font-size="12" font-weight="bold">StatutProjet</text>
+  <line x1="0" y1="42" x2="200" y2="42" stroke="#333" stroke-width="1"/>
+  <text x="100" y="62" text-anchor="middle" fill="#333" font-size="11">PLANNING</text>
+  <text x="100" y="82" text-anchor="middle" fill="#333" font-size="11">ACTIVE</text>
+  <text x="100" y="102" text-anchor="middle" fill="#333" font-size="11">ON_HOLD</text>
+  <text x="100" y="122" text-anchor="middle" fill="#333" font-size="11">COMPLETED</text>
+  <text x="100" y="142" text-anchor="middle" fill="#333" font-size="11">ARCHIVED</text>
+</g>
+
+<!-- 7. Activite x=720, y=300, w=265, h=208 -->
+<g transform="translate(720,300)">
+  <rect width="265" height="208" fill="white" stroke="#333" stroke-width="1.5" rx="3"/>
+  <rect width="265" height="35" fill="#047857" rx="3"/>
+  <rect y="28" width="265" height="7" fill="#047857"/>
+  <text x="132" y="22" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Activite</text>
+  <line x1="0" y1="35" x2="265" y2="35" stroke="#333" stroke-width="1"/>
+  <text x="8" y="55" fill="#222" font-size="11.5">- _id : ObjectId</text>
+  <text x="8" y="75" fill="#222" font-size="11.5">- projectId : ObjectId</text>
+  <text x="8" y="95" fill="#222" font-size="11.5">- name : String</text>
+  <text x="8" y="115" fill="#222" font-size="11.5">- phase : AeroPhase</text>
+  <text x="8" y="135" fill="#222" font-size="11.5">- progressPercentage : Number</text>
+  <line x1="0" y1="148" x2="265" y2="148" stroke="#333" stroke-width="1"/>
+  <text x="8" y="168" fill="#222" font-size="11.5">+ updateProgress()</text>
+  <text x="8" y="188" fill="#222" font-size="11.5">+ getActivities()</text>
+</g>
+
+<!-- 8. SousActivite x=720, y=540, w=265, h=188 -->
+<g transform="translate(720,540)">
+  <rect width="265" height="188" fill="white" stroke="#333" stroke-width="1.5" rx="3"/>
+  <rect width="265" height="35" fill="#059669" rx="3"/>
+  <rect y="28" width="265" height="7" fill="#059669"/>
+  <text x="132" y="22" text-anchor="middle" fill="white" font-size="13" font-weight="bold">SousActivite</text>
+  <line x1="0" y1="35" x2="265" y2="35" stroke="#333" stroke-width="1"/>
+  <text x="8" y="55" fill="#222" font-size="11.5">- _id : ObjectId</text>
+  <text x="8" y="75" fill="#222" font-size="11.5">- activityId : ObjectId</text>
+  <text x="8" y="95" fill="#222" font-size="11.5">- category : String</text>
+  <text x="8" y="115" fill="#222" font-size="11.5">- progressPercentage : Number</text>
+  <line x1="0" y1="128" x2="265" y2="128" stroke="#333" stroke-width="1"/>
+  <text x="8" y="148" fill="#222" font-size="11.5">+ createSubActivity()</text>
+  <text x="8" y="168" fill="#222" font-size="11.5">+ getSubActivities()</text>
+</g>
+
+<!-- 9. Tache x=720, y=760, w=265, h=248 -->
+<g transform="translate(720,760)">
+  <rect width="265" height="248" fill="white" stroke="#333" stroke-width="1.5" rx="3"/>
+  <rect width="265" height="35" fill="#0E7490" rx="3"/>
+  <rect y="28" width="265" height="7" fill="#0E7490"/>
+  <text x="132" y="22" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Tache</text>
+  <line x1="0" y1="35" x2="265" y2="35" stroke="#333" stroke-width="1"/>
+  <text x="8" y="55" fill="#222" font-size="11.5">- _id : ObjectId</text>
+  <text x="8" y="75" fill="#222" font-size="11.5">- title : String</text>
+  <text x="8" y="95" fill="#222" font-size="11.5">- authorId : ObjectId</text>
+  <text x="8" y="115" fill="#222" font-size="11.5">- reviewerId : ObjectId</text>
+  <text x="8" y="135" fill="#222" font-size="11.5">- status : StatutTache</text>
+  <text x="8" y="155" fill="#222" font-size="11.5">- estimatedDuration : Number</text>
+  <line x1="0" y1="168" x2="265" y2="168" stroke="#333" stroke-width="1"/>
+  <text x="8" y="188" fill="#222" font-size="11.5">+ assignTask()</text>
+  <text x="8" y="208" fill="#222" font-size="11.5">+ updateStatus()</text>
+  <text x="8" y="228" fill="#222" font-size="11.5">+ submitForReview()</text>
+</g>
+
+<!-- 10. StatutTache (enum) x=1085, y=760, w=215, h=198 -->
+<g transform="translate(1085,760)">
+  <rect width="215" height="198" fill="white" stroke="#333" stroke-width="1.5" rx="3"/>
+  <rect width="215" height="42" fill="#37474F" rx="3"/>
+  <rect y="35" width="215" height="7" fill="#37474F"/>
+  <text x="107" y="14" text-anchor="middle" fill="#b0bec5" font-size="10" font-style="italic">enumeration</text>
+  <text x="107" y="33" text-anchor="middle" fill="white" font-size="12" font-weight="bold">StatutTache</text>
+  <line x1="0" y1="42" x2="215" y2="42" stroke="#333" stroke-width="1"/>
+  <text x="107" y="62" text-anchor="middle" fill="#333" font-size="11">TODO</text>
+  <text x="107" y="82" text-anchor="middle" fill="#333" font-size="11">IN_PROGRESS</text>
+  <text x="107" y="102" text-anchor="middle" fill="#333" font-size="11">READY_FOR_REVIEW</text>
+  <text x="107" y="122" text-anchor="middle" fill="#333" font-size="11">IN_REVIEW</text>
+  <text x="107" y="142" text-anchor="middle" fill="#333" font-size="11">REVIEWED</text>
+  <text x="107" y="162" text-anchor="middle" fill="#333" font-size="11">BLOCKED</text>
+  <text x="107" y="182" text-anchor="middle" fill="#333" font-size="11">CLOSED</text>
+</g>
+
+<!-- 11. Revue x=318, y=660, w=248, h=188 -->
+<g transform="translate(318,660)">
+  <rect width="248" height="188" fill="white" stroke="#333" stroke-width="1.5" rx="3"/>
+  <rect width="248" height="35" fill="#B45309" rx="3"/>
+  <rect y="28" width="248" height="7" fill="#B45309"/>
+  <text x="124" y="22" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Revue</text>
+  <line x1="0" y1="35" x2="248" y2="35" stroke="#333" stroke-width="1"/>
+  <text x="8" y="55" fill="#222" font-size="11.5">- _id : ObjectId</text>
+  <text x="8" y="75" fill="#222" font-size="11.5">- taskId : ObjectId</text>
+  <text x="8" y="95" fill="#222" font-size="11.5">- reviewerId : ObjectId</text>
+  <text x="8" y="115" fill="#222" font-size="11.5">- decision : String</text>
+  <line x1="0" y1="128" x2="248" y2="128" stroke="#333" stroke-width="1"/>
+  <text x="8" y="148" fill="#222" font-size="11.5">+ submitReview()</text>
+  <text x="8" y="168" fill="#222" font-size="11.5">+ approveReview()</text>
+</g>
+
+<!-- 12. Commentaire x=318, y=878, w=248, h=188 -->
+<g transform="translate(318,878)">
+  <rect width="248" height="188" fill="white" stroke="#333" stroke-width="1.5" rx="3"/>
+  <rect width="248" height="35" fill="#D97706" rx="3"/>
+  <rect y="28" width="248" height="7" fill="#D97706"/>
+  <text x="124" y="22" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Commentaire</text>
+  <line x1="0" y1="35" x2="248" y2="35" stroke="#333" stroke-width="1"/>
+  <text x="8" y="55" fill="#222" font-size="11.5">- _id : ObjectId</text>
+  <text x="8" y="75" fill="#222" font-size="11.5">- authorId : ObjectId</text>
+  <text x="8" y="95" fill="#222" font-size="11.5">- text : String</text>
+  <text x="8" y="115" fill="#222" font-size="11.5">- createdAt : Date</text>
+  <line x1="0" y1="128" x2="248" y2="128" stroke="#333" stroke-width="1"/>
+  <text x="8" y="148" fill="#222" font-size="11.5">+ addComment()</text>
+  <text x="8" y="168" fill="#222" font-size="11.5">+ deleteComment()</text>
+</g>
+
+<!-- 13. Notification x=720, y=1040, w=265, h=208 -->
+<g transform="translate(720,1040)">
+  <rect width="265" height="208" fill="white" stroke="#333" stroke-width="1.5" rx="3"/>
+  <rect width="265" height="35" fill="#92400E" rx="3"/>
+  <rect y="28" width="265" height="7" fill="#92400E"/>
+  <text x="132" y="22" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Notification</text>
+  <line x1="0" y1="35" x2="265" y2="35" stroke="#333" stroke-width="1"/>
+  <text x="8" y="55" fill="#222" font-size="11.5">- _id : ObjectId</text>
+  <text x="8" y="75" fill="#222" font-size="11.5">- recipientId : ObjectId</text>
+  <text x="8" y="95" fill="#222" font-size="11.5">- title : String</text>
+  <text x="8" y="115" fill="#222" font-size="11.5">- isRead : Boolean</text>
+  <text x="8" y="135" fill="#222" font-size="11.5">- type : String</text>
+  <line x1="0" y1="148" x2="265" y2="148" stroke="#333" stroke-width="1"/>
+  <text x="8" y="168" fill="#222" font-size="11.5">+ markAsRead()</text>
+  <text x="8" y="188" fill="#222" font-size="11.5">+ sendRealTime()</text>
+</g>
+
+<!-- ================= RELATIONS ================= -->
+
+<!-- 1. Utilisateur -> Projet (gere) 1 --> 0..* -->
+<path d="M 285,255 L 510,255 L 510,144 L 720,144" fill="none" stroke="#333" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="400" y="245" text-anchor="middle" fill="#333" font-size="11" font-style="italic">gere</text>
+<text x="290" y="247" fill="#333" font-size="10" font-weight="bold">1</text>
+<text x="688" y="136" fill="#333" font-size="10" font-weight="bold">0..*</text>
+
+<!-- 2. Utilisateur -> Formation (suit) 0..* --> 0..* -->
+<path d="M 152,408 L 152,440" fill="none" stroke="#333" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="165" y="425" fill="#333" font-size="11" font-style="italic">suit</text>
+<text x="165" y="415" fill="#333" font-size="10" font-weight="bold">0..*</text>
+<text x="165" y="437" fill="#333" font-size="10" font-weight="bold">0..*</text>
+
+<!-- 3. Projet -> Activite (contient) 1 --> 1..* -->
+<path d="M 852,268 L 852,300" fill="none" stroke="#333" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="864" y="287" fill="#333" font-size="11" font-style="italic">contient</text>
+<text x="864" y="272" fill="#333" font-size="10" font-weight="bold">1</text>
+<text x="864" y="298" fill="#333" font-size="10" font-weight="bold">1..*</text>
+
+<!-- 4. Activite -> SousActivite (contient) 1 --> 1..* -->
+<path d="M 852,508 L 852,540" fill="none" stroke="#333" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="864" y="527" fill="#333" font-size="11" font-style="italic">contient</text>
+<text x="864" y="512" fill="#333" font-size="10" font-weight="bold">1</text>
+<text x="864" y="538" fill="#333" font-size="10" font-weight="bold">1..*</text>
+
+<!-- 5. SousActivite -> Tache (contient) 1 --> 0..* -->
+<path d="M 852,728 L 852,760" fill="none" stroke="#333" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="864" y="747" fill="#333" font-size="11" font-style="italic">contient</text>
+<text x="864" y="732" fill="#333" font-size="10" font-weight="bold">1</text>
+<text x="864" y="758" fill="#333" font-size="10" font-weight="bold">0..*</text>
+
+<!-- 6. Tache -> Revue (revisee par) 1 --> 0..1 -->
+<!-- Tache.left at y=820, Revue.right (566, 754) -->
+<path d="M 720,810 L 566,754" fill="none" stroke="#333" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="634" y="792" text-anchor="middle" fill="#333" font-size="11" font-style="italic">revisee par</text>
+<text x="714" y="802" fill="#333" font-size="10" font-weight="bold">1</text>
+<text x="568" y="746" fill="#333" font-size="10" font-weight="bold">0..1</text>
+
+<!-- 7. Revue -> Utilisateur (soumise par) 0..* --> 1 -->
+<!-- Revue.left (318,754) via x=308 to Utilisateur.right (285,316) -->
+<path d="M 318,754 L 308,754 L 308,316 L 285,316" fill="none" stroke="#333" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="290" y="535" text-anchor="middle" fill="#333" font-size="11" font-style="italic" transform="rotate(-90,290,535)">soumise par</text>
+<text x="321" y="745" fill="#333" font-size="10" font-weight="bold">0..*</text>
+<text x="288" y="308" fill="#333" font-size="10" font-weight="bold">1</text>
+
+<!-- 8. Tache -> Commentaire (possede) 1 --> 0..* -->
+<!-- Tache.left at y=875, Commentaire.right (566,972) -->
+<path d="M 720,875 L 566,972" fill="none" stroke="#333" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="632" y="933" text-anchor="middle" fill="#333" font-size="11" font-style="italic">possede</text>
+<text x="714" y="867" fill="#333" font-size="10" font-weight="bold">1</text>
+<text x="568" y="966" fill="#333" font-size="10" font-weight="bold">0..*</text>
+
+<!-- 9. Commentaire -> Utilisateur (redige par) 0..* --> 1 -->
+<!-- Commentaire.left (318,972) via x=292 to Utilisateur.right (285,366) -->
+<path d="M 318,972 L 292,972 L 292,366 L 285,366" fill="none" stroke="#333" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="272" y="670" text-anchor="middle" fill="#333" font-size="11" font-style="italic" transform="rotate(-90,272,670)">redige par</text>
+<text x="321" y="964" fill="#333" font-size="10" font-weight="bold">0..*</text>
+<text x="288" y="358" fill="#333" font-size="10" font-weight="bold">1</text>
+
+<!-- 10. Tache -> Notification (declenche) 1 --> 0..* -->
+<path d="M 852,1008 L 852,1040" fill="none" stroke="#333" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="864" y="1027" fill="#333" font-size="11" font-style="italic">declenche</text>
+<text x="864" y="1012" fill="#333" font-size="10" font-weight="bold">1</text>
+<text x="864" y="1038" fill="#333" font-size="10" font-weight="bold">0..*</text>
+
+<!-- 11. Notification -> Utilisateur (envoyee a) 0..* --> 1 -->
+<!-- Notification.left (720,1144) via x=272 to Utilisateur.bottom (272,408) -->
+<path d="M 720,1144 L 272,1144 L 272,408" fill="none" stroke="#333" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="495" y="1136" text-anchor="middle" fill="#333" font-size="11" font-style="italic">envoyee a</text>
+<text x="717" y="1136" fill="#333" font-size="10" font-weight="bold">0..*</text>
+<text x="278" y="416" fill="#333" font-size="10" font-weight="bold">1</text>
+
+<!-- 12. RapportIA -> Projet (concerne) 0..* --> 1 -->
+<path d="M 1085,124 L 1000,124 L 1000,172 L 985,172" fill="none" stroke="#333" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="1038" y="116" text-anchor="middle" fill="#333" font-size="11" font-style="italic">concerne</text>
+<text x="1081" y="116" fill="#333" font-size="10" font-weight="bold">0..*</text>
+<text x="988" y="164" fill="#333" font-size="10" font-weight="bold">1</text>
+
+<!-- 13. RoleUtilisateur ---> Utilisateur (uses, dashed) -->
+<path d="M 122,138 L 122,160" fill="none" stroke="#888" stroke-width="1.2" stroke-dasharray="6,3" marker-end="url(#arr-d)"/>
+<text x="132" y="151" fill="#888" font-size="10" font-style="italic">uses</text>
+
+<!-- 14. StatutTache ---> Tache (uses, dashed) -->
+<!-- StatutTache.left (1085,859) via x=997 to Tache.right (985,884) -->
+<path d="M 1085,859 L 997,859 L 997,884 L 985,884" fill="none" stroke="#888" stroke-width="1.2" stroke-dasharray="6,3" marker-end="url(#arr-d)"/>
+<text x="1034" y="851" text-anchor="middle" fill="#888" font-size="10" font-style="italic">uses</text>
+
+<!-- 15. StatutProjet ---> Projet (uses, dashed) -->
+<!-- StatutProjet.left (1085,327) via x=997 to Projet.right (985,200) -->
+<path d="M 1085,327 L 997,327 L 997,200 L 985,200" fill="none" stroke="#888" stroke-width="1.2" stroke-dasharray="6,3" marker-end="url(#arr-d)"/>
+<text x="1034" y="319" text-anchor="middle" fill="#888" font-size="10" font-style="italic">uses</text>
+
+<!-- ================= CAPTION ================= -->
+<line x1="60" y1="1262" x2="1310" y2="1262" stroke="#333" stroke-width="1.2"/>
+<text x="685" y="1279" text-anchor="middle" fill="#222" font-size="14" font-weight="bold" letter-spacing="0.5">
+FIGURE 2.3 : Diagramme de classes global de SmartPM
+</text>
+
+</svg>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#1D4ED8"></div>Sprint 1 - Auth</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#065F46"></div>Sprint 2 - Projets</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#0E7490"></div>Sprint 2 - Taches</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#B45309"></div>Sprint 3 - Revues</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#D97706"></div>Sprint 3 - Commentaires</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#92400E"></div>Sprint 3 - Notifications</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#5B21B6"></div>Sprint 4 - Formation</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#6D28D9"></div>Sprint 4 - IA</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#37474F"></div>Enumerations</div>
+</div>
+</body>
+</html>

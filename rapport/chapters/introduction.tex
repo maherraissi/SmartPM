@@ -1,0 +1,64 @@
+% ============================================================
+%  INTRODUCTION GÉNÉRALE
+% ============================================================
+\chapter*{Introduction générale}
+\addcontentsline{toc}{chapter}{Introduction générale}
+\markboth{Introduction générale}{Introduction générale}
+
+\vspace{0.3cm}
+
+Ces dernières années, l'industrie aéronautique et les domaines de développement logiciel
+critique connaissent une transformation profonde, poussée par des exigences croissantes
+en matière de traçabilité, de qualité et de conformité aux normes internationales. La
+norme \textbf{DO-178C}~\cite{do178c}, en particulier, impose aux équipes de développement un cadre
+rigoureux organisant le cycle de vie du logiciel en phases distinctes : exigences de haut
+niveau (HLR), exigences de bas niveau (LLR), développement (CODE), tests unitaires (LLT)
+et tests d'intégration (HLT). Respecter ce processus exige une coordination précise entre
+les membres de l'équipe, une traçabilité complète des tâches et un suivi rigoureux des
+certifications à chaque étape.
+
+\vspace{0.3cm}
+
+Cependant, les outils de gestion de projets traditionnels tels que \textit{Jira}~\cite{jira},
+\textit{Monday.com}~\cite{monday} ou \textit{Microsoft Project}~\cite{msproject} ne sont pas conçus pour répondre à ces
+spécificités aéronautiques. Ils ne proposent pas nativement de mécanismes de gestion des
+revues avec la règle Author~$\neq$~Reviewer, ni de suivi des certifications par phase, ni
+d'intégration d'une intelligence artificielle capable d'analyser l'avancement en temps réel.
+Par ailleurs, ils ne s'accompagnent d'aucune infrastructure DevOps~\cite{devops} permettant un déploiement
+sécurisé, scalable et monitoré en production.
+
+\vspace{0.3cm}
+
+C'est dans ce contexte qu'a été initié le projet \textbf{SmartPM}, réalisé au sein de
+\textbf{Capgemini Tunisie}~\cite{capgemini}. SmartPM est une plateforme web intelligente dédiée à la gestion
+de projets aéronautiques, intégrant un assistant IA multi-modèles, un système de certifications
+et revues conformes DO-178C, et une infrastructure Kubernetes permettant un déploiement
+robuste et un monitoring temps réel.
+
+\vspace{0.3cm}
+
+Afin de mener à bien ce travail, nous avons structuré ce rapport de la manière suivante :
+
+\begin{itemize}[leftmargin=2cm]
+  \item \textbf{Le premier chapitre} présente l'organisme d'accueil Capgemini Tunisie, le
+  cadre général du projet et le contexte opérationnel. Il met en évidence les limites des
+  outils existants et introduit SmartPM comme réponse à ces problématiques, avant de décrire
+  la méthodologie Scrum adoptée.
+
+  \item \textbf{Le deuxième chapitre} est consacré à l'analyse des besoins et à la définition
+  des exigences fonctionnelles et non fonctionnelles. Il présente également l'architecture
+  technique, les choix technologiques, le backlog produit et la planification des sprints.
+
+  \item \textbf{Le troisième chapitre} décrit la première release du projet, consacrée à la
+  mise en place du socle fonctionnel de SmartPM. À travers trois sprints successifs, il détaille
+  l'authentification, la gestion des projets et tâches, ainsi que les revues et certifications.
+
+  \item \textbf{Le quatrième chapitre} traite de la deuxième release, axée sur l'intégration
+  de l'intelligence artificielle et l'infrastructure DevOps. Il présente la conception et la
+  réalisation des sprints 4 et 5, marquant une étape clé dans la maturité de la plateforme.
+\end{itemize}
+
+\vspace{0.3cm}
+
+Enfin, ce rapport se conclut par une \textbf{conclusion générale} qui dresse le bilan du
+travail accompli et ouvre des perspectives pour les évolutions futures de SmartPM.

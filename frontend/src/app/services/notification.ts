@@ -2,12 +2,13 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, interval, Subscription } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService implements OnDestroy {
-  private apiUrl = 'http://localhost:3000/notifications';
+  private apiUrl = `${environment.apiUrl}/notifications`;
 
   // Shared reactive state accessible from any component
   private _notifications$ = new BehaviorSubject<any[]>([]);

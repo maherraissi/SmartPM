@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class TrainingService {
-  private api = 'http://localhost:3000/training';
+  private api = `${environment.apiUrl}/training`;
 
   constructor(private http: HttpClient) {}
 

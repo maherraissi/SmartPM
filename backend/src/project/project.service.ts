@@ -196,7 +196,8 @@ export class ProjectService {
    const pTotal = pTasks.length;
    const pClosed = pTasks.filter(t => t.status === TaskStatus.CLOSED).length;
    
-   console.log(`[DEBUG DB] Project: ${p.name}, Status in DB variable: ${p.status}, ID: ${p._id}`);
+
+
    return {
     id: p._id.toString(),
     name: p.name,

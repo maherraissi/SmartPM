@@ -39,7 +39,7 @@ kubectl apply -f k8s/grafana.yaml
 ## 4. Accéder à l'application
 
 Si vous utilisez Docker Desktop (avec K8s activé) ou Minikube :
-- **Frontend (SmartPM)** : http://localhost:30080
+- **Frontend (SmartPM)** : http://localhost:30080 
 - **Prometheus** : http://localhost:30090
 - **Grafana** : http://localhost:30091
 

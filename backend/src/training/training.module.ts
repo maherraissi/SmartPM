@@ -9,6 +9,7 @@ import { TrainingController } from './training.controller';
 import { Training, TrainingSchema } from './schemas/training.schema';
 import { UserTraining, UserTrainingSchema } from './schemas/user-training.schema';
 import { TeamTransferRequest, TeamTransferRequestSchema } from './schemas/team-transfer-request.schema';
+import { Demande, DemandeSchema } from './schemas/demande.schema';
 import { User, UserSchema } from '../user/schemas/user.schema';
 
 const UPLOAD_DIR = join(process.cwd(), 'uploads', 'training');
@@ -19,6 +20,7 @@ const UPLOAD_DIR = join(process.cwd(), 'uploads', 'training');
       { name: Training.name,            schema: TrainingSchema },
       { name: UserTraining.name,        schema: UserTrainingSchema },
       { name: TeamTransferRequest.name, schema: TeamTransferRequestSchema },
+      { name: Demande.name,             schema: DemandeSchema },
       { name: User.name,                schema: UserSchema },
     ]),
     MulterModule.register({
